@@ -3,7 +3,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { Opening } from "@/components/home/Opening";
 import { Ladder } from "@/components/home/Ladder";
 import { Screenings } from "@/components/home/Screenings";
-import { MethodRoute } from "@/components/home/MethodRoute";
+import { MethodBoard } from "@/components/home/MethodBoard";
 import { Audiences } from "@/components/home/Audiences";
 import { AiAmplifies } from "@/components/home/AiAmplifies";
 import { Finale } from "@/components/home/Finale";
@@ -47,7 +47,7 @@ export default function Home() {
           </div>
         </section>
 
-        <MethodRoute />
+        <MethodBoard />
         <Audiences />
         <AiAmplifies />
         <Finale />

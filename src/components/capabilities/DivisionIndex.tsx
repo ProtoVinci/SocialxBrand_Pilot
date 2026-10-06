@@ -73,15 +73,15 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
               </div>
               <ul>
                 {rows.map((d) => (
-                  <li key={d.slug} className="group relative isolate border-b border-current/15 transition-colors duration-300 [@media(hover:hover)]:hover:text-white" onPointerEnter={() => enter(d.slug)}>
-                    {/* hover flood: the row fills with iris from the bottom edge */}
+                  <li key={d.slug} className="group relative isolate border-b border-current/15 transition-colors duration-300" onPointerEnter={() => enter(d.slug)}>
+                    {/* hover flood: the row fills with cornflower from the bottom edge */}
                     <span aria-hidden className="absolute -inset-x-3 inset-y-0 -z-10 hidden origin-bottom scale-y-0 rounded-[10px] bg-iris transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:scale-y-100 [@media(hover:hover)]:block md:-inset-x-5" />
                     <Link
                       href={`/capabilities/${d.slug}`}
                       transitionTypes={["nav-forward"]}
                       className="grid grid-cols-[3.2rem_1fr] items-baseline gap-x-4 py-5 pr-28 md:grid-cols-[5rem_1fr_minmax(0,22rem)] md:py-6"
                     >
-                      <span className="label text-signal-ink transition-colors duration-300 [@media(hover:hover)]:group-hover:text-coral">[ {pad(d.number)} ]</span>
+                      <span className="label text-signal-ink transition-colors duration-300 [@media(hover:hover)]:group-hover:text-ink">[ {pad(d.number)} ]</span>
                       <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
                         <span
                           className={`font-display text-title font-semibold transition-[transform,color] duration-500 ease-[var(--ease-pilot)] [font-stretch:85%] md:text-[clamp(1.6rem,2.6vw,2.6rem)] ${

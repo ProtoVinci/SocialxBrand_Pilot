@@ -14,18 +14,22 @@
 }
 
 @theme {
-  /* Red + blue, from the logo (red mark, violet-blue SOCIAL), in lighter, warmer shades. */
-  --color-shell: #fff6f2;        /* base canvas: warm white with a rosy tint */
-  --color-petal: #fbe8e4;        /* raised surfaces, cards */
-  --color-petal-2: #f4d6d0;
-  --color-rose: #ffd3ca;         /* colour act: light warm red */
-  --color-periwinkle: #d9d1ff;   /* colour act: light warm blue (the logo violet, lifted) */
-  --color-iris: #6e40f2;         /* bold act: the logo violet-blue, deepened for white type */
-  --color-coral: #ffb3a6;        /* accent on iris */
-  --color-ink: #1d1338;          /* text: deep indigo */
-  --color-muted: #5a4f6e;        /* secondary text (≥ 4.5:1 on shell, rose, periwinkle) */
-  --color-signal: #ff3131;       /* logo red: action, the route, display accents */
-  --color-signal-ink: #b01818;   /* deep red for small text and accents on colour acts (AA) */
+  /* Red + blue, from the logo, softened to the Codex-style cornflower and a complementary coral. */
+  --color-shell: #fdfaf8;        /* base canvas: warm white */
+  --color-petal: #f5f0ed;        /* raised surfaces, cards */
+  --color-petal-2: #ebe3df;
+  --color-rose: #ffe4de;         /* soft act: pale coral mist */
+  --color-periwinkle: #dfe5ff;   /* soft act: pale cornflower mist */
+  --color-iris: #6b85fc;         /* cornflower blue (sampled from the Codex hero) */
+  --color-iris-2: #a4b4f8;
+  --color-iris-3: #bdc5fa;
+  --color-coral: #ff8a78;        /* complementary warm red */
+  --color-coral-2: #ffb6a8;
+  --color-coral-3: #ffd6cd;
+  --color-ink: #12121a;          /* text and buttons: near-black */
+  --color-muted: #5b5b6b;        /* secondary text (≥ 4.5:1 on shell and both mists) */
+  --color-signal: #ff3131;       /* logo red: the route, accents, stickers */
+  --color-signal-ink: #b81d1d;   /* red for small text and accents on soft acts (AA) */
   --color-violet: #8c52ff;       /* the logo's SOCIAL violet: selected / AI */
   --color-violet-ink: #6b34e0;
 
@@ -140,22 +144,36 @@ body {
   border-radius: 2px;
 }
 
-/* Colour acts: full-bleed sections that break the shell rhythm, alternating the logo's red and blue. */
+/* Colour acts. Soft acts are flat mists; the two bold acts are blurred gradient fields in the
+   manner of the Codex hero (cornflower) and its complementary coral, always with dark type. */
 .act-rose { background: var(--color-rose); color: var(--color-ink); }
 .act-periwinkle { background: var(--color-periwinkle); color: var(--color-ink); }
 .act-rose .text-muted, .act-periwinkle .text-muted { color: color-mix(in oklab, var(--color-ink) 80%, transparent); }
-/* logo red only clears contrast on shell; on pastel acts red accents deepen to signal-ink */
+/* logo red only clears contrast on shell; on soft acts red accents deepen to signal-ink */
 .act-rose .text-signal, .act-periwinkle .text-signal { color: var(--color-signal-ink); }
-/* Iris flips the palette inside it: the utilities read these variables at runtime, so
-   text-ink becomes white, bg-ink becomes a white pill with iris text, and red accents turn coral. */
+
+.act-iris, .act-coral {
+  color: var(--color-ink);
+  --color-muted: color-mix(in oklab, var(--color-ink) 82%, transparent);
+  /* red accents can't hold contrast on these fields: they become white (display) / ink (small) */
+  --color-signal: #ffffff;
+  --color-signal-ink: var(--color-ink);
+}
 .act-iris {
-  --color-ink: #ffffff;
-  --color-shell: var(--color-iris);
-  --color-muted: color-mix(in oklab, #fff 88%, transparent);
-  --color-signal: var(--color-coral);
-  --color-signal-ink: var(--color-coral);
-  background: var(--color-iris);
-  color: #fff;
+  background:
+    radial-gradient(55% 75% at 12% 28%, var(--color-iris) 0%, transparent 62%),
+    radial-gradient(45% 60% at 72% 22%, #8487fd 0%, transparent 60%),
+    radial-gradient(55% 70% at 86% 74%, var(--color-iris-3) 0%, transparent 64%),
+    radial-gradient(60% 60% at 36% 92%, #7e8eef 0%, transparent 60%),
+    var(--color-iris-2);
+}
+.act-coral {
+  background:
+    radial-gradient(55% 75% at 14% 30%, var(--color-coral) 0%, transparent 62%),
+    radial-gradient(45% 60% at 74% 20%, #ff9f8c 0%, transparent 60%),
+    radial-gradient(55% 70% at 84% 76%, var(--color-coral-3) 0%, transparent 64%),
+    radial-gradient(60% 60% at 34% 92%, #ff7f6c 0%, transparent 60%),
+    var(--color-coral-2);
 }
 
 /* Split-text lines get a mask so words can rise from below the baseline */

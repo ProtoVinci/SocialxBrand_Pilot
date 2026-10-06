@@ -3,7 +3,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SplitReveal } from "@/components/motion/SplitReveal";
 import { Reveal } from "@/components/motion/Reveal";
-import { MethodRoute } from "@/components/home/MethodRoute";
+import { MethodBoard } from "@/components/home/MethodBoard";
 import { AiAmplifies } from "@/components/home/AiAmplifies";
 import { Audiences } from "@/components/home/Audiences";
 import { Finale } from "@/components/home/Finale";
@@ -83,7 +83,7 @@ export default function ApproachPage() {
         ))}
       </section>
 
-      <MethodRoute />
+      <MethodBoard />
 
       {/* principles */}
       <section aria-labelledby="principles-title" className="gutter py-28">

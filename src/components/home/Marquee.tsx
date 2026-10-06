@@ -59,7 +59,7 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
         <Fragment key={k}>
           <span>We will show</span>
           <Chip asset={chips[k * 2]} tilt={-7} />
-          <span className="serif-accent text-coral normal-case">you will grow</span>
+          <span className="serif-accent normal-case text-white">you will grow</span>
           <Chip asset={chips[k * 2 + 1]} tilt={6} />
         </Fragment>
       ))}
@@ -82,8 +82,8 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
                 {[0, 1, 2].flatMap((n) =>
                   philosophy.ladder.map((w) => (
                     <span key={`${n}-${w}`} className="flex items-center">
-                      <span className="px-5 text-white/90">{w}</span>
-                      <span className="text-coral">✦</span>
+                      <span className="px-5 text-ink/85">{w}</span>
+                      <span className="text-white">✦</span>
                     </span>
                   )),
                 )}
@@ -98,7 +98,7 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
 }
 
 function Chip({ asset, tilt }: { asset?: VideoAsset; tilt: number }) {
-  if (!asset) return <span className="text-coral">✦</span>;
+  if (!asset) return <span className="text-white">✦</span>;
   return (
     <span className="inline-block aspect-[9/16] h-[0.82em] shrink-0 overflow-hidden rounded-[0.12em] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.45)] ring-4 ring-white" style={{ rotate: `${tilt}deg` }}>
       <picture>

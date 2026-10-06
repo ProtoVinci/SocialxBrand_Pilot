@@ -9,7 +9,7 @@ export default function NotFound() {
       </h1>
       <p className="mt-8 max-w-md text-lede text-ink/75">This page isn&apos;t on the route. Let&apos;s get you back to something worth showing.</p>
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link href="/" className="rounded-full bg-signal px-6 py-4 font-semibold text-ink">Back home</Link>
+        <Link href="/" className="rounded-full bg-ink px-6 py-4 font-semibold text-shell">Back home</Link>
         <Link href="/work" className="rounded-full border border-ink/25 px-6 py-4">See the work</Link>
       </div>
     </section>

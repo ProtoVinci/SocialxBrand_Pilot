@@ -5,7 +5,7 @@ import { MQ, dur } from "@/lib/motion/tokens";
 
 /**
  * Pointer gimmicks, fine pointers + motion only (touch and reduced motion get neither):
- *  - a cursor follower: a small iris dot that swells into a labelled bubble over anything
+ *  - a cursor follower: a small ink dot that swells into a labelled bubble over anything
  *    carrying `data-cursor="Play"` (the label is the attribute's value);
  *  - magnetic pull: any `.magnetic` element leans toward the pointer and settles back.
  * Both use event delegation on window, so they keep working across page transitions.
@@ -77,7 +77,7 @@ export function PointerFx() {
     <div
       ref={dot}
       aria-hidden
-      className="pointer-events-none fixed left-0 top-0 z-[90] grid size-24 place-items-center rounded-full bg-iris text-white invisible [&:not([data-big])>span]:opacity-0"
+      className="pointer-events-none fixed left-0 top-0 z-[90] grid size-24 place-items-center rounded-full bg-ink text-shell invisible [&:not([data-big])>span]:opacity-0"
     >
       <span ref={label} className="label transition-opacity duration-200" />
     </div>

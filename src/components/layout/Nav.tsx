@@ -124,7 +124,7 @@ export function Nav() {
             <Link
               href="/route"
               transitionTypes={["nav-forward"]}
-              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-signal px-4 py-2.5 text-sm font-semibold text-ink transition-transform duration-300 hover:-translate-y-0.5"
+              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-shell transition-transform duration-300 hover:-translate-y-0.5"
             >
               <span className="hidden sm:inline">Start your route</span>
               <span className="sm:hidden">Start</span>
