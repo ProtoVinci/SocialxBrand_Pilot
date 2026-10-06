@@ -23,7 +23,7 @@ export function FooterWordmark() {
 
   return (
     <div ref={ref} aria-hidden className="relative mt-4 overflow-hidden select-none">
-      <div data-word className="gutter whitespace-nowrap text-center font-display font-bold leading-[0.78] tracking-[-0.06em] text-paper [font-size:clamp(3rem,15.2vw,17rem)] [font-stretch:75%]">
+      <div data-word className="gutter whitespace-nowrap text-center font-display font-bold leading-[0.78] tracking-[-0.06em] text-ink [font-size:clamp(3rem,15.2vw,17rem)] [font-stretch:75%]">
         SOCIAL<span className="text-signal">x</span>BRAND PILOT
       </div>
     </div>

@@ -45,10 +45,10 @@ export function DivisionTicker() {
                   href={`/capabilities/${d.slug}`}
                   tabIndex={i >= row.length ? -1 : undefined}
                   className={`flex items-center gap-3 whitespace-nowrap rounded-full border px-5 py-3 text-sm transition-colors duration-300 hover:border-signal hover:bg-signal hover:text-ink ${
-                    r === 0 ? "border-paper/15" : "border-violet/40 text-paper/90"
+                    r === 0 ? "border-ink/15" : "border-violet/40 text-ink/90"
                   }`}
                 >
-                  <span className="label opacity-60">{pad(d.number)}</span>
+                  <span className="label opacity-80">{pad(d.number)}</span>
                   {d.shortName}
                 </Link>
               </li>

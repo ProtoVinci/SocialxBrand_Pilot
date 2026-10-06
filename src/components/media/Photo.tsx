@@ -15,7 +15,7 @@ export function Photo({ asset, alt, sizes = "(min-width: 768px) 33vw, 80vw", cla
   const fallback = asset.srcset.webp.at(-1)!;
   return (
     <div
-      className={`${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} overflow-hidden bg-ink-2 ${className}`}
+      className={`${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} overflow-hidden bg-sand ${className}`}
       style={{ backgroundImage: `url(${asset.lqip})`, backgroundSize: "cover", backgroundPosition: "center" }}
     >
       <picture>

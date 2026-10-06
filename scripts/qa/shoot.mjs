@@ -15,7 +15,7 @@ const reduce = process.argv.includes("--reduce");
 const fresh = !process.argv.includes("--repeat");
 
 await mkdir("qa-shots", { recursive: true });
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {});
 const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, reducedMotion: reduce ? "reduce" : "no-preference" });
 const page = await ctx.newPage();
 const errors = [];

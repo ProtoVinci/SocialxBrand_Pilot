@@ -19,7 +19,7 @@ export function Clock({ className = "" }: { className?: string }) {
         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-signal" />
       </span>
       {site.locationLabel}
-      <time suppressHydrationWarning className="tabular-nums text-paper">{time ?? "--:--"}</time>
+      <time suppressHydrationWarning className="tabular-nums text-ink">{time ?? "--:--"}</time>
     </span>
   );
 }

@@ -2,7 +2,7 @@
 // usage: node scripts/qa/debug.mjs --url=/ --probe="<js expression>" [--scroll=1800]
 import { chromium } from "playwright";
 const arg = (k, d) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split("=").slice(1).join("=") ?? d;
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {});
 const page = await browser.newPage({ viewport: { width: Number(arg("w", "1440")), height: Number(arg("h", "900")) } });
 page.on("pageerror", (e) => console.log("PAGEERROR", e.message, "\n", (e.stack || "").split("\n").slice(0, 6).join("\n")));
 await page.goto(`http://localhost:3100${arg("url", "/")}`, { waitUntil: "networkidle" });

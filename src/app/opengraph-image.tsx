@@ -8,7 +8,7 @@ export const contentType = "image/png";
 export default function OpengraphImage() {
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#0b0a12", color: "#f3f0e8", padding: 72 }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#fff5e8", color: "#23150f", padding: 72 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <svg width="48" height="71" viewBox={MARK_VIEWBOX}>
             <path d={RIBBON} fill="#ff3131" />
@@ -24,7 +24,7 @@ export default function OpengraphImage() {
             <span style={{ color: "#ff3131", marginLeft: 22 }}>WORTH SHOWING.</span>
           </div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#a9a5b6" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#6f5b4f" }}>
           <span>Digital Marketing Agency · India &amp; Global</span>
           <span>We will show, you will grow.</span>
         </div>

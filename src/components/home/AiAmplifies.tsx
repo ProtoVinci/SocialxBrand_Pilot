@@ -27,24 +27,24 @@ export function AiAmplifies() {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="ai-title" className="relative bg-ink py-28 md:py-40">
+    <section ref={root} aria-labelledby="ai-title" className="relative bg-cream py-28 md:py-40">
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-4">
-          <p className="label text-fog">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>
+          <p className="label text-muted">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>
           <h2 id="ai-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
             Our <span className="serif-accent font-normal text-violet">AI</span> philosophy.
           </h2>
-          <p className="mt-6 max-w-sm text-paper/70">
+          <p className="mt-6 max-w-sm text-ink/70">
             AI is treated as a marketing and productivity layer supporting human strategy, creativity and execution.
           </p>
-          <Link href="/capabilities/ai-marketing-automation" transitionTypes={["nav-forward"]} className="link-underline mt-8 inline-block text-paper">
+          <Link href="/capabilities/ai-marketing-automation" transitionTypes={["nav-forward"]} className="link-underline mt-8 inline-block text-ink">
             Explore AI Marketing &amp; Automation →
           </Link>
         </div>
         <ul className="flex flex-col gap-14 md:col-span-8">
           {aiPhilosophy.map((p) => (
             <li key={p.should} data-pair>
-              <p data-not className="relative inline-block font-display text-title font-semibold text-paper/80 [font-stretch:88%]">
+              <p data-not className="relative inline-block font-display text-title font-semibold text-ink/80 [font-stretch:88%]">
                 {p.not}
                 <span data-strike aria-hidden className="absolute left-0 right-0 top-[52%] h-[0.07em] origin-left bg-signal" />
               </p>

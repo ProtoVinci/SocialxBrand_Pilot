@@ -14,16 +14,18 @@
 }
 
 @theme {
-  --color-ink: #0b0a12;          /* base: deep navy-black */
-  --color-ink-2: #14121e;        /* raised surfaces */
-  --color-ink-3: #1e1b2b;        /* hairline-strong / chips */
-  --color-paper: #f3f0e8;        /* light acts */
-  --color-paper-2: #e8e3d7;
-  --color-fog: #a9a5b6;          /* muted text on ink (≥ 7:1) */
-  --color-smoke: #6c6878;        /* muted text on paper */
-  --color-signal: #ff3131;       /* logo red — action + the route */
-  --color-signal-ink: #c81e1e;   /* red for small text on paper (AA) */
-  --color-violet: #8c52ff;       /* wordmark purple — creative register / selection */
+  /* Warm daylight palette. The logo red and violet are kept; everything else is sunlit. */
+  --color-cream: #fff5e8;        /* base canvas */
+  --color-sand: #f8e7d0;         /* raised surfaces, cards */
+  --color-sand-2: #f1d9b8;
+  --color-sun: #ffd45c;          /* colour act: butter yellow */
+  --color-peach: #ffb892;        /* colour act: apricot */
+  --color-blush: #ffd3cb;        /* colour act: rose */
+  --color-ink: #23150f;          /* text: warm espresso */
+  --color-muted: #6f5b4f;        /* secondary text on cream (≥ 5.5:1) */
+  --color-signal: #ff3131;       /* logo red: action, the route, display accents */
+  --color-signal-ink: #b01818;   /* deep red for small text and accents on colour acts (AA on cream, sun, peach, blush) */
+  --color-violet: #8c52ff;       /* wordmark purple: selected / AI */
   --color-violet-ink: #6b34e0;
 
   /* motion tokens mirrored from src/lib/motion/tokens.ts */
@@ -107,20 +109,20 @@
    Base
    ───────────────────────────────────────────────────────────── */
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --nav-h: 4.5rem;
 }
 
 html {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-cream);
+  color: var(--color-ink);
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-cream);
+  color: var(--color-ink);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
@@ -128,7 +130,7 @@ body {
 
 ::selection {
   background: var(--color-signal);
-  color: var(--color-ink);
+  color: var(--color-cream);
 }
 
 :focus-visible {
@@ -137,12 +139,13 @@ body {
   border-radius: 2px;
 }
 
-.act-paper {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  color-scheme: light;
-}
-.act-paper ::selection { background: var(--color-ink); color: var(--color-paper); }
+/* Colour acts: full-bleed sections that break the cream rhythm. Muted text uses ink/75 on these. */
+.act-sun { background: var(--color-sun); color: var(--color-ink); }
+.act-peach { background: var(--color-peach); color: var(--color-ink); }
+.act-blush { background: var(--color-blush); color: var(--color-ink); }
+.act-sun .text-muted, .act-peach .text-muted, .act-blush .text-muted { color: color-mix(in oklab, var(--color-ink) 78%, transparent); }
+/* logo red only clears contrast on cream; on colour acts accents deepen to signal-ink */
+.act-sun .text-signal, .act-peach .text-signal, .act-blush .text-signal { color: var(--color-signal-ink); }
 
 /* Split-text lines get a mask so words can rise from below the baseline */
 .split-line { overflow: clip; padding-bottom: 0.06em; margin-bottom: -0.06em; }
@@ -166,7 +169,7 @@ video::-webkit-media-controls { display: none !important; }
 
 .skip-link {
   position: fixed; left: 1rem; top: -4rem; z-index: 200;
-  background: var(--color-signal); color: var(--color-ink);
+  background: var(--color-ink); color: var(--color-cream);
   padding: 0.6rem 1rem; font-weight: 600; transition: top 0.2s var(--ease-pilot);
 }
 .skip-link:focus { top: 1rem; }

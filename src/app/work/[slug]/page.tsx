@@ -43,25 +43,25 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }, { name: s.title, path: `/work/${slug}` }])} />
       <header className="gutter grid gap-12 pb-20 pt-[calc(var(--nav-h)+3rem)] md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">
-          <Link href="/work" transitionTypes={["nav-back"]} className="label text-fog hover:text-paper">← All work</Link>
-          <p className="label mt-8 text-signal">[ {pad(idx + 1)} / {pad(all.length)} ] {s.kicker}</p>
+          <Link href="/work" transitionTypes={["nav-back"]} className="label text-muted hover:text-ink">← All work</Link>
+          <p className="label mt-8 text-signal-ink">[ {pad(idx + 1)} / {pad(all.length)} ] {s.kicker}</p>
           <SplitReveal as="h1" trigger="mount" className="mt-4 font-display text-display font-bold [font-stretch:78%]">{s.title}</SplitReveal>
-          <p className="mt-8 max-w-xl text-lede text-paper/80">{s.line}</p>
-          <dl className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-paper/10 pt-6 text-sm">
-            <div><dt className="label text-fog">Format</dt><dd className="mt-2">{s.format}</dd></div>
-            <div><dt className="label text-fog">Pieces shown</dt><dd className="mt-2">{assets.length}</dd></div>
+          <p className="mt-8 max-w-xl text-lede text-ink/80">{s.line}</p>
+          <dl className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-ink/10 pt-6 text-sm">
+            <div><dt className="label text-muted">Format</dt><dd className="mt-2">{s.format}</dd></div>
+            <div><dt className="label text-muted">Pieces shown</dt><dd className="mt-2">{assets.length}</dd></div>
             <div className="col-span-2">
-              <dt className="label text-fog">Capabilities shown</dt>
+              <dt className="label text-muted">Capabilities shown</dt>
               <dd className="mt-3 flex flex-wrap gap-2">
                 {s.divisions.map(divisionBySlug).filter(Boolean).map((d) => (
-                  <Link key={d!.slug} href={`/capabilities/${d!.slug}`} transitionTypes={["nav-forward"]} className="rounded-full border border-paper/20 px-3 py-1.5 text-xs transition-colors hover:border-signal hover:text-signal">
+                  <Link key={d!.slug} href={`/capabilities/${d!.slug}`} transitionTypes={["nav-forward"]} className="rounded-full border border-ink/20 px-3 py-1.5 text-xs transition-colors hover:border-signal hover:text-signal">
                     {d!.shortName}
                   </Link>
                 ))}
               </dd>
             </div>
           </dl>
-          <p className="label mt-8 text-fog">{partnerCredit}</p>
+          <p className="label mt-8 text-muted">{partnerCredit}</p>
         </div>
         <div className="md:col-span-5">
           <ViewTransition name={`screening-${slug}`} share="morph" default="none">
@@ -78,10 +78,10 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
 
       <ScreeningMedia title={s.title} videos={rest.videos} photos={rest.photos} />
 
-      <Link href={`/work/${next.slug}`} transitionTypes={["nav-forward"]} className="group block border-t border-paper/10">
+      <Link href={`/work/${next.slug}`} transitionTypes={["nav-forward"]} className="group block border-t border-ink/10">
         <div className="gutter flex items-center justify-between gap-8 py-20">
           <div>
-            <p className="label text-fog">Next screening</p>
+            <p className="label text-muted">Next screening</p>
             <p className="mt-4 font-display text-display font-bold [font-stretch:78%] transition-colors group-hover:text-signal">{next.title} <span className="inline-block transition-transform duration-500 group-hover:translate-x-4">→</span></p>
           </div>
           {nextCover && (

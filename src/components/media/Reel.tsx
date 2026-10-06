@@ -76,7 +76,7 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
   const objectFit = fit === "cover" ? "object-cover" : "object-contain";
 
   return (
-    <div className={`${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} overflow-hidden bg-ink-2 ${className}`} {...hoverHandlers} style={{ backgroundImage: `url(${asset.lqip})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+    <div className={`${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} overflow-hidden bg-sand ${className}`} {...hoverHandlers} style={{ backgroundImage: `url(${asset.lqip})`, backgroundSize: "cover", backgroundPosition: "center" }}>
       <picture>
         <source srcSet={asset.poster.avif} type="image/avif" />
         <img
@@ -108,7 +108,7 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
         <button
           type="button"
           onClick={toggle}
-          className="label absolute bottom-3 left-3 z-10 rounded-full bg-ink/80 px-3 py-2 text-paper backdrop-blur"
+          className="label absolute bottom-3 left-3 z-10 rounded-full bg-cream/85 px-3 py-2 text-ink backdrop-blur"
           aria-label={userPlaying ? "Pause video" : "Play video"}
         >
           {userPlaying ? "Pause" : "Play"}

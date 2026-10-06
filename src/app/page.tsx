@@ -29,13 +29,13 @@ export default function Home() {
         <Ladder reels={ladder} />
         <Screenings items={rail} />
 
-        <section aria-labelledby="capabilities-title" className="relative bg-ink py-28 md:py-36">
+        <section aria-labelledby="capabilities-title" className="act-blush relative py-28 md:py-36">
           <div className="gutter">
-            <p className="label text-fog">[ 04 ] Capabilities — 18 divisions</p>
+            <p className="label text-muted">[ 04 ] Capabilities — 18 divisions</p>
             <SplitReveal as="h2" id="capabilities-title" className="mt-4 max-w-[18ch] font-display text-display font-semibold [font-stretch:80%]">
               Not every business needs <span className="serif-accent font-normal text-signal">every</span> service.
             </SplitReveal>
-            <p className="mt-8 max-w-2xl text-lede text-paper/75">{servicesIntro.body}</p>
+            <p className="mt-8 max-w-2xl text-lede text-ink/75">{servicesIntro.body}</p>
           </div>
           <div className="mt-14"><DivisionTicker /></div>
           <div className="gutter mt-20">

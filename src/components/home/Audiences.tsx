@@ -33,10 +33,10 @@ export function Audiences() {
   });
 
   return (
-    <section ref={root} aria-labelledby="audiences-title" className="act-paper py-28 md:py-36">
+    <section ref={root} aria-labelledby="audiences-title" className="act-sun py-28 md:py-36">
       <div className="gutter grid gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
-          <p className="label text-smoke">[ 06 ] Who we work with</p>
+          <p className="label text-muted">[ 06 ] Who we work with</p>
           <h2 id="audiences-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
             Marketing is for <span className="serif-accent font-normal text-signal-ink">every</span> business.
           </h2>
@@ -55,7 +55,7 @@ export function Audiences() {
                 aria-selected={a.id === active}
                 aria-controls="audience-panel"
                 onClick={() => choose(a.id)}
-                className={`rounded-full border px-5 py-3 text-sm font-medium transition-colors duration-300 ${a.id === active ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"}`}
+                className={`rounded-full border px-5 py-3 text-sm font-medium transition-colors duration-300 ${a.id === active ? "border-ink bg-cream text-ink" : "border-ink/20 hover:border-ink"}`}
               >
                 {a.name}
               </button>
@@ -65,13 +65,13 @@ export function Audiences() {
           <div id="audience-panel" role="tabpanel" aria-live="polite" className="mt-10">
             <p data-audience-need className="font-display text-title font-semibold [font-stretch:88%]">{current.need}</p>
             <span data-audience-rule aria-hidden className="mt-8 block h-px origin-left bg-signal-ink" />
-            <p className="label mt-6 text-smoke">A route might start with</p>
+            <p className="label mt-6 text-muted">A route might start with</p>
             {route.length > 0 ? (
               <ul className="mt-4 flex flex-wrap gap-2">
                 {route.map((d) => (
                   <li key={d!.slug} data-chip data-flip-id={d!.slug}>
-                    <Link href={`/capabilities/${d!.slug}`} className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm text-paper transition-colors hover:bg-signal-ink">
-                      <span className="label opacity-60">{pad(d!.number)}</span>{d!.shortName}
+                    <Link href={`/capabilities/${d!.slug}`} className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm text-cream transition-colors hover:bg-signal-ink">
+                      <span className="label opacity-80">{pad(d!.number)}</span>{d!.shortName}
                     </Link>
                   </li>
                 ))}
@@ -82,7 +82,7 @@ export function Audiences() {
             <Link href={`/route?audience=${active}`} transitionTypes={["nav-forward"]} className="mt-8 inline-flex items-center gap-3 font-semibold text-signal-ink">
               Plan a route for {current.name.toLowerCase()} <span aria-hidden>→</span>
             </Link>
-            <p className="mt-2 text-xs text-smoke">A starting route only. The real plan comes after we understand your business.</p>
+            <p className="mt-2 text-xs text-muted">A starting route only. The real plan comes after we understand your business.</p>
           </div>
         </div>
       </div>

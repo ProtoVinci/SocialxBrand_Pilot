@@ -59,21 +59,21 @@ export function MethodRoute() {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="method-title" className="relative overflow-hidden bg-ink-2 py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-between cinema:py-0 cinema:pb-14 cinema:pt-[calc(var(--nav-h)+2.5rem)]">
+    <section ref={root} aria-labelledby="method-title" className="relative overflow-hidden bg-sand py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-between cinema:py-0 cinema:pb-14 cinema:pt-[calc(var(--nav-h)+2.5rem)]">
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="label text-fog">[ 05 ] How we work — the route</p>
+          <p className="label text-muted">[ 05 ] How we work — the route</p>
           <h2 id="method-title" className="mt-4 max-w-[16ch] font-display text-headline font-semibold [font-stretch:82%]">
             We start by <span className="serif-accent font-normal text-signal">understanding</span> the business.
           </h2>
         </div>
-        <p className="max-w-sm text-paper/70">Seven stations, in order. Strategy comes before execution, and every stage feeds the next.</p>
+        <p className="max-w-sm text-ink/70">Seven stations, in order. Strategy comes before execution, and every stage feeds the next.</p>
       </div>
 
       {/* desktop: the drawn route */}
       <div className="relative mx-[clamp(1rem,4vw,3.5rem)] hidden h-[34svh] cinema:block" aria-hidden>
         <svg viewBox="0 0 1000 300" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
-          <path d={PATH} fill="none" stroke="rgba(243,240,232,0.12)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <path d={PATH} fill="none" stroke="rgba(35,21,15,0.14)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           <path data-route-path d={PATH} fill="none" stroke="#ff3131" strokeWidth="2" vectorEffect="non-scaling-stroke" />
         </svg>
         {PTS.map((p, i) => (
@@ -83,8 +83,8 @@ export function MethodRoute() {
             className="group absolute -translate-x-1/2 -translate-y-1/2"
             style={{ left: `${p.x / 10}%`, top: `${p.y / 3}%` }}
           >
-            <span className="block h-3.5 w-3.5 rounded-full border border-paper/40 bg-ink-2 transition-[background-color,border-color,transform] duration-500 group-data-[on]:scale-125 group-data-[on]:border-signal group-data-[on]:bg-signal" />
-            <span className={`label absolute left-1/2 w-max -translate-x-1/2 text-fog transition-colors duration-500 group-data-[on]:text-paper ${i % 2 === 0 ? "top-6" : "bottom-6"}`}>
+            <span className="block h-3.5 w-3.5 rounded-full border border-ink/40 bg-sand transition-[background-color,border-color,transform] duration-500 group-data-[on]:scale-125 group-data-[on]:border-signal group-data-[on]:bg-signal" />
+            <span className={`label absolute left-1/2 w-max -translate-x-1/2 text-muted transition-colors duration-500 group-data-[on]:text-ink ${i % 2 === 0 ? "top-6" : "bottom-6"}`}>
               {pad(i + 1)} {method[i].name}
             </span>
           </div>
@@ -95,12 +95,12 @@ export function MethodRoute() {
       <div className="gutter relative hidden h-[18svh] cinema:block">
         {method.map((m, i) => (
           <div key={m.id} data-now className="absolute inset-x-[clamp(1rem,4vw,3.5rem)] top-0 grid grid-cols-12 items-start gap-6">
-            <span className="lane col-span-3 font-display text-[clamp(4rem,9vw,9rem)] font-bold leading-[0.8] text-paper/70 [font-stretch:75%]">{pad(i + 1)}</span>
+            <span className="lane col-span-3 font-display text-[clamp(4rem,9vw,9rem)] font-bold leading-[0.8] text-ink/70 [font-stretch:75%]">{pad(i + 1)}</span>
             <div className="col-span-6">
               <h3 className="font-display text-headline font-semibold [font-stretch:82%]">{m.name}</h3>
-              <p className="mt-3 max-w-xl text-lede text-paper/75">{m.body}</p>
+              <p className="mt-3 max-w-xl text-lede text-ink/75">{m.body}</p>
             </div>
-            <p className="col-span-3 text-sm text-fog">{m.detail}</p>
+            <p className="col-span-3 text-sm text-muted">{m.detail}</p>
           </div>
         ))}
       </div>
@@ -110,10 +110,10 @@ export function MethodRoute() {
         <span data-rail aria-hidden className="absolute bottom-2 left-[calc(clamp(1rem,4vw,3.5rem)+0.4rem)] top-2 w-px origin-top bg-signal" />
         {method.map((m, i) => (
           <li key={m.id} data-step className="relative pl-10">
-            <span aria-hidden className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border border-signal bg-ink-2" />
-            <span className="label text-signal">{pad(i + 1)}</span>
+            <span aria-hidden className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border border-signal bg-sand" />
+            <span className="label text-signal-ink">{pad(i + 1)}</span>
             <h3 className="mt-1 font-display text-title font-semibold [font-stretch:85%]">{m.name}</h3>
-            <p className="mt-2 text-paper/75">{m.body}</p>
+            <p className="mt-2 text-ink/75">{m.body}</p>
           </li>
         ))}
       </ol>

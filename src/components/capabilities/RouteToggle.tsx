@@ -12,7 +12,7 @@ export function RouteToggle({ slug, name, className = "" }: { slug: string; name
       aria-pressed={on}
       aria-label={on ? `Remove ${name} from your route` : `Add ${name} to your route`}
       className={`label group/toggle inline-flex h-9 shrink-0 items-center gap-2 rounded-full border px-3 transition-colors duration-300 ${
-        on ? "border-violet bg-violet text-ink" : "border-current/25 hover:border-current"
+        on ? "border-violet bg-violet text-cream" : "border-current/25 hover:border-current"
       } ${className}`}
     >
       <span aria-hidden className={`grid h-4 w-4 place-items-center transition-transform duration-500 ease-[var(--ease-pilot)] ${on ? "rotate-[360deg]" : ""}`}>

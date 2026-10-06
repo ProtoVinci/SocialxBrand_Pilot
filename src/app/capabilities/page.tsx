@@ -26,16 +26,16 @@ export default function CapabilitiesPage() {
         title={<>The right mix, <span className="serif-accent font-normal text-signal">not the full menu.</span></>}
         lede={
           <>
-            <p><strong className="font-semibold text-paper">{servicesIntro.lead}</strong> {servicesIntro.body}</p>
-            <p className="mt-4 text-paper/60">Add the divisions that sound like your problem to your route, and we&apos;ll start the conversation from there.</p>
+            <p><strong className="font-semibold text-ink">{servicesIntro.lead}</strong> {servicesIntro.body}</p>
+            <p className="mt-4 text-ink/60">Add the divisions that sound like your problem to your route, and we&apos;ll start the conversation from there.</p>
           </>
         }
       />
       <DivisionTicker />
       <div className="gutter py-24">
         <DivisionIndex previews={divisionPreviews()} headingLevel="h2" />
-        <div className="mt-20 flex flex-col items-start gap-6 border-t border-paper/10 pt-12 md:flex-row md:items-center md:justify-between">
-          <p className="max-w-lg text-lede text-paper/75">Not sure where to start? Tell us about the business and the goal; we&apos;ll suggest a starting route.</p>
+        <div className="mt-20 flex flex-col items-start gap-6 border-t border-ink/10 pt-12 md:flex-row md:items-center md:justify-between">
+          <p className="max-w-lg text-lede text-ink/75">Not sure where to start? Tell us about the business and the goal; we&apos;ll suggest a starting route.</p>
           <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-signal px-6 py-4 font-semibold text-ink">
             Plan your route <span aria-hidden>→</span>
           </Link>

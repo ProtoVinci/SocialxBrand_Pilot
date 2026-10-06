@@ -59,15 +59,15 @@ export function RouteBuilder() {
   const canContinue = [true, true, route.length > 0, true, true][step];
 
   return (
-    <div ref={root} className="rounded-[24px] border border-paper/10 bg-ink-2 p-6 md:p-10">
+    <div ref={root} className="rounded-[24px] border border-ink/10 bg-sand p-6 md:p-10">
       {/* the route so far */}
       <ol className="relative mb-10 grid grid-cols-5" aria-label="Progress">
-        <span aria-hidden className="absolute left-[10%] right-[10%] top-[7px] h-px bg-paper/15" />
+        <span aria-hidden className="absolute left-[10%] right-[10%] top-[7px] h-px bg-ink/15" />
         <span aria-hidden data-progress className="absolute left-[10%] right-[10%] top-[7px] h-px origin-left scale-x-0 bg-signal" />
         {STEPS.map((s, i) => (
           <li key={s} className="relative flex flex-col items-center gap-2" aria-current={i === step ? "step" : undefined}>
-            <span className={`h-3.5 w-3.5 rounded-full border transition-colors duration-500 ${i <= step ? "border-signal bg-signal" : "border-paper/30 bg-ink-2"}`} />
-            <span className={`label ${i === step ? "text-paper" : "text-fog"}`}>{s}</span>
+            <span className={`h-3.5 w-3.5 rounded-full border transition-colors duration-500 ${i <= step ? "border-signal bg-signal" : "border-ink/30 bg-sand"}`} />
+            <span className={`label ${i === step ? "text-ink" : "text-muted"}`}>{s}</span>
           </li>
         ))}
       </ol>
@@ -88,10 +88,10 @@ export function RouteBuilder() {
             <legend className="sr-only">Business stage</legend>
             <div className="grid gap-3 sm:grid-cols-2">
               {audiences.map((a) => (
-                <label key={a.id} className={`cursor-pointer rounded-[16px] border p-5 transition-colors ${audience === a.id ? "border-signal bg-signal/10" : "border-paper/15 hover:border-paper/40"}`}>
+                <label key={a.id} className={`cursor-pointer rounded-[16px] border p-5 transition-colors ${audience === a.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
                   <input type="radio" name="audience" value={a.id} checked={audience === a.id} onChange={() => setAudience(a.id)} className="sr-only" />
                   <span className="font-display text-title font-semibold [font-stretch:86%]">{a.name}</span>
-                  <span className="mt-1 block text-sm text-paper/65">{a.need}</span>
+                  <span className="mt-1 block text-sm text-ink/65">{a.need}</span>
                 </label>
               ))}
             </div>
@@ -103,10 +103,10 @@ export function RouteBuilder() {
             <legend className="sr-only">Goal</legend>
             <div className="grid gap-3">
               {goals.map((g) => (
-                <label key={g.id} className={`flex cursor-pointer items-baseline justify-between gap-6 rounded-[16px] border p-5 transition-colors ${goal === g.id ? "border-signal bg-signal/10" : "border-paper/15 hover:border-paper/40"}`}>
+                <label key={g.id} className={`flex cursor-pointer items-baseline justify-between gap-6 rounded-[16px] border p-5 transition-colors ${goal === g.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
                   <input type="radio" name="goal" value={g.id} checked={goal === g.id} onChange={() => setGoal(g.id)} className="sr-only" />
                   <span className="font-display text-title font-semibold [font-stretch:86%]">{g.label}</span>
-                  <span className="text-right text-sm text-paper/65">{g.prompt}</span>
+                  <span className="text-right text-sm text-ink/65">{g.prompt}</span>
                 </label>
               ))}
             </div>
@@ -116,14 +116,14 @@ export function RouteBuilder() {
         {step === 2 && (
           <div className="mt-8">
             {suggested.length > 0 && (
-              <p className="text-sm text-paper/70">
+              <p className="text-sm text-ink/70">
                 We&apos;ve started you with a suggested route. Add or remove anything; it&apos;s a starting point, and the real plan comes after we understand your business.
               </p>
             )}
             <div className="mt-6 flex flex-col gap-8">
               {clusters.map((c) => (
                 <fieldset key={c.id}>
-                  <legend className="label text-fog">{c.name}</legend>
+                  <legend className="label text-muted">{c.name}</legend>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {divisions.filter((d) => d.cluster === c.id).map((d) => {
                       const on = route.includes(d.slug);
@@ -133,11 +133,11 @@ export function RouteBuilder() {
                           type="button"
                           aria-pressed={on}
                           onClick={() => routeStore.toggle(d.slug)}
-                          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm transition-colors duration-300 ${on ? "border-violet bg-violet text-ink" : "border-paper/15 hover:border-paper/50"}`}
+                          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm transition-colors duration-300 ${on ? "border-violet bg-violet text-cream" : "border-ink/15 hover:border-ink/50"}`}
                         >
-                          <span className="label opacity-70">{pad(d.number)}</span>
+                          <span className="label opacity-80">{pad(d.number)}</span>
                           {d.shortName}
-                          {suggested.includes(d.slug) && !on && <span className="label text-signal">suggested</span>}
+                          {suggested.includes(d.slug) && !on && <span className="label text-signal-ink">suggested</span>}
                         </button>
                       );
                     })}
@@ -145,7 +145,7 @@ export function RouteBuilder() {
                 </fieldset>
               ))}
             </div>
-            <p className="label mt-8 text-fog" aria-live="polite">{route.length} on your route</p>
+            <p className="label mt-8 text-muted" aria-live="polite">{route.length} on your route</p>
           </div>
         )}
 
@@ -158,7 +158,7 @@ export function RouteBuilder() {
               ["phone", "Phone / WhatsApp", "tel", "tel"],
             ] as const).map(([key, label, type, auto]) => (
               <label key={key} className="flex flex-col gap-2">
-                <span className="label text-fog">{label}{key === "name" ? " *" : ""}</span>
+                <span className="label text-muted">{label}{key === "name" ? " *" : ""}</span>
                 <input
                   type={type}
                   autoComplete={auto}
@@ -166,17 +166,17 @@ export function RouteBuilder() {
                   onChange={(e) => setDetails({ ...details, [key]: e.target.value })}
                   aria-invalid={Boolean((key === "name" && errors.name) || (key === "email" && errors.email))}
                   aria-describedby={key === "email" || key === "phone" ? "contact-error" : key === "name" ? "name-error" : undefined}
-                  className="rounded-[12px] border border-paper/15 bg-ink px-4 py-3.5 text-paper outline-none transition-colors placeholder:text-paper/30 focus:border-signal"
+                  className="rounded-[12px] border border-ink/15 bg-cream px-4 py-3.5 text-ink outline-none transition-colors placeholder:text-ink/30 focus:border-signal"
                 />
               </label>
             ))}
             <label className="flex flex-col gap-2 md:col-span-2">
-              <span className="label text-fog">Anything we should know? (optional)</span>
-              <textarea rows={4} value={details.message} onChange={(e) => setDetails({ ...details, message: e.target.value })} className="rounded-[12px] border border-paper/15 bg-ink px-4 py-3.5 text-paper outline-none transition-colors focus:border-signal" />
+              <span className="label text-muted">Anything we should know? (optional)</span>
+              <textarea rows={4} value={details.message} onChange={(e) => setDetails({ ...details, message: e.target.value })} className="rounded-[12px] border border-ink/15 bg-cream px-4 py-3.5 text-ink outline-none transition-colors focus:border-signal" />
             </label>
             <div className="md:col-span-2" aria-live="assertive">
-              {errors.name && <p id="name-error" className="text-sm text-signal">{errors.name}</p>}
-              {(errors.contact || errors.email) && <p id="contact-error" className="text-sm text-signal">{errors.contact ?? errors.email}</p>}
+              {errors.name && <p id="name-error" className="text-sm text-signal-ink">{errors.name}</p>}
+              {(errors.contact || errors.email) && <p id="contact-error" className="text-sm text-signal-ink">{errors.contact ?? errors.email}</p>}
             </div>
           </div>
         )}
@@ -184,9 +184,9 @@ export function RouteBuilder() {
         {step === 4 && (
           <div className="mt-8">
             <RouteSummary slugs={route} />
-            <details className="mt-8 rounded-[14px] border border-paper/10 p-5">
-              <summary className="label cursor-pointer text-fog">Read the brief</summary>
-              <pre className="mt-4 whitespace-pre-wrap font-sans text-sm text-paper/80">{briefText(brief)}</pre>
+            <details className="mt-8 rounded-[14px] border border-ink/10 p-5">
+              <summary className="label cursor-pointer text-muted">Read the brief</summary>
+              <pre className="mt-4 whitespace-pre-wrap font-sans text-sm text-ink/80">{briefText(brief)}</pre>
             </details>
             <div className="mt-8 grid gap-3 md:grid-cols-3">
               {adapters.map((a) => (
@@ -199,26 +199,26 @@ export function RouteBuilder() {
                     if (r.href) window.open(r.href, a.id === "whatsapp" ? "_blank" : "_self", "noopener");
                     setStatus(a.id === "copy" ? "Brief copied." : `${a.label.replace("Send ", "Opening ")}…`);
                   }}
-                  className={`rounded-[16px] p-5 text-left transition-transform duration-300 hover:-translate-y-0.5 ${a.id === "whatsapp" ? "bg-signal text-ink" : "border border-paper/15"}`}
+                  className={`rounded-[16px] p-5 text-left transition-transform duration-300 hover:-translate-y-0.5 ${a.id === "whatsapp" ? "bg-signal text-ink" : "border border-ink/15"}`}
                 >
                   <span className="block font-semibold">{a.label}</span>
-                  <span className={`mt-1 block text-sm ${a.id === "whatsapp" ? "text-ink/75" : "text-paper/60"}`}>{a.hint}</span>
+                  <span className={`mt-1 block text-sm ${a.id === "whatsapp" ? "text-ink/75" : "text-ink/60"}`}>{a.hint}</span>
                 </button>
               ))}
             </div>
-            <p className="mt-4 text-sm text-fog" role="status">{status}</p>
+            <p className="mt-4 text-sm text-muted" role="status">{status}</p>
           </div>
         )}
       </div>
 
-      <div className="mt-10 flex items-center justify-between gap-4 border-t border-paper/10 pt-6">
-        <button type="button" onClick={() => go(step - 1)} disabled={step === 0} className="label text-fog transition-colors hover:text-paper disabled:opacity-0">← Back</button>
+      <div className="mt-10 flex items-center justify-between gap-4 border-t border-ink/10 pt-6">
+        <button type="button" onClick={() => go(step - 1)} disabled={step === 0} className="label text-muted transition-colors hover:text-ink disabled:opacity-0">← Back</button>
         {step < STEPS.length - 1 && (
           <button
             type="button"
             onClick={() => go(step + 1)}
             disabled={!canContinue}
-            className="inline-flex items-center gap-3 rounded-full bg-paper px-6 py-3.5 font-semibold text-ink transition-opacity disabled:opacity-40"
+            className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3.5 font-semibold text-cream transition-opacity disabled:opacity-40"
           >
             {step === 3 ? "Review route" : "Continue"} <span aria-hidden>→</span>
           </button>
@@ -243,7 +243,7 @@ function RouteSummary({ slugs }: { slugs: string[] }) {
         {items.map((it, i) => (
           <li key={it!.slug} data-summary-stop className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2" style={{ left: `${pts[i].x}%`, top: `${pts[i].y}%` }}>
             <span className="h-3 w-3 rounded-full bg-signal" />
-            <span className={`label max-w-28 text-center text-paper ${pts[i].y < 50 ? "order-first" : ""}`}>{it!.shortName}</span>
+            <span className={`label max-w-28 text-center text-ink ${pts[i].y < 50 ? "order-first" : ""}`}>{it!.shortName}</span>
           </li>
         ))}
       </ol>

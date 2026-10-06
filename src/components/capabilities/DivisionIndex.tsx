@@ -69,7 +69,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
             <section key={c.id} aria-labelledby={`cluster-${c.id}`}>
               <div className="flex items-baseline justify-between gap-4 border-b border-current/15 pb-3">
                 <H id={`cluster-${c.id}`} className="label">{c.name}</H>
-                <span className="label opacity-60">{rows.length} {rows.length === 1 ? "division" : "divisions"}</span>
+                <span className="label opacity-80">{rows.length} {rows.length === 1 ? "division" : "divisions"}</span>
               </div>
               <ul>
                 {rows.map((d) => (
@@ -79,7 +79,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
                       transitionTypes={["nav-forward"]}
                       className="grid grid-cols-[3.2rem_1fr] items-baseline gap-x-4 py-5 pr-28 md:grid-cols-[5rem_1fr_minmax(0,22rem)] md:py-6"
                     >
-                      <span className="label text-signal">[ {pad(d.number)} ]</span>
+                      <span className="label text-signal-ink">[ {pad(d.number)} ]</span>
                       <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
                         <span
                           className={`font-display text-title font-semibold transition-[transform,color] duration-500 ease-[var(--ease-pilot)] [font-stretch:85%] md:text-[clamp(1.6rem,2.6vw,2.6rem)] ${

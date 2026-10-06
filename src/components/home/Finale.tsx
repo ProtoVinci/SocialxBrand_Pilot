@@ -7,6 +7,7 @@ import { MQ } from "@/lib/motion/tokens";
 /**
  * ACT 9 — the promise. "WE WILL SHOW." begins as outlined lanes (the BRAND PILOT stencil)
  * and fills as you arrive; "YOU WILL GROW." grows into place while the route underlines it.
+ * The act is set in full logo red: the brightest, warmest moment of the page, just before the footer.
  */
 export function Finale() {
   const root = useRef<HTMLElement>(null);
@@ -24,29 +25,29 @@ export function Finale() {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="finale-title" className="relative overflow-hidden bg-ink py-28 md:py-40">
+    <section ref={root} aria-labelledby="finale-title" className="relative overflow-hidden bg-signal py-28 text-ink md:py-40">
       <div className="gutter">
         <h2 id="finale-title" className="font-display text-mega font-bold uppercase [font-stretch:76%]">
           <span className="relative block w-max max-w-full">
-            <span className="lane block text-paper/60" aria-hidden>We will show.</span>
-            <span data-fill className="absolute inset-0 block text-paper">We will show.</span>
+            <span className="lane block text-ink/45" aria-hidden>We will show.</span>
+            <span data-fill className="absolute inset-0 block text-ink">We will show.</span>
           </span>
-          <span data-grow className="relative block w-max max-w-full text-signal">
+          <span data-grow className="relative block w-max max-w-full text-cream">
             You will grow.
             <svg aria-hidden viewBox="0 0 1000 40" preserveAspectRatio="none" className="absolute -bottom-3 left-0 h-6 w-full overflow-visible">
-              <path data-underline d="M0 30 C 200 10, 400 38, 620 22 S 900 6, 1000 16" fill="none" stroke="#ff3131" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+              <path data-underline d="M0 30 C 200 10, 400 38, 620 22 S 900 6, 1000 16" fill="none" stroke="#fff5e8" strokeWidth="2" vectorEffect="non-scaling-stroke" />
             </svg>
           </span>
         </h2>
         <div className="mt-16 flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
-          <p className="max-w-md text-lede text-paper/75">
+          <p className="max-w-md text-lede text-ink">
             We don&apos;t simply aim to create digital activity. We aim to create digital impact.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-signal px-6 py-4 font-semibold text-ink transition-transform duration-300 hover:-translate-y-0.5">
+            <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-4 font-semibold text-cream transition-transform duration-300 hover:-translate-y-0.5">
               Start your Pilot Route <span aria-hidden>→</span>
             </Link>
-            <a href="mailto:socialxbrandpilot@gmail.com" className="inline-flex items-center gap-3 rounded-full border border-paper/25 px-6 py-4 font-medium transition-colors hover:border-paper">
+            <a href="mailto:socialxbrandpilot@gmail.com" className="inline-flex items-center gap-3 rounded-full border border-ink/40 px-6 py-4 font-medium transition-colors hover:border-ink">
               Email us
             </a>
           </div>

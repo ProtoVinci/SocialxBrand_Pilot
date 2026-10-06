@@ -46,46 +46,46 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
 
       {/* identity */}
       <header className="gutter relative overflow-hidden pb-16 pt-[calc(var(--nav-h)+3rem)] md:pb-24">
-        <span aria-hidden className="lane pointer-events-none absolute -right-[2vw] top-[calc(var(--nav-h)+1rem)] select-none font-display text-[clamp(10rem,30vw,28rem)] font-bold leading-[0.8] text-paper/25 [font-stretch:75%]">
+        <span aria-hidden className="lane pointer-events-none absolute -right-[2vw] top-[calc(var(--nav-h)+1rem)] select-none font-display text-[clamp(10rem,30vw,28rem)] font-bold leading-[0.8] text-ink/25 [font-stretch:75%]">
           {pad(d.number)}
         </span>
         <div className="relative">
-          <Link href="/capabilities" transitionTypes={["nav-back"]} className="label text-fog hover:text-paper">← All capabilities</Link>
-          <p className="label mt-8 text-signal">[ {pad(d.number)} / 18 ] {cluster.name}</p>
+          <Link href="/capabilities" transitionTypes={["nav-back"]} className="label text-muted hover:text-ink">← All capabilities</Link>
+          <p className="label mt-8 text-signal-ink">[ {pad(d.number)} / 18 ] {cluster.name}</p>
           <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
             <h1 className="mt-4 max-w-[16ch] font-display text-display font-bold [font-stretch:78%]">{d.name}</h1>
           </ViewTransition>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <RouteToggle slug={d.slug} name={d.shortName} className="h-11 px-5 text-paper" />
-            <Link href="/route" transitionTypes={["nav-forward"]} className="link-underline text-sm text-paper/80">Plan a route with this →</Link>
+            <RouteToggle slug={d.slug} name={d.shortName} className="h-11 px-5 text-ink" />
+            <Link href="/route" transitionTypes={["nav-forward"]} className="link-underline text-sm text-ink/80">Plan a route with this →</Link>
           </div>
         </div>
       </header>
 
       {/* what it is */}
-      <section aria-labelledby="what-title" className="gutter grid gap-10 border-t border-paper/10 py-20 md:grid-cols-12">
-        <h2 id="what-title" className="label text-fog md:col-span-3">What it is</h2>
+      <section aria-labelledby="what-title" className="gutter grid gap-10 border-t border-ink/10 py-20 md:grid-cols-12">
+        <h2 id="what-title" className="label text-muted md:col-span-3">What it is</h2>
         <div className="md:col-span-9">
           <SplitReveal as="p" variant="blur" className="max-w-[34ch] font-display text-[clamp(1.6rem,2.9vw,3rem)] font-semibold leading-[1.08] tracking-[-0.02em] [font-stretch:88%]">{lead}</SplitReveal>
           {restIntro.map((p) => (
-            <Reveal key={p} as="p" className="mt-8 max-w-3xl text-lede text-paper/75">{p}</Reveal>
+            <Reveal key={p} as="p" className="mt-8 max-w-3xl text-lede text-ink/75">{p}</Reveal>
           ))}
         </div>
       </section>
 
       {/* capability groups */}
-      <section aria-labelledby="groups-title" className="gutter border-t border-paper/10 py-20">
+      <section aria-labelledby="groups-title" className="gutter border-t border-ink/10 py-20">
         <div className="grid gap-10 md:grid-cols-12">
-          <h2 id="groups-title" className="label text-fog md:col-span-3">What it covers</h2>
+          <h2 id="groups-title" className="label text-muted md:col-span-3">What it covers</h2>
           <Reveal group className="grid gap-x-10 gap-y-14 md:col-span-9 md:grid-cols-2">
             {d.groups.map((g, gi) => (
               <div key={g.title}>
                 <h3 className="flex items-baseline gap-3 font-display text-title font-semibold [font-stretch:86%]">
-                  <span className="label text-signal">{pad(gi + 1)}</span>{g.title}
+                  <span className="label text-signal-ink">{pad(gi + 1)}</span>{g.title}
                 </h3>
                 <ul className="mt-5 flex flex-wrap gap-2">
                   {g.items.map((item) => (
-                    <li key={item} className="rounded-full border border-paper/15 px-3 py-1.5 text-sm text-paper/85">{item}</li>
+                    <li key={item} className="rounded-full border border-ink/15 px-3 py-1.5 text-sm text-ink/85">{item}</li>
                   ))}
                 </ul>
               </div>
@@ -95,10 +95,10 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       </section>
 
       {/* deliverables */}
-      <section aria-labelledby="deliverables-title" className="act-paper py-20">
+      <section aria-labelledby="deliverables-title" className="act-peach py-20">
         <div className="gutter grid gap-10 md:grid-cols-12">
           <div className="md:col-span-3">
-            <h2 id="deliverables-title" className="label text-smoke">Key deliverables</h2>
+            <h2 id="deliverables-title" className="label text-muted">Key deliverables</h2>
             <p className="mt-4 font-display text-[clamp(4rem,8vw,7rem)] font-bold leading-none [font-stretch:76%]">{pad(d.deliverables.length)}</p>
           </div>
           <Reveal group as="ol" className="grid sm:grid-cols-2 md:col-span-9 md:grid-cols-3">
@@ -113,10 +113,10 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       </section>
 
       {/* approach */}
-      <section aria-labelledby="approach-title" className="gutter border-b border-paper/10 py-24">
+      <section aria-labelledby="approach-title" className="gutter border-b border-ink/10 py-24">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <h2 id="approach-title" className="font-display text-headline font-semibold [font-stretch:82%]">Our <span className="serif-accent font-normal text-signal">approach</span></h2>
-          <p className="label text-fog">{d.approach.length} stations</p>
+          <p className="label text-muted">{d.approach.length} stations</p>
         </div>
         <div className="mt-14"><ApproachRoute steps={d.approach} /></div>
       </section>
@@ -124,7 +124,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       {/* real work */}
       {work.length > 0 && (
         <section aria-labelledby="work-title" className="gutter py-24">
-          <h2 id="work-title" className="label text-fog">Work that shows it</h2>
+          <h2 id="work-title" className="label text-muted">Work that shows it</h2>
           <ul className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-4">
             {work.map(({ screening, cover }) => (
               <li key={screening.slug}>
@@ -141,15 +141,15 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       )}
 
       {/* connections */}
-      <section aria-labelledby="related-title" className="gutter border-t border-paper/10 py-24">
-        <h2 id="related-title" className="label text-fog">Often combined with</h2>
+      <section aria-labelledby="related-title" className="gutter border-t border-ink/10 py-24">
+        <h2 id="related-title" className="label text-muted">Often combined with</h2>
         <ul className="mt-8 grid gap-5 md:grid-cols-3">
           {related.map((r) => (
-            <li key={r!.slug} className="relative rounded-[18px] border border-paper/10 p-6 transition-colors hover:border-paper/30">
+            <li key={r!.slug} className="relative rounded-[18px] border border-ink/10 p-6 transition-colors hover:border-ink/30">
               <Link href={`/capabilities/${r!.slug}`} transitionTypes={["nav-forward"]} className="block after:absolute after:inset-0">
-                <span className="label text-signal">[ {pad(r!.number)} ]</span>
+                <span className="label text-signal-ink">[ {pad(r!.number)} ]</span>
                 <span className="mt-3 block font-display text-title font-semibold [font-stretch:86%]">{r!.shortName}</span>
-                <span className="mt-3 line-clamp-3 block text-sm text-paper/65">{r!.whatItIs[0]}</span>
+                <span className="mt-3 line-clamp-3 block text-sm text-ink/65">{r!.whatItIs[0]}</span>
               </Link>
               <RouteToggle slug={r!.slug} name={r!.shortName} className="relative z-10 mt-6" />
             </li>
@@ -157,13 +157,13 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
         </ul>
       </section>
 
-      <nav aria-label="Divisions" className="gutter grid grid-cols-2 border-t border-paper/10">
+      <nav aria-label="Divisions" className="gutter grid grid-cols-2 border-t border-ink/10">
         <Link href={`/capabilities/${prev.slug}`} transitionTypes={["nav-back"]} className="group py-10 pr-6">
-          <span className="label text-fog">← {pad(prev.number)}</span>
+          <span className="label text-muted">← {pad(prev.number)}</span>
           <span className="mt-2 block font-display text-title font-semibold [font-stretch:86%] group-hover:text-signal">{prev.shortName}</span>
         </Link>
-        <Link href={`/capabilities/${next.slug}`} transitionTypes={["nav-forward"]} className="group border-l border-paper/10 py-10 pl-6 text-right">
-          <span className="label text-fog">{pad(next.number)} →</span>
+        <Link href={`/capabilities/${next.slug}`} transitionTypes={["nav-forward"]} className="group border-l border-ink/10 py-10 pl-6 text-right">
+          <span className="label text-muted">{pad(next.number)} →</span>
           <span className="mt-2 block font-display text-title font-semibold [font-stretch:86%] group-hover:text-signal">{next.shortName}</span>
         </Link>
       </nav>

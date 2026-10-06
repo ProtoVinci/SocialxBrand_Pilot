@@ -90,7 +90,7 @@ export function Nav() {
         ref={bar}
         style={{ viewTransitionName: "site-header" }}
         className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300 ${
-          solid || open ? "border-b border-paper/10 bg-ink/80 backdrop-blur-xl" : "border-b border-transparent"
+          solid || open ? "border-b border-ink/10 bg-cream/80 backdrop-blur-xl" : "border-b border-transparent"
         }`}
       >
         <nav aria-label="Primary" className="gutter flex h-[var(--nav-h)] items-center justify-between gap-6">
@@ -108,7 +108,7 @@ export function Nav() {
                   href={l.href}
                   aria-current={isActive(l.href) ? "page" : undefined}
                   transitionTypes={["nav-forward"]}
-                  className="roll relative block rounded-full px-4 py-2 text-sm text-paper/80 transition-colors hover:text-paper aria-[current=page]:text-paper"
+                  className="roll relative block rounded-full px-4 py-2 text-sm text-ink/80 transition-colors hover:text-ink aria-[current=page]:text-ink"
                 >
                   <span className="relative block overflow-hidden">
                     <span className="roll-a block">{l.label}</span>
@@ -131,7 +131,7 @@ export function Nav() {
               {route.length > 0 && (
                 <span
                   key={route.length}
-                  className="grid h-5 min-w-5 animate-[badge-pop_0.45s_var(--ease-pilot)] place-items-center rounded-full bg-ink px-1 font-mono text-[0.68rem] text-paper"
+                  className="grid h-5 min-w-5 animate-[badge-pop_0.45s_var(--ease-pilot)] place-items-center rounded-full bg-cream px-1 font-mono text-[0.68rem] text-ink"
                   aria-label={`${route.length} divisions on your route`}
                 >
                   {route.length}
@@ -144,7 +144,7 @@ export function Nav() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="site-menu"
-              className="label flex h-10 items-center gap-2 rounded-full border border-paper/20 px-4 text-paper transition-colors hover:border-paper/50"
+              className="label flex h-10 items-center gap-2 rounded-full border border-ink/20 px-4 text-ink transition-colors hover:border-ink/50"
             >
               <span>{open ? "Close" : "Menu"}</span>
               <span className="relative block h-2 w-4" aria-hidden>
@@ -163,14 +163,14 @@ export function Nav() {
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        className="fixed inset-0 z-40 hidden flex-col justify-end bg-ink pb-10 pt-[calc(var(--nav-h)+2rem)]"
+        className="fixed inset-0 z-40 hidden flex-col justify-end bg-cream pb-10 pt-[calc(var(--nav-h)+2rem)]"
         style={{ visibility: "hidden" }}
       >
         <ol className="gutter flex flex-col">
           {links.map((l, i) => {
             const preview = previews[(i * 7) % Math.max(1, previews.length)];
             return (
-              <li key={l.href} className="group border-t border-paper/10 last:border-b">
+              <li key={l.href} className="group border-t border-ink/10 last:border-b">
                 <Link
                   href={l.href}
                   transitionTypes={["nav-forward"]}
@@ -179,11 +179,11 @@ export function Nav() {
                 >
                   <span className="overflow-hidden">
                     <span data-menu-item className="flex items-baseline gap-4 font-display text-[clamp(2.4rem,7vw,6rem)] font-semibold leading-[0.95] tracking-[-0.04em] [font-stretch:80%] transition-colors group-hover:text-signal">
-                      <span className="label text-fog">0{i + 1}</span>
+                      <span className="label text-muted">0{i + 1}</span>
                       {l.label}
                     </span>
                   </span>
-                  <span className="hidden max-w-60 text-right text-sm text-fog md:block">{l.hint}</span>
+                  <span className="hidden max-w-60 text-right text-sm text-muted md:block">{l.hint}</span>
                   {preview && (
                     <Reel asset={preview} mode="manual" className="hidden aspect-[9/16] w-16 shrink-0 rounded-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:block" />
                   )}

@@ -46,15 +46,15 @@ export function Screenings({ items }: { items: Item[] }) {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="screenings-title" className="relative overflow-hidden bg-ink py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0">
+    <section ref={root} aria-labelledby="screenings-title" className="relative overflow-hidden bg-cream py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0">
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="label text-fog">[ 03 ] Screenings — real work</p>
+          <p className="label text-muted">[ 03 ] Screenings — real work</p>
           <SplitReveal as="h2" id="screenings-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
             Made to be <span className="serif-accent font-normal">watched</span>, not just posted.
           </SplitReveal>
         </div>
-        <p className="label max-w-xs text-fog">{partnerCredit}</p>
+        <p className="label max-w-xs text-muted">{partnerCredit}</p>
       </div>
 
       <ol
@@ -66,10 +66,10 @@ export function Screenings({ items }: { items: Item[] }) {
             <Link href={`/work/${screening.slug}`} transitionTypes={["nav-forward"]} className="group block">
               <Reel asset={reel} label={`${screening.title} — ${screening.format}`} className="aspect-[9/16] w-full rounded-[18px] transition-[border-radius] duration-500 group-hover:rounded-[6px]" />
               <span className="mt-4 flex items-baseline gap-3">
-                <span className="label text-signal">[ {pad(i + 1)} ]</span>
+                <span className="label text-signal-ink">[ {pad(i + 1)} ]</span>
                 <span className="font-display text-title font-semibold [font-stretch:85%] group-hover:text-signal">{screening.title}</span>
               </span>
-              <span className="label mt-1 block text-fog">{screening.kicker} · {screening.format}</span>
+              <span className="label mt-1 block text-muted">{screening.kicker} · {screening.format}</span>
             </Link>
           </li>
         ))}
@@ -78,7 +78,7 @@ export function Screenings({ items }: { items: Item[] }) {
             <span className="font-display text-display font-semibold leading-none [font-stretch:78%] group-hover:text-signal">
               Enter the work <span className="inline-block transition-transform duration-500 group-hover:translate-x-3">→</span>
             </span>
-            <span className="mt-4 block max-w-xs text-sm text-fog">{items.length} screenings, from creator reels to wedding films, logos and menus.</span>
+            <span className="mt-4 block max-w-xs text-sm text-muted">{items.length} screenings, from creator reels to wedding films, logos and menus.</span>
           </Link>
         </li>
       </ol>

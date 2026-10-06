@@ -27,20 +27,20 @@ export default function RoutePage() {
       />
       <div className="gutter grid gap-10 pb-32 lg:grid-cols-12">
         <div className="lg:col-span-8">
-          <Suspense fallback={<div className="h-[40rem] rounded-[24px] border border-paper/10 bg-ink-2" />}>
+          <Suspense fallback={<div className="h-[40rem] rounded-[24px] border border-ink/10 bg-sand" />}>
             <RouteBuilder />
           </Suspense>
         </div>
         <aside aria-labelledby="talk-title" className="lg:col-span-4">
-          <div className="sticky top-[calc(var(--nav-h)+1.5rem)] rounded-[24px] border border-paper/10 p-6 md:p-8">
+          <div className="sticky top-[calc(var(--nav-h)+1.5rem)] rounded-[24px] border border-ink/10 p-6 md:p-8">
             <h2 id="talk-title" className="font-display text-title font-semibold [font-stretch:86%]">Or just talk to us.</h2>
             <dl className="mt-6 flex flex-col gap-5">
-              <div><dt className="label text-fog">Email</dt><dd className="mt-1"><a className="link-underline" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
-              <div><dt className="label text-fog">Phone</dt><dd className="mt-1"><a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a></dd></div>
-              <div><dt className="label text-fog">WhatsApp</dt><dd className="mt-1"><a className="link-underline" href={wa} target="_blank" rel="noopener">Message us ↗</a></dd></div>
-              <div><dt className="label text-fog">Web</dt><dd className="mt-1">www.sxbp.com</dd></div>
+              <div><dt className="label text-muted">Email</dt><dd className="mt-1"><a className="link-underline" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+              <div><dt className="label text-muted">Phone</dt><dd className="mt-1"><a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a></dd></div>
+              <div><dt className="label text-muted">WhatsApp</dt><dd className="mt-1"><a className="link-underline" href={wa} target="_blank" rel="noopener">Message us ↗</a></dd></div>
+              <div><dt className="label text-muted">Web</dt><dd className="mt-1">www.sxbp.com</dd></div>
             </dl>
-            <Clock className="mt-8 text-fog" />
+            <Clock className="mt-8 text-muted" />
           </div>
         </aside>
       </div>

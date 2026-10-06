@@ -87,7 +87,15 @@ The original brief (a very long prompt) asked for:
 - Test fixes: the reduced-motion selector was ambiguous (it is now an exact match), and the WhatsApp popup is now stubbed with `context.route("https://wa.me/**")`, so the test needs no network.
 - **Full suite: 33/33 pass** (`npm test`, desktop/mobile/reduced). `tsc`, `eslint` and `npm run build` (43 pages) are clean.
 
-**Cloud gotchas:** run `npx next typegen` before `tsc` on a fresh checkout, or `PageProps`/`LayoutProps` won't be found. The preinstalled Chromium does not match this Playwright version, so run tests with `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome npm test` (it's an optional override in `playwright.config.ts`). Do not run `playwright install`.
+**Light theme redesign (2026-10-06, cloud):** the client said the site "is ass" and asked to drop dark mode for something brighter, lighter and warmer. Done:
+
+- New palette and colour acts (see `docs/design-brief.md` § Colour, which replaces the §4 colour table below). The dark tokens (`ink-2/3`, `paper`, `fog`, `smoke`) are gone.
+- Ladder rebuilt: the act background changes colour per word, the reel is a framed, undimmed 9:16 card, and the clipped red fragments under the word are fixed (±130% offsets plus a fade).
+- Manifesto takeover washes to butter yellow instead of black. The finale is a full logo-red act. The hero fan is resized so it no longer overlaps the headline or clips at the right.
+- Contrast: signal-ink deepened to `#B01818` and faded labels raised to 80%. The axe colour-contrast audit is clean except for elements caught mid-animation.
+- **Not yet done:** the motion-director review (mandatory after motion changes per `AGENTS.md`, because the ladder now animates colour) and the rest of the reviewer round. The reference sites (`*.framer.website`) are blocked by the cloud environment's network policy, so the comparison used `docs/design-research.md`.
+
+**Cloud gotchas:** run `npx next typegen` before `tsc` on a fresh checkout, or `PageProps`/`LayoutProps` won't be found. The preinstalled Chromium does not match this Playwright version, so set `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` for `npm test` and for `scripts/qa/shoot.mjs` / `debug.mjs` (all three honour it). Do not run `playwright install`.
 
 **To re-run the reviewers**: use the Workflow tool with `scriptPath: scripts/tooling/review-workflow.js`. It runs the 5 personas from `.claude/agents/` in parallel, read-only, with the model pinned, and needs the dev server on :3100.
 
@@ -140,7 +148,7 @@ The red **signal line** is the recurring protagonist. It:
 
 The second motif is **lane type**: horizontal stripes clipped to glyphs (the `.lane` utility), echoing the logo's BRAND PILOT inline stencil.
 
-### Colours (sampled from the logo files)
+### Colours (SUPERSEDED: the site is now light; see `docs/design-brief.md` § Colour)
 
 | Token | Value |
 |---|---|

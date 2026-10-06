@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export const viewport: Viewport = { themeColor: "#0b0a12", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#fff5e8", colorScheme: "light" };
 
 // Marks the document for JS-driven reveals before first paint (skipped for reduced motion),
 // so headings never flash in their final state and then jump.

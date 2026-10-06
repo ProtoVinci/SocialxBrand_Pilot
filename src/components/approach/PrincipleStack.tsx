@@ -32,13 +32,13 @@ export function PrincipleStack() {
     <div ref={root} className="flex flex-col gap-6">
       {principles.map((p, i) => (
         <div key={p.title} data-card className="sticky" style={{ top: `calc(var(--nav-h) + 1.5rem + ${i * 18}px)` }}>
-          <article className={`origin-top rounded-[22px] border border-paper/10 p-8 md:p-12 ${i % 2 === 0 ? "bg-ink-2" : "bg-ink-3"}`}>
+          <article className={`origin-top rounded-[22px] border border-ink/10 p-8 md:p-12 ${i % 2 === 0 ? "bg-sand" : "bg-sand-2"}`}>
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div>
-                <span className="label text-signal">{pad(i + 1)} / {pad(principles.length)}</span>
+                <span className="label text-signal-ink">{pad(i + 1)} / {pad(principles.length)}</span>
                 <h3 className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">{p.title}</h3>
               </div>
-              <p className="max-w-sm text-lede text-paper/75 md:text-right">{p.body}</p>
+              <p className="max-w-sm text-lede text-ink/75 md:text-right">{p.body}</p>
             </div>
           </article>
         </div>
