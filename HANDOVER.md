@@ -72,6 +72,13 @@ The original brief (a very long prompt) asked for:
 - the Playwright test suite in `tests/`;
 - the content-audit test.
 
+**Latest (end of local session):**
+
+- Added `playwright.config.ts`, `tests/site.spec.ts` (smoke, overflow, axe, reduced motion, route builder) and `tests/content-audit.spec.ts`. Run them with `npm test`.
+- The content audit's division and contact tests pass. **The "no invented-proof patterns" test currently FAILS.** Run `npx playwright test tests/content-audit.spec.ts --project=desktop` to see which file and regex. It is likely a false positive (for example "trusted by" or a city regex matching real copy), but check it: fix the copy if it's a real claim, otherwise narrow the regex.
+- `tests/site.spec.ts` has **not been run yet**.
+- Reviewer round 1 was launched but its results did not reach the repo. Re-run it with `scripts/tooling/review-workflow.js`.
+
 **To re-run the reviewers**: use the Workflow tool with `scriptPath: scripts/tooling/review-workflow.js`. It runs the 5 personas from `.claude/agents/` in parallel, read-only, with the model pinned, and needs the dev server on :3100.
 
 ---

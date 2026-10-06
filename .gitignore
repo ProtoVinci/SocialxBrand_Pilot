@@ -45,3 +45,5 @@ media-source/
 /public/__contact/
 
 /qa-shots/
+/test-results/
+/playwright-report/
