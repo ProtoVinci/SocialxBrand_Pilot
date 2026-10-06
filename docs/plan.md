@@ -1,5 +1,7 @@
 # SOCIALxBRAND PILOT — motion-led website: build plan
 
+> **This is the original approved plan, kept as a record.** Several decisions have since changed at the client's request. The palette (now red + blue light, see `docs/design-brief.md` § Colour), the method act (now a split-flap departures board), the division approach routes (now boarding-pass tickets) and the video budget (now 3 on desktop) are the main ones. `HANDOVER.md` describes the site as it is now.
+
 ## Context
 
 SOCIALxBRAND PILOT (SxBP), an Indian digital marketing agency, needs its first website. The client wants professional quality, excellent typography, strong animation, and photo/video that feels alive. The brief ranks the priorities as motion > visual > type > interaction > brand > UX > content > architecture, and says "the motion IS the website".

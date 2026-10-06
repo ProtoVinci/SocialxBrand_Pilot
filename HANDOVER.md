@@ -1,284 +1,224 @@
 # HANDOVER: SOCIALxBRAND PILOT website
 
-> **If you are a new session told only "continue": read this whole file first.** Then read `AGENTS.md` and `docs/plan.md` (the approved plan). Pick up at **§6 Next steps**, in order. Keep this file updated as you work and commit it with your changes.
+> **New session told only "continue"?** Read this whole file, then `AGENTS.md`. Pick up at **§7 Next steps**, in order. Keep this file current and commit it with your changes.
 
-Last updated: 2026-10-06, cloud session (branch `claude/epic-einstein-dj8x13`, based on `main` @ b2f0f77). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot.
+Last updated: 2026-10-06 (cloud session). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot. **Work directly on `main`.** The client asked for one branch only. A leftover remote branch `claude/epic-einstein-dj8x13` points at an old commit of `main`; delete it if it still exists (the cloud session's git proxy refuses branch deletions).
 
 ---
 
 ## 1. The job
 
-Build the complete, motion-led website for **SOCIALxBRAND PILOT** (SxBP), an Indian digital marketing agency. Promise: "We will show, you will grow."
+Build the complete, motion-led website for **SOCIALxBRAND PILOT** (SxBP), an Indian digital marketing agency. Promise: "We will show, you will grow." The brief's core line is **"The motion IS the website."**
 
-- **Client priorities, in order**: motion design > visual quality > typography > interaction > brand expression > UX > content structure > architecture.
-- The client explicitly wants **excellent typography, strong animation, and video/photos that feel alive**.
-- The brief's core line is **"The motion IS the website."**
-
-The original brief (a very long prompt) asked for:
-
-- Research of 12 Framer reference sites.
-- A unique information architecture (not a rigid Home/Work/Services/Contact).
-- A signature experience ("The Pilot Route").
-- Five docs, six OpenCode skills, five reviewer agents and an MCP setup.
-- Responsive motion at 6 viewports, accessibility, SEO.
-- Repeated build → run → screenshot → critique → refine loops.
-- Reviewer passes, then a production build.
-
-### User decisions (binding)
-
-- **Contact form**: keep it broad for now. It is implemented as adapters (WhatsApp / mailto / copy); add an API adapter later when the client decides.
-- **Credit**: "Production partner: Vishay Creations" on work.
-- **Exclusions**: none (all portfolio categories allowed). As a taste call, intimate kissing photos were skipped, and SxBP's own logo files are excluded from Logo Work.
-- **Media**: download a curated set (~1.5 GB approved). Done.
-- **Installed specialist skills** are *optional tools*: frontend-design, impeccable, ui-ux-pro-max, design-motion-principles, taste-motion, taste-gsap, cinematic-motion, agent-browser, remotion-best-practices (in `.claude/skills/`, from `skills-lock.json`). Use one only when it materially helps. **The SxBP direction always wins over their fixed palettes and rules.** "ui-implementer" was requested but has no canonical source, so it was not installed.
-- The user writes in Learning output style. There is **one intentional `TODO(human)`** left for them (§6 item 1).
+- **Client priorities, in order:** motion design > visual quality > typography > interaction > brand expression > UX > content structure > architecture.
+- The client wants excellent typography, strong animation, video and photos that feel alive, and (since the redesign rounds) **prominent red + blue colour, textured, never flat or "vibe-coded"**.
 
 ### Hard rules
 
-- **Never invent** clients, metrics, ROI, testimonials, awards, follower counts, years in business, a team, certifications, partnerships, prices or a city. Location is "India · IST" only.
-- Every claim comes from `src/content/*`, which is transcribed from `docs/source/*.pdf`.
+- **Never invent** clients, metrics, ROI, testimonials, awards, follower counts, years in business, a team, certifications, partnerships, prices or a city. The location is "India · IST" only. `tests/content-audit.spec.ts` guards this.
+- Every claim comes from `src/content/*`, transcribed from `docs/source/*.pdf`.
+- Real work only (the client's Drive). Keep "Production partner: Vishay Creations". Never letterbox 9:16 reels.
+- Reduced motion and no-JS must show all content.
+
+### Client decisions (binding)
+
+- **Contact:** adapters (WhatsApp / mailto / copy) in the `/route` builder; add an API adapter later if the client wants one.
+- **Look:** light theme only (dark mode was dropped). The colours are **red + blue from the logo**: blue is the cornflower sampled from a screenshot of openai.com/codex the client supplied, and red is its exact complement. Every colour surface is **textured** (dots or grid).
+- **Specialist skills** in `.claude/skills/` are optional tools; the SxBP direction always wins over their palettes and rules.
+- **Hosting/launch:** `startup.bat` for the client's Windows machine (see §3).
 
 ---
 
-## 2. Status: what exists and works
+## 2. Status
 
 | Area | State |
 |---|---|
-| Scaffold | Next.js **16.3.8** (Turbopack), React 19.2, TS 5, Tailwind **4**, ESLint 9. `tsc` and `eslint` are clean. |
-| Motion stack | gsap 3.15 (+ScrollTrigger, SplitText, Flip, CustomEase, DrawSVG), @gsap/react 2.1.2, lenis 1.3.26 |
-| Content | All 18 divisions transcribed verbatim (`src/content/divisions.ts`), the company profile (`site.ts`), 14 work screenings (`work.ts`) |
-| Media | 95 curated assets processed into `public/media/` (43 videos, 52 photos; ~42 MB of loops). Manifest: `src/content/media.generated.json` |
-| Home (`/`) | Acts 0–9 built and screenshot-verified at 1440×900 (details in §4) |
-| `/work`, `/work/[slug]` | Built: Flip filters, screening pages, shared-element cover, next teaser |
-| `/capabilities`, `/capabilities/[slug]` | Built: ticker, index with cursor reel preview, 18 division pages with their own approach routes |
-| `/approach` | Built: who we are, quote, philosophy, vision/mission, method, principle deck, differentiators, audiences, AI, finale |
-| `/route` | Built: 5-step route builder plus "just talk" panel; WhatsApp/email/copy adapters |
-| SEO | metadataBase `https://www.sxbp.com`, per-page canonical, sitemap.ts, robots.ts, opengraph-image.tsx, JSON-LD (ProfessionalService, Service per division, BreadcrumbList), 404 |
-| Docs | `docs/design-research.md`, `design-brief.md`, `site-architecture.md`, `content-map.md`, `motion-system.md`, `plan.md` |
-| Agent tooling | `AGENTS.md` (+`CLAUDE.md` → `@AGENTS.md`), 6 skills in `.opencode/skills/`, 5 reviewer agents in `.opencode/agents/` **and** `.claude/agents/` (generated by `scripts/tooling/agents.mjs`), `opencode.json`, `.mcp.json` |
-| QA tooling | `scripts/qa/shoot.mjs` (Playwright frames), `scripts/qa/debug.mjs` (errors + probes) |
-
-**Verified since the first push:**
-
-- `npm run build` passes (43 static pages).
-- The mobile hero fan, the striped lane type and the division "What it is" size were confirmed visually.
-
-**In progress / not yet done**: see §6. In short:
-
-- the TODO(human) route suggestions;
-- **reviewer round 1** (was running when this was written; findings get recorded in `docs/reviews.md` once fixed);
-- the full 6-viewport sweep of the inner pages;
-- a Lighthouse/perf pass;
-- the Playwright test suite in `tests/`;
-- the content-audit test.
-
-**Latest (end of local session):**
-
-- Added `playwright.config.ts`, `tests/site.spec.ts` (smoke, overflow, axe, reduced motion, route builder) and `tests/content-audit.spec.ts`. Run them with `npm test`.
-- The content audit's division and contact tests pass. **The "no invented-proof patterns" test currently FAILS.** Run `npx playwright test tests/content-audit.spec.ts --project=desktop` to see which file and regex. It is likely a false positive (for example "trusted by" or a city regex matching real copy), but check it: fix the copy if it's a real claim, otherwise narrow the regex.
-- `tests/site.spec.ts` has **not been run yet**.
-- Reviewer round 1 was launched but its results did not reach the repo. Re-run it with `scripts/tooling/review-workflow.js`.
-
-**Cloud session (2026-10-06):**
-
-- `suggestRoute()` implemented with the §6.1 mapping. Without a goal it returns the audience's 4 core divisions. With a goal, the goal's divisions lead, the audience's divisions follow, the list is deduplicated and capped at 6, and the audience's top pick is always kept.
-- Content-audit failure fixed. It was a false positive: the `4/5` star-rating regex matched Tailwind's `aspect-[4/5]`. The regex now ignores bracketed values.
-- **Real a11y bug fixed:** SplitText's default `aria: "auto"` put `aria-label` on plain spans and paragraphs, which axe flags as `aria-prohibited-attr` (serious). `SplitReveal` now keeps `auto` only on h1–h6 and uses `none` elsewhere. The hero line split uses `none`.
-- Test fixes: the reduced-motion selector was ambiguous (it is now an exact match), and the WhatsApp popup is now stubbed with `context.route("https://wa.me/**")`, so the test needs no network.
-- **Full suite: 33/33 pass** (`npm test`, desktop/mobile/reduced). `tsc`, `eslint` and `npm run build` (43 pages) are clean.
-
-**Colour in the type, textures, performance (2026-10-06, cloud, latest):**
-
-- *Colour:* `--color-blue` (#3651E6, AA on shell) and `--color-blue-ink` (#2F49D6, soft acts) carry text and UI: section labels, alternating accent words (red/blue), the hero's second line, buttons, links, selection, focus, and logo-coloured wordmarks (SOCIAL blue, BRAND PILOT red). Inside `.act-iris`/`.act-rouge` blue falls back to ink; inside the soft acts it deepens to blue-ink.
-- *Textures:* every colour act has its own pattern (cornflower = white dot matrix, red = white grid, periwinkle = blue grid, rose = red dots); `grid-paper` utility = faint ink grid faded at the edges (hero, departures board, footer).
-- *Performance* (measure with `node scripts/qa/perf.mjs --url=/ --cpu=4`, prod build): home blocking time 4.1s → 2.4s and scroll 24 → 30 fps at 4x CPU; /capabilities scroll 34 → 50 fps (a 2s hover freeze removed). What changed: no duplicate ScrollTrigger.refresh on first load; DivisionIndex hover is DOM/CSS only (no React state); videos download only when the play budget grants them a slot (desktop budget 3); the rail's 11 inner ScrollTriggers became one computed update; heading/block reveals use IntersectionObserver (`src/lib/motion/observe.ts`) instead of ScrollTriggers; lazy text splitting; Lenis lerp 0.15; nav without backdrop blur and tweening only on change; marquee retargets only on change; hero glows are gradients, not blur filters; shorter page transitions. Remaining home cost is mostly React hydration + GSAP setup of the pinned acts.
-
-**Matched red + saturation + tickets (2026-10-06, cloud):** the red is now the exact OKLCH complement of the Codex cornflower (`#E95157` vs `#6281FD`), tokens `rouge*` replace `coral*`, and every act is more saturated. `ApproachRoute` (division pages) is now a deck of boarding-pass tickets dealing out from a stack.
-
-**Codex palette + departures board (2026-10-06, cloud):** the client found the iris too dark/"vibe coded" and supplied a screenshot of openai.com/codex (blocked from the cloud container). The palette is now the cornflower sampled from it plus a complementary coral, as blurred gradient fields with black type and black pill buttons (`docs/design-brief.md` § Colour). The wavy 7-station method timeline (`MethodRoute`, deleted) is replaced by `components/home/MethodBoard.tsx`: a split-flap departures board, pinned on desktop, where the active station floods cornflower, flaps its letters and turns Next → Boarding → Cleared. Used on the home page and /approach.
-
-**Red + blue palette and gimmicks (2026-10-06, cloud, superseded palette):** after reviewing a screen recording, the client asked for eye-popping reference-style gimmicks and a bluer direction, then refined it to "red blue like the logo, lighter and warmer". Done: the palette in `docs/design-brief.md` § Colour (tokens shell/petal/rose/periwinkle/iris/coral), `.act-iris` variable re-scoping, `components/fx/PointerFx.tsx` (cursor follower + magnetic), `components/fx/SpinBadge.tsx`, `components/home/Marquee.tsx` (velocity marquee), hero stickers, card tilt and an iris row flood. Bugs fixed from the recording: method panel titles overlapping, blurry LQIP posters in the rail (now eager), the AI lines arriving late, no ladder reel on mobile, and the nav overlapping the headline. Screen recordings were made with Playwright `recordVideo` (wheel-scrolling the page) and converted with ffmpeg; they live in `qa-shots/` (gitignored), not in the repo.
-
-**Light theme redesign (2026-10-06, cloud, superseded palette):** the client said the site "is ass" and asked to drop dark mode for something brighter, lighter and warmer. Done:
-
-- New palette and colour acts (see `docs/design-brief.md` § Colour, which replaces the §4 colour table below). The dark tokens (`ink-2/3`, `paper`, `fog`, `smoke`) are gone.
-- Ladder rebuilt: the act background changes colour per word, the reel is a framed, undimmed 9:16 card, and the clipped red fragments under the word are fixed (±130% offsets plus a fade).
-- Manifesto takeover washes to butter yellow instead of black. The finale is a full logo-red act. The hero fan is resized so it no longer overlaps the headline or clips at the right.
-- Contrast: signal-ink deepened to `#B01818` and faded labels raised to 80%. The axe colour-contrast audit is clean except for elements caught mid-animation.
-- **Not yet done:** the motion-director review (mandatory after motion changes per `AGENTS.md`, because the ladder now animates colour) and the rest of the reviewer round. The reference sites (`*.framer.website`) are blocked by the cloud environment's network policy, so the comparison used `docs/design-research.md`.
-
-**Cloud gotchas:** run `npx next typegen` before `tsc` on a fresh checkout, or `PageProps`/`LayoutProps` won't be found. The preinstalled Chromium does not match this Playwright version, so set `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` for `npm test` and for `scripts/qa/shoot.mjs` / `debug.mjs` (all three honour it). Do not run `playwright install`.
-
-**To re-run the reviewers**: use the Workflow tool with `scriptPath: scripts/tooling/review-workflow.js`. It runs the 5 personas from `.claude/agents/` in parallel, read-only, with the model pinned, and needs the dev server on :3100.
+| Stack | Next.js **16.3.8** (Turbopack), React 19.2, TS 5, Tailwind **4**, ESLint 9, gsap 3.15 (ScrollTrigger, SplitText, Flip, CustomEase, DrawSVG), @gsap/react, Lenis 1.3 |
+| Pages | `/`, `/work`, `/work/[slug]` (14), `/capabilities`, `/capabilities/[slug]` (18), `/approach`, `/route`; `/contact` → `/route`; 404. **43 static pages build.** |
+| Content | All 18 divisions verbatim (`divisions.ts`), the company profile (`site.ts`), 14 screenings (`work.ts`), 95 curated media assets (43 videos, 52 photos) in `public/media/` |
+| SEO | metadataBase `https://www.sxbp.com`, canonicals, sitemap, robots, OG image (in the current palette), JSON-LD |
+| Tests | `npm test` → **33/33 pass** (smoke + overflow at 3 viewports, axe, reduced motion, route builder → WhatsApp, content audit) |
+| Checks | `npx tsc --noEmit`, `npx eslint src` and `npm run build` are clean. The axe colour-contrast audit is clean apart from elements caught mid-animation. |
+| Launcher | `startup.bat` (Windows), tested under Wine with Windows Node 22 across 12 scenarios |
+| Performance | Measured with `scripts/qa/perf.mjs` at 4× CPU: home load blocking time 2.4s (was 4.1s), home scroll ~30 fps (was 24), capabilities ~50 fps (was 34, with a 2s freeze removed), work ~53 fps, approach ~45 fps |
+| Docs | `docs/design-brief.md` (the **current** colour and texture system), `docs/motion-system.md` (current), `design-research.md`, `site-architecture.md`, `content-map.md`, `plan.md` (the original approved plan, kept as a record) |
 
 ---
 
 ## 3. How to run
 
-**Windows, one click:** double-click `startup.bat` in the repo root. It checks Node (20.9+), runs `npm install` only when `node_modules` is missing or older than `package-lock.json`, picks the first free port from 3100, starts the dev server and opens the browser once the site answers. Options: `startup.bat prod` (build + production server), `startup.bat 3200` (port), `startup.bat --no-open`, `startup.bat help`; they combine in any order. Helpers live in `scripts/tooling/` (`deps-fresh.mjs`, `free-port.mjs`, `open-when-ready.mjs`). `.gitattributes` keeps `.bat` files CRLF. It was tested under Wine's `cmd` with Windows Node 22 (all paths: help, bad option, busy port, explicit port, prod, missing Node, old Node via a `node.cmd` shim, stale deps, install/build/server failures).
+**Windows, one click:** double-click `startup.bat`. It checks Node ≥ 20.9, runs `npm install` only when `node_modules` is missing or older than `package-lock.json`, picks the first free port from 3100, starts the dev server and opens the browser once the site answers.
+- Options, combinable in any order: `prod` (build + production server), a port number, `--no-open`, `help`.
+- Its helpers are in `scripts/tooling/` (`deps-fresh.mjs`, `free-port.mjs`, `open-when-ready.mjs`). `.gitattributes` keeps `.bat` files CRLF.
 
+**Anywhere:**
 
 ```bash
 npm install
-npx playwright install chromium   # for QA scripts
-npm run dev                       # Next dev; locally the preview used port 3100 (.claude/launch.json, autoPort)
-node scripts/qa/shoot.mjs --url=/ --vp=1440x900 --at="0,40vh,25%,50%,75%,100%" --wait=1400
-node scripts/qa/shoot.mjs --url=/ --vp=390x844 --at="0,100vh,30%,60%" --reduce
-node scripts/qa/debug.mjs --url=/ --scroll=4000 --probe="document.title"
+npm run dev -- --port 3100          # 3000 is taken by another project on the client's machine
 npx tsc --noEmit && npx eslint src
-npm run build
+npm run build && npm run start -- --port 3100
+npm test                            # Playwright; starts/reuses a server on :3100
 ```
 
-- `shoot.mjs` and `debug.mjs` assume `http://localhost:3100`. Pass `--base=http://localhost:3000` if needed. Positions accept px, `vh`, `%` of the page, or `#id+offset`.
-- `--repeat` skips the first-visit intro curtain. Output goes to `qa-shots/` (gitignored).
-- **Windows note**: on the original machine, port 3000 was taken by another project (`sujal_site`). Don't kill it. That's why port 3100 is used.
+**QA scripts** (they expect a server on :3100; pass `--base=` otherwise; output goes to `qa-shots/`, which is gitignored):
 
-### Media pipeline (only needed if re-curating)
+```bash
+node scripts/qa/shoot.mjs --url=/ --vp=1440x900 --at="0,25%,#method-title+200" --wait=1400 --repeat
+node scripts/qa/debug.mjs --url=/ --scroll=4000                # page errors + probes
+node scripts/qa/perf.mjs --url=/ --cpu=4 --scroll=7000         # load metrics + scroll fps/jank (prod build only)
+```
 
-The raw originals (`media-source/`, 1.5 GB) are **gitignored and NOT in the repo**. Processed outputs in `public/media/` **are** committed. To rebuild from scratch:
+- `shoot.mjs` positions accept px, `vh`, `%` or `#id+offset` (negative offsets as `#id+-200`). `--repeat` skips the intro curtain, and `--reduce` emulates reduced motion.
+- Screen recordings were made with Playwright `recordVideo` while wheel-scrolling, then converted with ffmpeg.
 
-1. Recreate `media-source/` by copying `docs/source/drive-contact-keys.json` → `media-source/contact-keys.json` and `docs/source/download-plan.json` → `media-source/download-plan.json`. Or re-run `node scripts/media/inventory.mjs` and then `node scripts/media/contact-sheet.mjs`.
-2. Run `node scripts/media/mosaic.mjs` for visual curation sheets (`media-source/mosaic-*.jpg`). Edit `scripts/media/selection.json`.
-3. Run `node scripts/media/download.mjs --probe` (prints the total; aborts if it's over 1.8 GB), then `node scripts/media/download.mjs` (uses `curl.exe`; on Linux, change the `curl.exe` string and `NUL` → `/dev/null`).
-4. Run `node scripts/media/transcode.mjs` (needs ffmpeg with libsvtav1 + libx264). `--only=<keys>` force re-encodes specific items; `ROTATE` handles sideways sources (30-8, 32-2).
-- The public Drive root is `1aW_4Cg8rG6wv5QpH_2RvEjvzOkT59yWR` ("SxBP x Vishay Creations Portfolio", 500 files: 173 videos, mostly vertical 9:16, and 327 photos). Every video file is named "Vishay Creations.mov", so **the Drive id is the only key**.
+**Cloud-session notes:**
+- Run `npx next typegen` before `tsc` on a fresh checkout.
+- Set `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` for `npm test` and all `scripts/qa/*` (the preinstalled Chromium differs from this Playwright version). Never run `playwright install`.
+- `*.framer.website`, `openai.com` and `web.archive.org` are blocked by the environment's network policy.
+
+### Media pipeline (only to re-curate)
+
+The raw originals (`media-source/`, 1.5 GB) are gitignored and not in the repo; the processed `public/media/` is committed.
+1. Run `scripts/media/inventory.mjs` then `contact-sheet.mjs`, or copy `docs/source/drive-contact-keys.json` / `download-plan.json` into `media-source/`.
+2. Run `mosaic.mjs` and curate `selection.json`.
+3. Run `download.mjs --probe`, then `download.mjs`.
+4. Run `transcode.mjs` (needs ffmpeg with libsvtav1 + libx264).
+
+The Drive root is `1aW_4Cg8rG6wv5QpH_2RvEjvzOkT59yWR`. Every video there is named "Vishay Creations.mov", so the Drive id is the only key.
 
 ---
 
-## 4. Design direction (decided; don't re-litigate)
+## 4. Design system (current; details in `docs/design-brief.md`)
 
-The full rationale is in `docs/design-brief.md` and `docs/motion-system.md`.
+### Colour: red + blue, textured
 
-### Concept: "The Pilot Route"
+| Token | Hex | Role |
+|---|---|---|
+| shell / petal | `#FDF9F7` / `#F3ECE9` | canvas / cards and the board |
+| periwinkle / rose | `#C9D3FF` / `#FBC8C3` | soft acts (blue tint / red tint) |
+| iris family | `#6281FD` (+ `#8F9FFB`, `#A4B4F8`, `#4658B1`) | Codex cornflower: `.act-iris` gradient fields, row floods, blue ticket headers |
+| rouge family | `#E95157` (+ `#EE6461`, `#F19F99`, `#A33737`) | the exact OKLCH complement (same L/C, hue 270° → 22°): `.act-rouge` fields (finale) |
+| blue / blue-ink | `#3651E6` / `#2F49D6` | **type and UI blue**: section labels, accent words, links, buttons, selection, focus |
+| signal / signal-ink | `#FF3131` / `#B01C22` | logo red (route line, stickers, display accents) / small red text |
+| ink / muted | `#12121A` / `#55556A` | text |
+| violet | `#8C52FF` | "selected" (route toggles) |
 
-The red **signal line** is the recurring protagonist. It:
-
-- is born from the logomark;
-- threads the hero;
-- becomes the nav scroll-progress hairline;
-- draws the 7-station method;
-- draws each division's approach chain;
-- connects the visitor's chosen divisions;
-- underlines "YOU WILL GROW."
-
-The second motif is **lane type**: horizontal stripes clipped to glyphs (the `.lane` utility), echoing the logo's BRAND PILOT inline stencil.
-
-### Colours (SUPERSEDED: the site is now light; see `docs/design-brief.md` § Colour)
-
-| Token | Value |
-|---|---|
-| ink | `#0B0A12` |
-| ink-2 / ink-3 | `#14121E` / `#1E1B2B` |
-| paper | `#F3F0E8` |
-| signal (red) | `#FF3131` |
-| signal-ink (small text on paper) | `#C81E1E` |
-| violet (selected / AI) | `#8C52FF` |
-
-Light "paper acts" break the dark rhythm.
+- **Acts re-scope colour variables.** Inside `.act-iris`/`.act-rouge`, red accents become white or ink and blue becomes ink. Inside `.act-rose`/`.act-periwinkle`, red deepens to signal-ink and blue to blue-ink. Don't hard-code colours in components; use the tokens so these overrides keep contrast.
+- **Textures:**
+  - iris: white dot matrix
+  - rouge: white grid
+  - periwinkle: blue grid
+  - rose: red dots
+  - `grid-paper` utility: a faint ink grid faded at the edges (hero, departures board, footer)
+- **Accent words alternate red and blue** from section to section. The hero's second line is blue. Wordmarks follow the logo: SOCIAL blue, BRAND PILOT red.
+- Primary buttons are blue pills. On red fields they are ink.
 
 ### Type
 
-- **Bricolage Grotesque**: variable `wdth` + `opsz`; display uses `font-stretch:76–88%`. Mega tracking is −0.022em, because tighter tracking made glyph seams appear.
-- **Instrument Serif** italic: the single accent word per headline, often red.
-- **Geist** for body and **Geist Mono** for `[ 01 ]` labels.
+- **Bricolage Grotesque** (variable `wdth`/`opsz`, display at `font-stretch` 76–88%, mega tracking −0.022em).
+- **Instrument Serif** italic for the one accent word per headline.
+- **Geist** for body, and **Geist Mono** for the `[ 01 ]` labels.
 
-### Motion grammar (`src/lib/motion/tokens.ts`)
+### Motion grammar (`src/lib/motion/tokens.ts`; details in `docs/motion-system.md`)
 
-- Eases: `pilot` = (0.22, 1, 0.36, 1) for entrances; `glide` = (0.65, 0, 0.35, 1) for curtains and lines; `none` for scrub.
-- Durations: 0.2 / 0.35 / 0.6 / 0.9 / 1.3.
-- Staggers: chars 0.018, words 0.04, lines 0.08, cards 0.07, total capped at 0.5.
-- Reveals trigger at "top 82%", once.
-- The `cinema` CSS variant and `MQ.cinema` mean desktop ≥768 **and** `html.js-motion`. A head script sets `js-motion` only when reduced motion is not requested, and `intro` on the first visit to `/`.
+- **Eases:** `pilot` (entrances), `glide` (swaps and lines), `none` (scrub).
+- **Durations:** 0.2 / 0.35 / 0.6 / 0.9 / 1.3. **Staggers** are capped at 0.5s total.
+- **`cinema`** (CSS variant and `MQ.cinema`) means desktop ≥768 **and** motion allowed. A head script sets `html.js-motion`, and `intro` on the first visit.
+- **Reveals use IntersectionObserver** (`src/lib/motion/observe.ts`), not ScrollTrigger. Keep the ScrollTrigger count low (§6).
 
-### Home acts
+### Home acts (in order)
 
 | # | Act | What it does |
 |---|---|---|
-| 0 | Logomark curtain | First visit only |
-| 1 | Hero | "EVERY BUSINESS / HAS SOMETHING / *worth showing.*" with a fan of 5 real reels that rotates in |
-| 1→2 | One pin (+230%) | Lines part, the centre reel takes over the screen, dims, and the manifesto fills char by char; "activity." is struck and "impact." turns red |
-| 3 | Philosophy ladder | CSS sticky, 440svh: the word swaps seen / remembered / trusted / chosen / moving forward over crossfading reels |
-| 4 | Screenings | Pinned horizontal rail of one 9:16 reel per screening (mobile: snap rail) |
-| 5 | Capabilities | "Not every business needs *every* service", 2 tickers, a 4-cluster index with cursor reel preview and add-to-route toggles |
-| 6 | The Route | Pin +320%: the line draws through 7 stations and the now-panel changes (mobile: vertical rail) |
-| 7 | Audiences | Paper act: tabs, Flip chips from `suggestRoute()` |
-| 8 | AI | Strike-and-replace typography for the 3 philosophy pairs |
-| 9 | Finale | Lane "WE WILL SHOW." fills, and "YOU WILL GROW." grows and is underlined |
+| 0 | Curtain | Logomark, first visit only |
+| 1 | Hero (shell + `grid-paper` + blue/red glows) | "EVERY BUSINESS / **HAS SOMETHING** (blue) / *worth showing.*"; a fan of 5 reels with stickers ("Real work · no stock", "Made in 9:16 ✦"); a spinning route badge |
+| 1→2 | One pin (+230%) | The centre reel takes over; a dotted cornflower field rises; the manifesto fills char by char; "activity" is struck, "impact" lands white |
+| 3 | Ladder (periwinkle, CSS sticky) | The red word swaps seen → moving forward; a framed reel crossfades |
+| 4 | Screenings (pin) | A horizontal rail of 9:16 reels; cards tilt on hover; "Watch" cursor |
+| 4b | Marquee (iris field) | "WE WILL SHOW / *you will grow*" with inline reel stickers; velocity-driven |
+| 5 | Capabilities | Tickers + a 4-cluster index; rows flood cornflower; cursor reel preview |
+| 6 | **Departures board** (pin +300%) | `MethodBoard`: a split-flap board; the active station floods, flaps, Next → Boarding → Cleared |
+| 7 | Audiences (rose) | Tabs; route chips from `suggestRoute()` |
+| 8 | AI | Strike-and-replace typography |
+| 9 | Finale (rouge field, gridded) | "WE WILL SHOW." fills, and "YOU WILL GROW." grows in white |
+| — | Footer (`grid-paper`) | Contacts, a live IST clock, a giant logo-coloured wordmark |
 
-The footer carries a giant wordmark that rises in, plus a live IST clock.
+Division pages show their approach as **boarding-pass tickets** (`ApproachRoute`) that deal out from a stack. `/approach` reuses the departures board and has blue/red vision/mission fields.
 
-### Media behaviours
+### Pointer gimmicks (`src/components/fx/`; fine pointers + motion only)
 
-- `Reel` gives AV1 WebM (only if ≥10% smaller than the MP4) plus an H.264 fallback, posters and LQIPs. It plays only while visible.
-- `video-budget.ts` caps playback at 4 videos on desktop and 2 on mobile.
-- Modes: `inview`, `hover` and `manual`. Photos drift with a scrubbed parallax.
+- A cursor follower (blue dot → labelled bubble over `[data-cursor]`).
+- Magnetic `.magnetic` CTAs.
+- `SpinBadge`.
 
-### Pages
-
-The routes are `/`, `/work`, `/work/[slug]` (14 slugs), `/capabilities`, `/capabilities/[slug]` (18), `/approach` and `/route`. `/contact` redirects to `/route`. Page transitions run through `PageShell` (React `<ViewTransition>`, classes `route-in`/`route-out`) with `transitionTypes` on Links. Shared names: `division-<slug>` (index title → division h1) and `screening-<slug>` (work tile → cover).
-
----
-
-## 5. Gotchas learned the hard way (read before editing)
-
-1. **`clearProps: undefined` crashes GSAP.** Its presence alone makes GSAP call `.split()` on undefined. Only add optional keys conditionally (see `SplitReveal`).
-2. **A base `relative` beats a caller's `absolute`** in Tailwind's utility order. `Reel`, `Photo` and `RouteToggle` only add `relative` when the caller hasn't passed `absolute` or `fixed`.
-3. **React StrictMode (dev) double-invokes `useGSAP`.** After a revert, GSAP may re-parse a leftover transform as a pixel `y`. When tweening `yPercent`, pin `y: 0` (see Ladder).
-4. **Takeover geometry uses `offset*` layout boxes, never `getBoundingClientRect`.** Rects include transforms and drift on refresh mid-scroll.
-5. **`-webkit-text-stroke` on Bricolage shows its internal overlapping contours.** The lane effect therefore uses `background-clip:text` stripes instead.
-6. **Tailwind scans the whole repo by default**, including `.claude/skills/**`. `globals.css` uses `@import "tailwindcss" source("..")` to scan `src/` only.
-7. **The ESLint react-hooks v7 rules** forbid GSAP `contextSafe(...)` closures that read refs (use plain event handlers) and setState inside effects (use adjust-during-render or refs).
-8. **Model note (Claude Code)**: the user's global `~/.claude/settings.json` sets `CLAUDE_CODE_SUBAGENT_MODEL` to an invalid model (`poolside/laguna-s-2.1[1m]`). **Subagents and workflows must pin `model: "claude-opus-5-5"`** (or the current top model), or every agent fails instantly. WebFetch was broken for the same reason; use `curl` or `Invoke-WebRequest` instead. This may not apply in a cloud session.
-9. **PowerShell `Set-Content` re-encodes UTF-8.** It corrupted `▶`/`…` once. Use the Edit tool, or `[IO.File]::WriteAllText` with UTF8 (no BOM).
-10. **The built-in browser pane renders 1440×900 emulation tiny.** Use the Playwright `shoot.mjs` for visual judgement.
-11. **Next 16**: `params` is a Promise, so use `PageProps<"/route/[slug]">` and `await params`. View transitions need no flag. `next lint` no longer exists.
-12. **Commit messages on Windows PowerShell 5.1.** Embedded double quotes in a `-m` here-string get split into separate args, and git then treats the words as pathspecs. Write the message to a file and use `git commit -F <file>`.
-13. **Pushing**: the remote is `origin` → https://github.com/ProtoVinci/SocialxBrand_Pilot.git, branch `main`. Commit and push after each meaningful step.
+All of them use event delegation, so they survive page transitions.
 
 ---
 
-## 6. Next steps (do in order)
+## 5. Changes history (newest first, condensed)
 
-1. ~~**TODO(human): `src/lib/route/suggest.ts` → `suggestRoute(audience, goal?)`.** It is left for the user (Learning mode). It must return 3–6 division slugs from `src/content/divisions.ts`, most important first. It is used by the home Audiences act (audience only) and the `/route` builder (audience + goal). Until it's implemented, those UIs show a graceful "build it on the route planner" fallback. **If the user says to just continue without contributing, implement a sensible mapping yourself** (for example: local → search-seo, whatsapp-marketing, social-media-management, photography; startups → branding-identity, strategy-consulting, social-media-marketing, content-creation; growing → performance-marketing, content-marketing, creator-brand-growth; established → reputation-pr-community, youtube-organic-video, creative-advertising-campaigns, ai-marketing-automation; then adjust by goal: seen → social/performance/seo; remembered → branding/content; trusted → reputation/youtube/content-marketing; chosen → performance/whatsapp/seo; grow → strategy/ai/youtube). Remove the eslint-disable line once the params are used.~~ **Done** (cloud session). The user can still refine the mapping.
-2. ~~Verify recent fixes visually~~ **Done** (mobile fan, lane type, division "What it is" size). Still to eyeball: ladder ticks <md, the reduced-motion screenings rail, wide work tiles at 4:5.
-3. **Full QA sweep** at 1440×900, 1280×720, 1024×768, 768×1024, 390×844 and 360×800, plus `--reduce`, for every route (`/`, `/work`, one `/work/<slug>`, `/capabilities`, one `/capabilities/<slug>`, `/approach`, `/route`). Check `overflowX:false` and `errors:[]`. Use the `visual-qa` skill checklist.
-4. ~~**Test the route builder end to end**~~ **Mostly covered** by `tests/site.spec.ts` (audience → goal → toggle → validation → WhatsApp URL). Still missing: the mailto and copy adapters. in Playwright: pick an audience and goal, toggle divisions (check the nav badge count), check validation errors, and check that the WhatsApp/mailto URLs are well-formed.
-5. **Run the 5 reviewer agents in parallel** (creative-director, motion-director, conversion-critic, frontend-reviewer, visual-qa) with the model pinned (gotcha 8). Fix every substantive finding, then run a **second review round**.
-6. **`npm run build` passes ✓.** Still to do: `npm run start` and a prod smoke test. Check the static generation of all 14 + 18 slugs, the sitemap output and the OG image render.
-7. **Performance pass**:
-   - CLS < 0.05, hero poster ≤ 200 KB, ≤ 4 MB of video on first view.
-   - No long tasks > 200 ms while scrolling the pins (Playwright trace with 4× CPU throttle).
-   - Consider `fetchPriority="high"` on the hero centre poster.
-8. ~~**Tests**~~ **Done: suite exists and is green (33/33).** Originally: add `tests/` with `@playwright/test` (already a devDependency):
-   - route smoke tests;
-   - no horizontal overflow at 360px;
-   - reduced-motion completeness;
-   - axe (`@axe-core/playwright`) with 0 serious violations;
-   - **a content-audit test**: all 18 division names match `docs/source` and the contact details match, plus a grep guard against invented-proof patterns (testimonial, award, "% growth", "clients", "years").
-9. **Optional polish ideas** (only if critique supports them):
-   - a `/lab` prototype bench for hero variants B/C (giant cropped wordmark over a two-row reel ticker; reel chips inline in the headline);
-   - a scroll-scrubbed short-GOP hero clip (`-g 10`);
-   - a magnetic CTA micro-interaction (the class `magnetic` exists on the hero CTA, but no JS is attached yet).
-10. Keep `HANDOVER.md` and `docs/*` current. Commit and push to `origin main` after each meaningful step.
+1. **Colour in type + textures + performance.** Blue type tokens, alternating accents, logo wordmarks, textured acts, and the performance pass (§6).
+2. **Matched red + saturation + tickets.** The red became the exact complement of the Codex blue; saturation was raised; division approach routes became tickets.
+3. **Codex palette + departures board.** From the client's openai.com/codex screenshot; the wavy method timeline (`MethodRoute`) was replaced by `MethodBoard`.
+4. **Logo red/blue + gimmicks.** Marquee, cursor, magnetic CTAs, badge, stickers, and card tilt. Fixed from a recording review: method title overlap, blurry rail posters, late AI lines, no mobile ladder reel, and the nav overlapping the hero.
+5. **Light theme.** Dark mode dropped. The ladder was rebuilt (framed undimmed reel; fixed clipped word fragments).
+6. **First cloud session.** `suggestRoute()` implemented; content-audit false positive fixed (`aspect-[4/5]`); SplitText `aria-label` a11y bug fixed (only headings get `aria: "auto"`); tests made offline-safe; `startup.bat`.
 
 ---
 
-## 7. File map (most important)
+## 6. Gotchas (read before editing)
+
+1. **`clearProps: undefined` crashes GSAP.** Add optional keys conditionally (see `SplitReveal`).
+2. **A base `relative` beats a caller's `absolute`** in Tailwind's order. `Reel`, `Photo`, `RouteToggle` and `SpinBadge` add `relative` only when the caller didn't pass `absolute`/`fixed`.
+3. **A transformed ancestor re-anchors `absolute` children.** GSAP transforms on the hero CTA row did this to the badge, so the badge now sits outside that row.
+4. **StrictMode double-invokes `useGSAP`.** Pin `y: 0` when tweening `yPercent`.
+5. **Geometry from `offset*` layout boxes, never `getBoundingClientRect`** (takeover, rail, tickets).
+6. **`-webkit-text-stroke` on Bricolage shows its internal contours.** The `.lane` effect uses `background-clip:text` stripes.
+7. **Tailwind scans `src/` only** (`@import "tailwindcss" source("..")`).
+8. **ESLint react-hooks v7:** no `contextSafe` closures reading refs; no setState in effects.
+9. **SplitText `aria`:** use `"auto"` only on h1–h6. `aria-label` on spans and paragraphs is an axe violation.
+10. **`gsap.quickSetter` has no `scale` shorthand.** Use `scaleX` + `scaleY`.
+11. **GSAP's `context.add(fn)` returns void** (it runs `fn` now, inside the context). For late work inside a `matchMedia` handler, call `() => context.add(() => …)`.
+12. **Keep ScrollTriggers few.** Every `ScrollTrigger.refresh()` re-measures them all, and with three pins on home each extra trigger made refreshes slower. One-shot reveals go through `observeOnce` (IntersectionObserver); per-item scroll effects go in one `onUpdate`.
+13. **Hover state never goes in React state on big lists.** `DivisionIndex` re-rendered 18 reels per hover (a 2s freeze); it now toggles data attributes.
+14. **Videos:** never set `preload="auto"` on visibility. `play()` from the budget starts the download, so reels that stay on their poster cost nothing.
+15. **Next 16:** `params` is a Promise (`PageProps<"/x/[slug]">`). `next lint` no longer exists.
+16. **Windows:** PowerShell `Set-Content` re-encodes UTF-8, so use the Edit tool. With PowerShell 5.1 quoting, prefer `git commit -F file`.
+17. **Batch files:** call any `.cmd` (npm, a node shim) with `call`, or the script ends silently. Wine's `where` and `findstr /r /x` don't behave like Windows', so the launcher avoids them.
+
+---
+
+## 7. Next steps (in order)
+
+1. **Run the 5 reviewer agents** (creative-director, motion-director, conversion-critic, frontend-reviewer, visual-qa; personas in `.claude/agents/`; runner: Workflow tool with `scriptPath: scripts/tooling/review-workflow.js`, model pinned). The **motion-director review is owed** under `AGENTS.md` after all the motion changes. Fix substantive findings, then run a second round.
+2. **Full visual QA sweep** of every route at 1440×900, 1280×720, 1024×768, 768×1024, 390×844 and 360×800, plus `--reduce`. Inner pages at tablet sizes have had the least attention.
+3. **Home load cost.** It's still the heaviest page (blocking time ~2.4s at 4× CPU), mostly React hydration plus the setup of the three pinned acts. Ideas: defer setup of below-the-fold acts to idle time (mind pin order: `refreshPriority` / `ScrollTrigger.sort()`); trim the hero's first-frame work.
+4. **Route builder tests** for the mailto and copy adapters (WhatsApp is covered).
+5. **Production smoke test:** the sitemap output, the OG image render, all 14 + 18 slugs.
+6. **Optional:** a `/lab` bench for hero variants; a scroll-scrubbed short-GOP hero clip.
+
+---
+
+## 8. File map
 
 ```
-src/app/                 layout.tsx (fonts, head motion script, Nav/Footer/SmoothScroll, JSON-LD), page.tsx (home acts),
-                         work/, work/[slug]/, capabilities/, capabilities/[slug]/, approach/, route/,
-                         sitemap.ts, robots.ts, opengraph-image.tsx, icon.svg, not-found.tsx, globals.css (tokens, utilities, VT css)
+startup.bat              Windows launcher (+ scripts/tooling/{deps-fresh,free-port,open-when-ready}.mjs)
+src/app/                 layout.tsx (fonts, head motion script, Nav/Footer/SmoothScroll/PointerFx, JSON-LD), page.tsx (home acts),
+                         work/, capabilities/, approach/, route/, sitemap.ts, robots.ts, opengraph-image.tsx, not-found.tsx,
+                         globals.css (tokens, acts + textures, utilities incl. grid-paper/lane, view-transition CSS)
 src/content/             divisions.ts, site.ts, work.ts, media.generated.json
-src/lib/                 gsap.ts, motion/tokens.ts, route/{store,suggest,enquiry}.ts, seo.ts, previews.ts
-src/components/home/     Opening, Ladder, Screenings, MethodRoute, Audiences, AiAmplifies, Finale
-src/components/          capabilities/{DivisionIndex,DivisionTicker,RouteToggle,ApproachRoute}, work/{WorkIndex,ScreeningMedia},
+src/lib/                 gsap.ts, motion/{tokens,observe}.ts, route/{store,suggest,enquiry}.ts, seo.ts, previews.ts
+src/components/home/     Opening, Ladder, Screenings, Marquee, MethodBoard, Audiences, AiAmplifies, Finale
+src/components/fx/       PointerFx (cursor + magnetic), SpinBadge
+src/components/          capabilities/{DivisionIndex,DivisionTicker,RouteToggle,ApproachRoute (tickets)}, work/{WorkIndex,ScreeningMedia},
                          route/RouteBuilder, approach/PrincipleStack, media/{Reel,Photo,video-budget}, motion/{SplitReveal,Reveal,SmoothScroll},
                          layout/{Nav,Footer,FooterWordmark,Clock,PageShell,PageHeader}, brand/{Mark,mark-paths}, seo/JsonLd
+tests/                   site.spec.ts, content-audit.spec.ts (playwright.config.ts honours PW_CHROMIUM_PATH)
+scripts/qa/              shoot.mjs, debug.mjs, perf.mjs
 scripts/media/           inventory, contact-sheet, mosaic, selection.json, download, transcode
-scripts/qa/              shoot.mjs, debug.mjs      scripts/tooling/agents.mjs
-docs/                    research, brief, architecture, content-map, motion-system, plan.md, source/ (PDFs + Drive inventory)
-.opencode/skills/        6 project skills          .opencode/agents/ + .claude/agents/   5 reviewers
-.claude/skills/          9 third-party skills (optional)   .claude/launch.json   .mcp.json   opencode.json   AGENTS.md
-public/brand/            original logo PNGs        public/media/v, public/media/p   processed media
+scripts/tooling/         agents.mjs (regenerates reviewer agents), review-workflow.js
+docs/                    design-brief (current colour/texture), motion-system (current), design-research, site-architecture,
+                         content-map, plan (original plan, kept as record), source/ (PDFs + Drive inventory)
+.claude/agents + .opencode/agents   5 reviewers     .opencode/skills   6 project skills     .claude/skills   optional specialists
 ```

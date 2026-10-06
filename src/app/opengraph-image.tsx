@@ -8,23 +8,22 @@ export const contentType = "image/png";
 export default function OpengraphImage() {
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#fff6f2", color: "#1d1338", padding: 72 }}>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#fdf9f7", color: "#12121a", padding: 72 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <svg width="48" height="71" viewBox={MARK_VIEWBOX}>
             <path d={RIBBON} fill="#ff3131" />
             <path d={RIBBON} fill="#ff3131" transform={`translate(0 ${RIBBON_OFFSET})`} />
             <path d={TRIANGLE} fill="#ff3131" />
           </svg>
-          <div style={{ fontSize: 30, fontWeight: 700, letterSpacing: -0.5 }}>SOCIALxBRAND PILOT</div>
+          <div style={{ display: "flex", fontSize: 30, fontWeight: 700, letterSpacing: -0.5 }}><span style={{ color: "#3651e6" }}>SOCIAL</span><span>x</span><span style={{ color: "#ff3131" }}>BRAND PILOT</span></div>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 92, fontWeight: 800, lineHeight: 0.95, letterSpacing: -3 }}>EVERY BUSINESS HAS</div>
-          <div style={{ display: "flex", fontSize: 92, fontWeight: 800, lineHeight: 0.95, letterSpacing: -3 }}>
-            <span>SOMETHING</span>
-            <span style={{ color: "#ff3131", marginLeft: 22 }}>WORTH SHOWING.</span>
-          </div>
+          {/* one phrase per line: the OG renderer has no condensed display face, so text sets wide */}
+          <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3 }}>EVERY BUSINESS HAS</div>
+          <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3, color: "#3651e6" }}>SOMETHING</div>
+          <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3, color: "#ff3131" }}>WORTH SHOWING.</div>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#5a4f6e" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#55556a" }}>
           <span>Digital Marketing Agency · India &amp; Global</span>
           <span>We will show, you will grow.</span>
         </div>
