@@ -109,6 +109,9 @@ The original brief (a very long prompt) asked for:
 
 ## 3. How to run
 
+**Windows, one click:** double-click `startup.bat` in the repo root. It checks Node (20.9+), runs `npm install` only when `node_modules` is missing or older than `package-lock.json`, picks the first free port from 3100, starts the dev server and opens the browser once the site answers. Options: `startup.bat prod` (build + production server), `startup.bat 3200` (port), `startup.bat --no-open`, `startup.bat help`; they combine in any order. Helpers live in `scripts/tooling/` (`deps-fresh.mjs`, `free-port.mjs`, `open-when-ready.mjs`). `.gitattributes` keeps `.bat` files CRLF. It was tested under Wine's `cmd` with Windows Node 22 (all paths: help, bad option, busy port, explicit port, prod, missing Node, old Node via a `node.cmd` shim, stale deps, install/build/server failures).
+
+
 ```bash
 npm install
 npx playwright install chromium   # for QA scripts
