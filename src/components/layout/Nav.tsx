@@ -99,7 +99,7 @@ export function Nav() {
         <nav aria-label="Primary" className="gutter flex h-[var(--nav-h)] items-center justify-between gap-6">
           <Link href="/" className="group flex items-center gap-3" aria-label="SOCIALxBRAND PILOT — home" transitionTypes={["nav-back"]}>
             <Mark className="h-8 w-auto text-signal transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:-translate-y-0.5" />
-            <span className="hidden font-display text-[0.95rem] font-semibold tracking-[-0.01em] sm:block">
+            <span className="hidden whitespace-nowrap font-display text-[0.95rem] font-semibold tracking-[-0.01em] sm:block md:max-lg:hidden">
               <span className="text-blue">SOCIAL</span>x<span className="text-signal-ink">BRAND PILOT</span>
             </span>
           </Link>
@@ -129,8 +129,9 @@ export function Nav() {
               transitionTypes={["nav-forward"]}
               className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-transform duration-300 hover:-translate-y-0.5"
             >
-              <span className="hidden sm:inline">Start your route</span>
-              <span className="sm:hidden">Start</span>
+              <span className="whitespace-nowrap">
+                Start<span className="max-sm:hidden md:max-lg:hidden"> your route</span>
+              </span>
               {route.length > 0 && (
                 <span
                   key={route.length}

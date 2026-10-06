@@ -117,7 +117,7 @@ export function MethodBoard() {
                 {/* the boarding flood */}
                 <span aria-hidden className="act-iris absolute inset-0 -z-10 origin-left scale-x-0 transition-transform duration-700 ease-[var(--ease-pilot)] group-data-[state=now]:scale-x-100" />
                 <span className="label whitespace-nowrap text-signal-ink group-data-[state=now]:text-ink">[ {pad(i + 1)} ]</span>
-                <h3 className="flex flex-wrap gap-[3px] font-mono text-[clamp(0.95rem,1.55vw,1.45rem)] font-semibold uppercase" aria-label={m.name}>
+                <h3 className="flex flex-wrap gap-[3px] font-mono text-[clamp(0.8rem,1.55vw,1.45rem)] md:flex-nowrap font-semibold uppercase" aria-label={m.name}>
                   {[...m.name.toUpperCase()].map((ch, k) => (
                     <span
                       key={k}

@@ -83,7 +83,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
               {steps.map((s) => (
                 <li key={s} data-tick className="group">
                   <span className="block h-[2px] bg-ink/15 transition-colors duration-500 group-data-[on]:bg-signal" />
-                  <span className="label mt-2 hidden text-ink/75 transition-colors duration-500 group-data-[on]:text-ink md:block">{s}</span>
+                  <span className="label mt-2 hidden text-ink/75 transition-colors duration-500 group-data-[on]:text-ink lg:block">{s}</span>
                 </li>
               ))}
             </ol>

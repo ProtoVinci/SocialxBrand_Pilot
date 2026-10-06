@@ -127,13 +127,13 @@ export function Opening({ fan }: Props) {
       <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-svh cinema:inset-0 cinema:z-0 cinema:h-auto" aria-hidden>
         <div
           data-fan
-          className="absolute left-1/2 top-[20%] h-[45svh] w-[25.3svh] -translate-x-1/2 max-md:top-auto max-md:bottom-[6%] max-md:h-[34svh] max-md:w-[19.1svh] md:left-[78%]"
+          className="absolute left-1/2 top-[20%] h-[45svh] w-[25.3svh] -translate-x-1/2 max-lg:top-auto max-lg:bottom-[6%] max-lg:h-[34svh] max-lg:w-[19.1svh] lg:left-[83%] xl:left-[78%]"
         >
           {/* stickers: true statements only (all work is the client's own, shot vertical) */}
-          <span data-sticker className="absolute -left-[22%] top-[6%] z-10 -rotate-[9deg] rounded-full bg-signal px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-white shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-md:-left-[30%] max-md:px-3 max-md:py-1.5">
+          <span data-sticker className="absolute -left-[22%] top-[6%] z-10 -rotate-[9deg] rounded-full bg-signal px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-white shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-lg:-left-[30%] max-lg:px-3 max-lg:py-1.5">
             Real work · no stock
           </span>
-          <span data-sticker className="absolute -right-[18%] bottom-[12%] z-10 rotate-[7deg] rounded-[14px] bg-periwinkle px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-ink shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-md:-right-[26%] max-md:px-3 max-md:py-1.5">
+          <span data-sticker className="absolute -right-[18%] bottom-[12%] z-10 rotate-[7deg] rounded-[14px] bg-periwinkle px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-ink shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-lg:-right-[26%] max-lg:px-3 max-lg:py-1.5">
             Made in 9:16 ✦
           </span>
           {fan.slice(0, 5).map((asset, i) => (
@@ -151,7 +151,7 @@ export function Opening({ fan }: Props) {
       </div>
 
       {/* Act 1: hero */}
-      <div className="gutter relative z-10 flex min-h-svh flex-col justify-between pb-10 pt-[calc(var(--nav-h)+1.5rem)] max-md:pb-[42svh]">
+      <div className="gutter relative z-10 flex min-h-svh flex-col justify-between pb-10 pt-[calc(var(--nav-h)+1.5rem)] max-lg:pb-[42svh]">
         <div data-hero-meta data-reveal className="flex items-start justify-between gap-6 text-ink/80">
           <span className="label">[ 00 ] Digital Marketing Agency · India &amp; Global</span>
           <Clock className="hidden md:inline-flex" />
@@ -167,14 +167,14 @@ export function Opening({ fan }: Props) {
             </span>
           </h1>
           {/* the signal line: leaves the headline and runs into the fan of work */}
-          <div data-signal-wrap aria-hidden className="pointer-events-none absolute -bottom-7 left-0 h-20 w-[min(62vw,60rem)] max-md:hidden">
+          <div data-signal-wrap aria-hidden className="pointer-events-none absolute -bottom-7 left-0 h-20 w-[min(62vw,60rem)] max-lg:hidden">
             <svg viewBox="0 0 1000 80" preserveAspectRatio="none" className="h-full w-full overflow-visible">
               <path data-signal d="M0 40 C 160 40, 260 66, 470 58 S 820 14, 1000 6" fill="none" stroke="#ff3131" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
             </svg>
           </div>
         </div>
 
-        <div data-hero-cta data-reveal className="flex flex-col items-start gap-6 md:max-w-[58%] md:flex-row md:items-end md:gap-10">
+        <div data-hero-cta data-reveal className="flex flex-col items-start gap-6 lg:max-w-[58%] xl:flex-row xl:items-end xl:gap-10">
           <p className="max-w-sm text-lede text-ink/80">
             We build the strategy, creative and growth systems that help the right people see it.
           </p>
@@ -191,7 +191,7 @@ export function Opening({ fan }: Props) {
 
       {/* outside the CTA row on purpose (that row is transformed, which would re-anchor an absolute child);
           cinema only, since the section grows to hold the stacked manifesto otherwise */}
-      <div data-badge className="absolute bottom-[9%] right-[clamp(1rem,4vw,3.5rem)] z-10 hidden cinema:block">
+      <div data-badge className="absolute bottom-[9%] right-[clamp(1rem,4vw,3.5rem)] z-10 hidden lg:cinema:block">
         <SpinBadge />
       </div>
 

@@ -22,8 +22,9 @@ export function SpinBadge({ className = "" }: Props) {
         <defs>
           <path id={id} d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0" />
         </defs>
-        <text className="fill-current font-mono uppercase" fontSize="8.2" letterSpacing="1.6">
-          <textPath href={`#${id}`}>Start your Pilot Route ✦ We will show ✦</textPath>
+        {/* circumference = 2π·37 ≈ 232.5: textLength makes the line close the loop exactly */}
+        <text className="fill-current font-mono uppercase" fontSize="7.4" letterSpacing="0.9">
+          <textPath href={`#${id}`} textLength="230" lengthAdjust="spacing">Start your Pilot Route ✦ We will show ✦ </textPath>
         </text>
       </svg>
       <Mark className="w-9 text-signal transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:scale-110" />
