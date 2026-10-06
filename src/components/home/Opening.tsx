@@ -115,10 +115,10 @@ export function Opening({ fan }: Props) {
         </div>
       </div>
 
-      {/* soft light behind the hero, after the Codex gradient fields: cornflower top-left, coral low right */}
+      {/* soft light behind the hero, after the Codex gradient fields: cornflower top-left, matched red low right */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-svh overflow-hidden">
-        <div className="absolute -left-[12%] -top-[28%] h-[75svh] w-[58vw] rounded-full bg-iris-2/60 blur-[110px]" />
-        <div className="absolute -right-[6%] top-[38%] h-[60svh] w-[42vw] rounded-full bg-coral-3/80 blur-[110px]" />
+        <div className="absolute -left-[12%] -top-[28%] h-[75svh] w-[58vw] rounded-full bg-iris/55 blur-[110px]" />
+        <div className="absolute -right-[6%] top-[38%] h-[60svh] w-[42vw] rounded-full bg-rouge/45 blur-[110px]" />
       </div>
 
       {/* Stage: the reel fan, which becomes the full-screen takeover */}

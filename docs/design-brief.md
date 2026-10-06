@@ -25,31 +25,30 @@ A second motif comes from the logo's **multi-line inline stencil** in BRAND PILO
 
 ## Colour
 
-**Red + blue from the logo, softened to a Codex-style cornflower and a complementary coral (2026-10-06).** The client found the deep iris too dark and "vibe coded", and pointed to the openai.com/codex hero: blurred cornflower gradient fields, black type, black pill buttons. The blues below were sampled from that screenshot. (History: navy-black → warm cream/yellow → deep iris/rose → this.)
+**Red + blue from the logo (2026-10-06).** Blue is the cornflower sampled from the openai.com/codex hero the client supplied. Red is its exact complement: the same OKLCH lightness and chroma (0.643 / 0.187) with the hue turned from 270° to 22°. Both are used at full saturation so the colour reads as prominent. (History: navy-black → warm cream/yellow → deep iris/rose → pale Codex mist → this.)
 
 | Token | Hex | Role |
 |---|---|---|
-| shell | `#FDFAF8` | base canvas: warm white |
-| petal / petal-2 | `#F5F0ED` / `#EBE3DF` | cards, the departures board |
-| periwinkle | `#DFE5FF` | soft act: pale cornflower mist (philosophy ladder, badge) |
-| rose | `#FFE4DE` | soft act: pale coral mist (audiences, approach philosophy) |
-| iris / iris-2 / iris-3 | `#6B85FC` / `#A4B4F8` / `#BDC5FA` | cornflower (Codex): the `.act-iris` gradient field, row floods |
-| coral / coral-2 / coral-3 | `#FF8A78` / `#FFB6A8` / `#FFD6CD` | complementary red: the `.act-coral` gradient field (finale), hero glow |
+| shell | `#FDF9F7` | base canvas |
+| petal / petal-2 | `#F3ECE9` / `#E8DEDB` | cards, the departures board |
+| periwinkle | `#C9D3FF` | soft act: cornflower tint (philosophy ladder, badge) |
+| rose | `#FBC8C3` | soft act: matched red tint (audiences, approach philosophy) |
+| iris / -2 / -3 / -deep | `#6281FD` / `#8F9FFB` / `#A4B4F8` / `#4658B1` | Codex cornflower: the `.act-iris` field, row floods, blue ticket headers |
+| rouge / -2 / -3 / -deep | `#E95157` / `#EE6461` / `#F19F99` / `#A33737` | the complementary red: the `.act-rouge` field (finale), red ticket headers, hero glow |
 | ink | `#12121A` | text and primary buttons (black pills, as on Codex) |
-| muted | `#5B5B6B` | secondary text |
-| signal | `#FF3131` | logo red: the route line, stickers, display accents on shell |
-| signal-ink | `#B81D1D` | small red text, and red accents on the soft acts (AA) |
+| muted | `#55556A` | secondary text |
+| signal | `#FF3131` | logo red: the route line, stickers, accents on shell |
+| signal-ink | `#B01C22` | small red text and red accents on soft acts (AA) |
 | violet | `#8C52FF` | the logo's SOCIAL violet: "selected", the AI accent |
 
 **Rules.**
 
-- Bold acts are blurred radial-gradient fields (`.act-iris` cornflower, `.act-coral` coral) with dark type, never solid saturated blocks. Inside them red accents become white (display) or ink (small text).
-- Primary buttons are black pills; the logo red is reserved for the logo, the route line, stickers and single accent words.
-- Order down the home page: shell (with cornflower and coral glows) → iris field (manifesto) → periwinkle → shell → iris field (marquee) → shell → shell board → rose → shell → coral field (finale) → shell.
+- Bold acts are blurred radial-gradient fields (`.act-iris`, `.act-rouge`) with dark type. Inside them red accents become white (display) or ink (small).
+- Primary buttons are black pills; the logo red is for the logo, the route line, stickers and single accent words.
 
 ## Interaction gimmicks
 
-Taken from the reference research (`design-research.md`): a velocity marquee (Sol tickers) with inline reel stickers; a cursor follower that becomes a labelled bubble over `[data-cursor]` (fine pointers only, never hiding the native cursor); magnetic `.magnetic` CTAs; a spinning "Start your Pilot Route" badge; tilted stickers on the hero fan (Hanzo); hover tilt on screening cards; a cornflower flood on capability rows; the method as a split-flap departures board. All are off under reduced motion and on touch.
+Taken from the reference research (`design-research.md`): a velocity marquee (Sol tickers) with inline reel stickers; a cursor follower that becomes a labelled bubble over `[data-cursor]` (fine pointers only, never hiding the native cursor); magnetic `.magnetic` CTAs; a spinning "Start your Pilot Route" badge; tilted stickers on the hero fan (Hanzo); hover tilt on screening cards; a cornflower flood on capability rows; the method as a split-flap departures board; each division's approach as a deck of boarding-pass tickets that deals out on scroll. All are off under reduced motion and on touch.
 
 ## Typography
 

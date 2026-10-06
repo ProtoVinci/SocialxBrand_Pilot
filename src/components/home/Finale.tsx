@@ -7,7 +7,7 @@ import { MQ } from "@/lib/motion/tokens";
 /**
  * ACT 9 — the promise. "WE WILL SHOW." begins as outlined lanes (the BRAND PILOT stencil)
  * and fills as you arrive; "YOU WILL GROW." grows into place while the route underlines it.
- * The act is a warm coral gradient field: the warmest moment of the page, just before the footer.
+ * The act is a red gradient field (the complement of the Codex cornflower), just before the footer.
  */
 export function Finale() {
   const root = useRef<HTMLElement>(null);
@@ -25,7 +25,7 @@ export function Finale() {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="finale-title" className="act-coral relative overflow-hidden py-28 md:py-40">
+    <section ref={root} aria-labelledby="finale-title" className="act-rouge relative overflow-hidden py-28 md:py-40">
       <div className="gutter">
         <h2 id="finale-title" className="font-display text-mega font-bold uppercase [font-stretch:76%]">
           <span className="relative block w-max max-w-full">
