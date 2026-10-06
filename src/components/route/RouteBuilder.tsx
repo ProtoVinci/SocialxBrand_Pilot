@@ -123,7 +123,7 @@ export function RouteBuilder() {
             <div className="mt-6 flex flex-col gap-8">
               {clusters.map((c) => (
                 <fieldset key={c.id}>
-                  <legend className="label text-muted">{c.name}</legend>
+                  <legend className="label text-blue">{c.name}</legend>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {divisions.filter((d) => d.cluster === c.id).map((d) => {
                       const on = route.includes(d.slug);
@@ -145,7 +145,7 @@ export function RouteBuilder() {
                 </fieldset>
               ))}
             </div>
-            <p className="label mt-8 text-muted" aria-live="polite">{route.length} on your route</p>
+            <p className="label mt-8 text-blue" aria-live="polite">{route.length} on your route</p>
           </div>
         )}
 
@@ -158,7 +158,7 @@ export function RouteBuilder() {
               ["phone", "Phone / WhatsApp", "tel", "tel"],
             ] as const).map(([key, label, type, auto]) => (
               <label key={key} className="flex flex-col gap-2">
-                <span className="label text-muted">{label}{key === "name" ? " *" : ""}</span>
+                <span className="label text-blue">{label}{key === "name" ? " *" : ""}</span>
                 <input
                   type={type}
                   autoComplete={auto}
@@ -171,7 +171,7 @@ export function RouteBuilder() {
               </label>
             ))}
             <label className="flex flex-col gap-2 md:col-span-2">
-              <span className="label text-muted">Anything we should know? (optional)</span>
+              <span className="label text-blue">Anything we should know? (optional)</span>
               <textarea rows={4} value={details.message} onChange={(e) => setDetails({ ...details, message: e.target.value })} className="rounded-[12px] border border-ink/15 bg-shell px-4 py-3.5 text-ink outline-none transition-colors focus:border-signal" />
             </label>
             <div className="md:col-span-2" aria-live="assertive">
@@ -185,7 +185,7 @@ export function RouteBuilder() {
           <div className="mt-8">
             <RouteSummary slugs={route} />
             <details className="mt-8 rounded-[14px] border border-ink/10 p-5">
-              <summary className="label cursor-pointer text-muted">Read the brief</summary>
+              <summary className="label cursor-pointer text-blue">Read the brief</summary>
               <pre className="mt-4 whitespace-pre-wrap font-sans text-sm text-ink/80">{briefText(brief)}</pre>
             </details>
             <div className="mt-8 grid gap-3 md:grid-cols-3">
@@ -212,13 +212,13 @@ export function RouteBuilder() {
       </div>
 
       <div className="mt-10 flex items-center justify-between gap-4 border-t border-ink/10 pt-6">
-        <button type="button" onClick={() => go(step - 1)} disabled={step === 0} className="label text-muted transition-colors hover:text-ink disabled:opacity-0">← Back</button>
+        <button type="button" onClick={() => go(step - 1)} disabled={step === 0} className="label text-blue transition-colors hover:text-ink disabled:opacity-0">← Back</button>
         {step < STEPS.length - 1 && (
           <button
             type="button"
             onClick={() => go(step + 1)}
             disabled={!canContinue}
-            className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3.5 font-semibold text-shell transition-opacity disabled:opacity-40"
+            className="inline-flex items-center gap-3 rounded-full bg-blue px-6 py-3.5 font-semibold text-white transition-opacity disabled:opacity-40"
           >
             {step === 3 ? "Review route" : "Continue"} <span aria-hidden>→</span>
           </button>

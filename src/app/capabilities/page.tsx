@@ -23,7 +23,7 @@ export default function CapabilitiesPage() {
       <PageHeader
         index="C"
         label="Capabilities — 18 core marketing divisions"
-        title={<>The right mix, <span className="serif-accent font-normal text-signal">not the full menu.</span></>}
+        title={<>The right mix, <span className="serif-accent font-normal text-blue">not the full menu.</span></>}
         lede={
           <>
             <p><strong className="font-semibold text-ink">{servicesIntro.lead}</strong> {servicesIntro.body}</p>
@@ -36,7 +36,7 @@ export default function CapabilitiesPage() {
         <DivisionIndex previews={divisionPreviews()} headingLevel="h2" />
         <div className="mt-20 flex flex-col items-start gap-6 border-t border-ink/10 pt-12 md:flex-row md:items-center md:justify-between">
           <p className="max-w-lg text-lede text-ink/75">Not sure where to start? Tell us about the business and the goal; we&apos;ll suggest a starting route.</p>
-          <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-4 font-semibold text-shell">
+          <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-blue px-6 py-4 font-semibold text-white">
             Plan your route <span aria-hidden>→</span>
           </Link>
         </div>

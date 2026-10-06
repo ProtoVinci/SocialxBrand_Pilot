@@ -80,13 +80,14 @@ export function MethodBoard() {
     <section
       ref={root}
       aria-labelledby="method-title"
-      className="relative overflow-hidden bg-shell py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0 cinema:pt-[var(--nav-h)]"
+      className="relative isolate overflow-hidden bg-shell py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0 cinema:pt-[var(--nav-h)]"
     >
+      <div aria-hidden className="grid-paper pointer-events-none absolute inset-0 -z-10" />
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="label text-muted">[ 05 ] How we work — the Pilot Route</p>
+          <p className="label text-blue">[ 05 ] How we work — the Pilot Route</p>
           <h2 id="method-title" className="mt-4 max-w-[24ch] font-display text-headline font-semibold [font-stretch:82%]">
-            We start by <span className="serif-accent font-normal text-signal">understanding</span> the business.
+            We start by <span className="serif-accent font-normal text-blue">understanding</span> the business.
           </h2>
         </div>
         <p className="max-w-sm text-ink/70">Seven stations, in order. Strategy comes before execution, and every stage feeds the next.</p>
@@ -100,7 +101,7 @@ export function MethodBoard() {
             <Clock className="whitespace-nowrap text-muted" />
           </div>
           <div aria-hidden className="hidden grid-cols-[4.5rem_minmax(0,1.1fr)_minmax(0,1.4fr)_8.5rem] gap-6 border-b border-ink/10 px-7 py-2 md:grid">
-            {["Stn", "Station", "What happens", "Status"].map((h) => <span key={h} className="label text-muted">{h}</span>)}
+            {["Stn", "Station", "What happens", "Status"].map((h) => <span key={h} className="label text-blue">{h}</span>)}
           </div>
 
           {/* the red signal line: progress down the board */}

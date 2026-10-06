@@ -35,10 +35,10 @@ export default function RoutePage() {
           <div className="sticky top-[calc(var(--nav-h)+1.5rem)] rounded-[24px] border border-ink/10 p-6 md:p-8">
             <h2 id="talk-title" className="font-display text-title font-semibold [font-stretch:86%]">Or just talk to us.</h2>
             <dl className="mt-6 flex flex-col gap-5">
-              <div><dt className="label text-muted">Email</dt><dd className="mt-1"><a className="link-underline" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
-              <div><dt className="label text-muted">Phone</dt><dd className="mt-1"><a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a></dd></div>
-              <div><dt className="label text-muted">WhatsApp</dt><dd className="mt-1"><a className="link-underline" href={wa} target="_blank" rel="noopener">Message us ↗</a></dd></div>
-              <div><dt className="label text-muted">Web</dt><dd className="mt-1">www.sxbp.com</dd></div>
+              <div><dt className="label text-blue">Email</dt><dd className="mt-1"><a className="link-underline" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
+              <div><dt className="label text-blue">Phone</dt><dd className="mt-1"><a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a></dd></div>
+              <div><dt className="label text-blue">WhatsApp</dt><dd className="mt-1"><a className="link-underline" href={wa} target="_blank" rel="noopener">Message us ↗</a></dd></div>
+              <div><dt className="label text-blue">Web</dt><dd className="mt-1">www.sxbp.com</dd></div>
             </dl>
             <Clock className="mt-8 text-muted" />
           </div>

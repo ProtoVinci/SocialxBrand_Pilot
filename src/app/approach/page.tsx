@@ -27,13 +27,13 @@ export default function ApproachPage() {
       <PageHeader
         index="A"
         label="Approach — who we are"
-        title={<>Business first. <span className="serif-accent font-normal text-signal">Then everything else.</span></>}
+        title={<>Business first. <span className="serif-accent font-normal text-blue">Then everything else.</span></>}
         lede={<p>{whoWeAre[0]}</p>}
       />
 
       {/* who we are */}
       <section aria-labelledby="who-title" className="gutter grid gap-12 border-t border-ink/10 py-24 md:grid-cols-12">
-        <h2 id="who-title" className="label text-muted md:col-span-3">Who we are</h2>
+        <h2 id="who-title" className="label text-blue md:col-span-3">Who we are</h2>
         <div className="md:col-span-9">
           <Reveal as="p" className="max-w-3xl text-lede text-ink/80">{whoWeAre[1]}</Reveal>
           <Reveal as="p" className="mt-6 max-w-3xl text-lede text-ink/80">{whoWeAre[2]}</Reveal>
@@ -58,7 +58,7 @@ export default function ApproachPage() {
       <section aria-labelledby="philosophy-title" className="act-rose py-24">
         <div className="gutter grid gap-12 md:grid-cols-12">
           <div className="md:col-span-4">
-            <h2 id="philosophy-title" className="label text-muted">Our marketing philosophy</h2>
+            <h2 id="philosophy-title" className="label text-blue">Our marketing philosophy</h2>
             <p className="mt-6 font-display text-title font-semibold [font-stretch:86%]">{philosophy.intro}</p>
           </div>
           <Reveal group as="ul" className="grid gap-6 sm:grid-cols-2 md:col-span-8">
@@ -87,9 +87,9 @@ export default function ApproachPage() {
 
       {/* principles */}
       <section aria-labelledby="principles-title" className="gutter py-28">
-        <p className="label text-muted">What we stand for</p>
+        <p className="label text-blue">What we stand for</p>
         <h2 id="principles-title" className="mt-4 max-w-[16ch] font-display text-headline font-semibold [font-stretch:82%]">
-          Six principles, <span className="serif-accent font-normal text-signal">one stance.</span>
+          Six principles, <span className="serif-accent font-normal text-blue">one stance.</span>
         </h2>
         <div className="mt-14"><PrincipleStack /></div>
       </section>
@@ -98,7 +98,7 @@ export default function ApproachPage() {
       <section aria-labelledby="different-title" className="gutter border-t border-ink/10 py-24">
         <div className="grid gap-12 md:grid-cols-12">
           <div className="md:col-span-4">
-            <h2 id="different-title" className="label text-muted">What makes us different</h2>
+            <h2 id="different-title" className="label text-blue">What makes us different</h2>
             <ul className="mt-8 flex flex-col gap-6">
               {personality.map((p) => (
                 <li key={p.title}>

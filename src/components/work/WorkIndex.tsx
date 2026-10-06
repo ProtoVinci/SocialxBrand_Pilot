@@ -53,10 +53,10 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
             type="button"
             aria-pressed={filter === f.id}
             onClick={() => choose(f.id)}
-            className={`rounded-full border px-5 py-2.5 text-sm transition-colors duration-300 ${filter === f.id ? "border-ink bg-ink text-shell" : "border-ink/20 hover:border-ink"}`}
+            className={`rounded-full border px-5 py-2.5 text-sm transition-colors duration-300 ${filter === f.id ? "border-blue bg-blue text-white" : "border-ink/20 hover:border-ink"}`}
           >
             {f.label}
-            <span className="label ml-2 opacity-60">{f.id === "all" ? items.length : items.filter((i) => i.family === f.id).length}</span>
+            <span className="label ml-2 opacity-85">{f.id === "all" ? items.length : items.filter((i) => i.family === f.id).length}</span>
           </button>
         ))}
       </div>
@@ -81,9 +81,9 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
                 </ViewTransition>
                 <div className="mt-4 flex items-baseline justify-between gap-4">
                   <span className="font-display text-title font-semibold [font-stretch:85%] transition-colors group-hover:text-signal">{screening.title}</span>
-                  <span className="label shrink-0 text-muted">{pad(item.count)}</span>
+                  <span className="label shrink-0 text-blue">{pad(item.count)}</span>
                 </div>
-                <span className="label mt-1 block text-muted">{screening.kicker} · {screening.format}</span>
+                <span className="label mt-1 block text-blue">{screening.kicker} · {screening.format}</span>
               </Link>
             </li>
           );

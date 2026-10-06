@@ -1,7 +1,8 @@
 "use client";
 import { useRef, type ElementType, type ReactNode } from "react";
-import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
-import { MQ, cappedStagger, dur, revealStart, stagger } from "@/lib/motion/tokens";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { MQ, cappedStagger, dur, stagger } from "@/lib/motion/tokens";
+import { observeOnce, REVEAL_MARGIN } from "@/lib/motion/observe";
 
 type Props = {
   as?: ElementType;
@@ -13,7 +14,7 @@ type Props = {
   delay?: number;
 };
 
-/** The `lift` preset: blocks rise 40px into place once, as they enter the viewport. */
+/** The `lift` preset: blocks rise 40px into place once, as they enter the viewport (IntersectionObserver, no ScrollTrigger). */
 export function Reveal({ as: Tag = "div", children, className, group = false, y = 40, delay = 0 }: Props) {
   const ref = useRef<HTMLElement>(null);
 
@@ -27,15 +28,12 @@ export function Reveal({ as: Tag = "div", children, className, group = false, y 
       const targets = group ? Array.from(el.children) : [el];
       if (group) {
         gsap.set(targets, { autoAlpha: 0, y });
-        ScrollTrigger.batch(targets, {
-          start: revealStart,
-          once: true,
-          onEnter: (batch) =>
-            gsap.to(batch, { autoAlpha: 1, y: 0, duration: dur.base, delay, stagger: cappedStagger(batch.length, stagger.cards) }),
-        });
-      } else {
-        gsap.from(el, { autoAlpha: 0, y, duration: dur.base, delay, scrollTrigger: { trigger: el, start: revealStart, once: true } });
+        return observeOnce(targets, REVEAL_MARGIN, (batch) =>
+          gsap.to(batch, { autoAlpha: 1, y: 0, duration: dur.base, delay, stagger: cappedStagger(batch.length, stagger.cards) }),
+        );
       }
+      const tween = gsap.from(el, { autoAlpha: 0, y, duration: dur.base, delay, paused: true });
+      return observeOnce([el], REVEAL_MARGIN, () => tween.play());
     });
     return () => mm.revert();
   }, { scope: ref });

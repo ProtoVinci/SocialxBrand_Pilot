@@ -28,6 +28,7 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
       const lean = q("[data-lean]");
       const skewTo = gsap.quickTo(lean, "skewX", { duration: dur.base, ease: "pilot" });
       let dir = 1;
+      let lastBoost = 1;
       let settle: gsap.core.Tween | undefined;
 
       const st = ScrollTrigger.create({
@@ -37,12 +38,17 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
         onToggle: (self) => loops.forEach((l) => (self.isActive ? l.play() : l.pause())),
         onUpdate: (self) => {
           const v = self.getVelocity();
-          dir = self.direction;
-          const boost = 1 + Math.min(Math.abs(v) / 350, 6);
-          loops.forEach((l) => gsap.to(l, { timeScale: dir * boost, duration: dur.quick, overwrite: true }));
+          const boost = Math.round((1 + Math.min(Math.abs(v) / 350, 6)) * 4) / 4; // quarter steps
+          // retarget only when speed or direction really changed, not on every scroll event
+          if (boost !== lastBoost || self.direction !== dir) {
+            dir = self.direction;
+            lastBoost = boost;
+            loops.forEach((l) => gsap.to(l, { timeScale: dir * boost, duration: dur.quick, overwrite: true }));
+          }
           skewTo(gsap.utils.clamp(-10, 10, -v / 220));
           settle?.kill();
           settle = gsap.delayedCall(0.18, () => {
+            lastBoost = 1;
             loops.forEach((l) => gsap.to(l, { timeScale: dir, duration: dur.slow, ease: "pilot", overwrite: true }));
             skewTo(0);
           });

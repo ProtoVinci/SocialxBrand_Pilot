@@ -36,9 +36,9 @@ export function Audiences() {
     <section ref={root} aria-labelledby="audiences-title" className="act-rose py-28 md:py-36">
       <div className="gutter grid gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
-          <p className="label text-muted">[ 06 ] Who we work with</p>
+          <p className="label text-blue">[ 06 ] Who we work with</p>
           <h2 id="audiences-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
-            Marketing is for <span className="serif-accent font-normal text-signal-ink">every</span> business.
+            Marketing is for <span className="serif-accent font-normal text-blue">every</span> business.
           </h2>
           <p className="mt-6 max-w-md text-lede text-ink/75">
             We do not define our work by a single industry; we define it by the marketing need.
@@ -65,12 +65,12 @@ export function Audiences() {
           <div id="audience-panel" role="tabpanel" aria-live="polite" className="mt-10">
             <p data-audience-need className="font-display text-title font-semibold [font-stretch:88%]">{current.need}</p>
             <span data-audience-rule aria-hidden className="mt-8 block h-px origin-left bg-signal-ink" />
-            <p className="label mt-6 text-muted">A route might start with</p>
+            <p className="label mt-6 text-blue">A route might start with</p>
             {route.length > 0 ? (
               <ul className="mt-4 flex flex-wrap gap-2">
                 {route.map((d) => (
                   <li key={d!.slug} data-chip data-flip-id={d!.slug}>
-                    <Link href={`/capabilities/${d!.slug}`} className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm text-shell transition-colors hover:bg-signal-ink">
+                    <Link href={`/capabilities/${d!.slug}`} className="inline-flex items-center gap-2 rounded-full bg-blue px-4 py-2.5 text-sm text-white transition-colors hover:bg-ink">
                       <span className="label opacity-80">{pad(d!.number)}</span>{d!.shortName}
                     </Link>
                   </li>

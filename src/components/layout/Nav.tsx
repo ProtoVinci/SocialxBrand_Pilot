@@ -30,6 +30,7 @@ export function Nav() {
   // scroll states: solid as soon as content passes under it (12px), hide on scroll-down, route-progress hairline
   useGSAP(() => {
     const setProgress = gsap.quickSetter(progress.current, "scaleX");
+    let hidden = false;
     const st = ScrollTrigger.create({
       start: 0,
       end: "max",
@@ -39,6 +40,8 @@ export function Nav() {
         setSolid(y > 12);
         if (open) return;
         const hide = self.direction === 1 && y > window.innerHeight * 0.6;
+        if (hide === hidden) return; // tween only on a change, not on every scroll event
+        hidden = hide;
         gsap.to(bar.current, { yPercent: hide ? -110 : 0, duration: dur.quick, ease: "snap", overwrite: true });
       },
     });
@@ -89,15 +92,15 @@ export function Nav() {
       <header
         ref={bar}
         style={{ viewTransitionName: "site-header" }}
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300 ${
-          solid || open ? "border-b border-ink/10 bg-shell/80 backdrop-blur-xl" : "border-b border-transparent"
+        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 ${
+          solid || open ? "border-b border-ink/10 bg-shell/95" : "border-b border-transparent"
         }`}
       >
         <nav aria-label="Primary" className="gutter flex h-[var(--nav-h)] items-center justify-between gap-6">
           <Link href="/" className="group flex items-center gap-3" aria-label="SOCIALxBRAND PILOT — home" transitionTypes={["nav-back"]}>
             <Mark className="h-8 w-auto text-signal transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:-translate-y-0.5" />
             <span className="hidden font-display text-[0.95rem] font-semibold tracking-[-0.01em] sm:block">
-              SOCIAL<span className="text-signal">x</span>BRAND PILOT
+              <span className="text-blue">SOCIAL</span>x<span className="text-signal-ink">BRAND PILOT</span>
             </span>
           </Link>
 
@@ -124,7 +127,7 @@ export function Nav() {
             <Link
               href="/route"
               transitionTypes={["nav-forward"]}
-              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-shell transition-transform duration-300 hover:-translate-y-0.5"
+              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-transform duration-300 hover:-translate-y-0.5"
             >
               <span className="hidden sm:inline">Start your route</span>
               <span className="sm:hidden">Start</span>
@@ -154,7 +157,7 @@ export function Nav() {
             </button>
           </div>
         </nav>
-        <span ref={progress} aria-hidden className="absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-signal" />
+        <span ref={progress} aria-hidden className="absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-gradient-to-r from-blue to-signal" />
       </header>
 
       <div
@@ -179,7 +182,7 @@ export function Nav() {
                 >
                   <span className="overflow-hidden">
                     <span data-menu-item className="flex items-baseline gap-4 font-display text-[clamp(2.4rem,7vw,6rem)] font-semibold leading-[0.95] tracking-[-0.04em] [font-stretch:80%] transition-colors group-hover:text-signal">
-                      <span className="label text-muted">0{i + 1}</span>
+                      <span className="label text-blue">0{i + 1}</span>
                       {l.label}
                     </span>
                   </span>

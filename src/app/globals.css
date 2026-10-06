@@ -29,7 +29,9 @@
   --color-rouge-2: #ee6461;
   --color-rouge-3: #f19f99;
   --color-rouge-deep: #a33737;
-  --color-ink: #12121a;          /* text and primary buttons */
+  --color-blue: #3651e6;         /* text + UI blue: labels, accents, links, buttons (5.8:1 on shell) */
+  --color-blue-ink: #2f49d6;     /* blue for small text on the soft acts (4.7:1) */
+  --color-ink: #12121a;          /* body text */
   --color-muted: #55556a;        /* secondary text on shell */
   --color-signal: #ff3131;       /* logo red: the route line, stickers, accents on shell */
   --color-signal-ink: #b01c22;   /* red for small text and accents on soft acts (AA) */
@@ -71,6 +73,15 @@
   }
 }
 
+/* A faint ink grid for plain shell surfaces (hero, departures board), faded out toward the edges. */
+@utility grid-paper {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--color-ink) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 7%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 75% 70% at 50% 45%, #000 40%, transparent 100%);
+}
+
 @utility gutter {
   padding-inline: clamp(1rem, 4vw, 3.5rem);
 }
@@ -88,6 +99,7 @@
 }
 
 @utility link-underline {
+  color: var(--color-blue);
   background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
   transition: background-size 0.45s var(--ease-pilot);
   &:hover, &:focus-visible { background-size: 100% 1px; }
@@ -137,23 +149,38 @@ body {
 }
 
 ::selection {
-  background: var(--color-signal);
-  color: var(--color-shell);
+  background: var(--color-blue);
+  color: #fff;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-signal);
+  outline: 2px solid var(--color-blue);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
 /* Colour acts. Soft acts are flat mists; the two bold acts are blurred gradient fields in the
    manner of the Codex hero (cornflower) and its matched complementary red, always with dark type. */
-.act-rose { background: var(--color-rose); color: var(--color-ink); }
-.act-periwinkle { background: var(--color-periwinkle); color: var(--color-ink); }
+/* Textures: every colour act carries a fine pattern (dots or grid) so the colour reads as a
+   designed surface, not a flat fill. Each act has its own, so neighbours never look alike.
+   They are plain background layers (no pseudo-elements), so sticky/pinned acts are unaffected. */
+.act-rose {
+  color: var(--color-ink);
+  background:
+    radial-gradient(circle, color-mix(in oklab, var(--color-signal-ink) 30%, transparent) 1.1px, transparent 1.6px) 0 0 / 18px 18px,
+    var(--color-rose);
+}
+.act-periwinkle {
+  color: var(--color-ink);
+  background:
+    linear-gradient(to right, color-mix(in oklab, var(--color-blue-ink) 13%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    linear-gradient(to bottom, color-mix(in oklab, var(--color-blue-ink) 13%, transparent) 1px, transparent 1px) 0 0 / 32px 32px,
+    var(--color-periwinkle);
+}
 .act-rose .text-muted, .act-periwinkle .text-muted { color: color-mix(in oklab, var(--color-ink) 80%, transparent); }
 /* logo red only clears contrast on shell; on soft acts red accents deepen to signal-ink */
 .act-rose .text-signal, .act-periwinkle .text-signal { color: var(--color-signal-ink); }
+.act-rose, .act-periwinkle { --color-blue: var(--color-blue-ink); }
 
 .act-iris, .act-rouge {
   color: var(--color-ink);
@@ -161,9 +188,13 @@ body {
   /* red accents can't hold contrast on these fields: they become white (display) / ink (small) */
   --color-signal: #ffffff;
   --color-signal-ink: var(--color-ink);
+  /* blue type can't hold contrast on the gradient fields either: it falls back to ink */
+  --color-blue: var(--color-ink);
 }
 .act-iris {
   background:
+    /* dot matrix, after the dotted glyphs drifting over the Codex hero */
+    radial-gradient(circle, rgb(255 255 255 / 0.38) 1px, transparent 1.5px) 0 0 / 16px 16px,
     radial-gradient(60% 80% at 10% 25%, var(--color-iris) 0%, transparent 65%),
     radial-gradient(45% 60% at 72% 18%, #7b7cfb 0%, transparent 62%),
     radial-gradient(50% 65% at 88% 78%, var(--color-iris-3) 0%, transparent 62%),
@@ -172,6 +203,8 @@ body {
 }
 .act-rouge {
   background:
+    linear-gradient(to right, rgb(255 255 255 / 0.16) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(to bottom, rgb(255 255 255 / 0.16) 1px, transparent 1px) 0 0 / 28px 28px,
     radial-gradient(60% 80% at 10% 25%, var(--color-rouge) 0%, transparent 65%),
     radial-gradient(45% 60% at 72% 18%, #f0606f 0%, transparent 62%),
     radial-gradient(50% 65% at 88% 78%, var(--color-rouge-3) 0%, transparent 62%),
@@ -215,13 +248,14 @@ video::-webkit-media-controls { display: none !important; }
 ::view-transition-old(site-header) { display: none; }
 ::view-transition-new(site-header) { animation: none; }
 
+/* kept short so navigation feels instant: the new page is readable within ~300ms */
 ::view-transition-old(.route-out) {
-  animation: 260ms var(--ease-glide) both vt-fade-out, 520ms var(--ease-glide) both vt-lift-out;
+  animation: 180ms var(--ease-glide) both vt-fade-out, 320ms var(--ease-glide) both vt-lift-out;
 }
 ::view-transition-new(.route-in) {
-  animation: 360ms var(--ease-pilot) 180ms both vt-fade-in, 640ms var(--ease-pilot) both vt-rise-in;
+  animation: 240ms var(--ease-pilot) 90ms both vt-fade-in, 420ms var(--ease-pilot) both vt-rise-in;
 }
-::view-transition-group(.morph) { animation-duration: 560ms; animation-timing-function: var(--ease-pilot); }
+::view-transition-group(.morph) { animation-duration: 420ms; animation-timing-function: var(--ease-pilot); }
 ::view-transition-image-pair(.morph) { animation-name: vt-via-blur; }
 
 @keyframes vt-fade-out { to { opacity: 0; } }

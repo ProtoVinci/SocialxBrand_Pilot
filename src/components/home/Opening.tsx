@@ -117,8 +117,9 @@ export function Opening({ fan }: Props) {
 
       {/* soft light behind the hero, after the Codex gradient fields: cornflower top-left, matched red low right */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-svh overflow-hidden">
-        <div className="absolute -left-[12%] -top-[28%] h-[75svh] w-[58vw] rounded-full bg-iris/55 blur-[110px]" />
-        <div className="absolute -right-[6%] top-[38%] h-[60svh] w-[42vw] rounded-full bg-rouge/45 blur-[110px]" />
+        <div className="grid-paper absolute inset-0" />
+        {/* radial gradients, not blur filters: same softness, a fraction of the paint cost */}
+        <div className="absolute inset-0 bg-[radial-gradient(45%_60%_at_8%_0%,color-mix(in_oklab,var(--color-iris)_58%,transparent)_0%,transparent_70%),radial-gradient(38%_50%_at_96%_72%,color-mix(in_oklab,var(--color-rouge)_45%,transparent)_0%,transparent_70%)]" />
       </div>
 
       {/* Stage: the reel fan, which becomes the full-screen takeover */}
@@ -159,7 +160,7 @@ export function Opening({ fan }: Props) {
         <div className="relative">
           <h1 id="hero-title" data-hero-title data-reveal className="font-display text-mega font-bold uppercase [font-stretch:76%]">
             <span data-line className="block">Every business</span>
-            <span data-line className="block">has something</span>
+            <span data-line className="block text-blue">has something</span>
             <span data-line className="block normal-case">
               <span className="serif-accent font-normal tracking-[-0.03em]">worth </span>
               <span className="serif-accent font-normal tracking-[-0.03em] text-signal">showing.</span>
@@ -178,7 +179,7 @@ export function Opening({ fan }: Props) {
             We build the strategy, creative and growth systems that help the right people see it.
           </p>
           <div className="flex shrink-0 flex-wrap gap-3">
-            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-ink px-6 py-4 font-semibold text-shell transition-transform duration-300 hover:-translate-y-0.5">
+            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-blue px-6 py-4 font-semibold text-white transition-transform duration-300 hover:-translate-y-0.5">
               Start your Pilot Route <span aria-hidden>→</span>
             </Link>
             <Link href="/work" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full border border-ink/25 px-6 py-4 font-medium transition-colors hover:border-ink">

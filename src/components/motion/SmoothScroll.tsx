@@ -23,7 +23,8 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     const coarse = window.matchMedia("(pointer: coarse)").matches;
     if (reduce || coarse) return;
 
-    const instance = new Lenis({ autoRaf: false, lerp: 0.1, smoothWheel: true, anchors: { offset: -80 } });
+    // lerp 0.15: smooth, but catches up with the wheel quickly so scrolling feels snappy, not floaty
+    const instance = new Lenis({ autoRaf: false, lerp: 0.15, smoothWheel: true, anchors: { offset: -80 } });
     const offScroll = instance.on("scroll", ScrollTrigger.update);
     const tick = (time: number) => instance.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -38,8 +39,12 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // New route: start at the top and re-measure every trigger once fonts are ready.
+  // New route: start at the top and re-measure every trigger once fonts are ready. Skipped on
+  // the first page load, where ScrollTrigger already refreshes on "load" (a second full
+  // refresh re-measured every pin and cost ~350ms of main thread for nothing).
+  const firstRoute = useRef(true);
   useEffect(() => {
+    if (firstRoute.current) { firstRoute.current = false; return; }
     lenis.current?.scrollTo(0, { immediate: true, force: true });
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
   }, [pathname]);

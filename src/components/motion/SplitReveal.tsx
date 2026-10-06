@@ -1,7 +1,8 @@
 "use client";
 import { useRef, type ElementType, type ReactNode } from "react";
 import { gsap, useGSAP, SplitText } from "@/lib/gsap";
-import { MQ, dur, revealStart, stagger as st } from "@/lib/motion/tokens";
+import { observeOnce, NEAR_MARGIN, REVEAL_MARGIN } from "@/lib/motion/observe";
+import { MQ, dur, stagger as st } from "@/lib/motion/tokens";
 
 type Variant = "rise" | "blur" | "chars";
 
@@ -24,6 +25,8 @@ type Props = {
  * Splitting is aria-safe: on headings SplitText labels the parent and hides the fragments.
  * aria-label is not permitted on generic tags (p, span, div), so there the fragments are left
  * readable instead (aria: "none").
+ * Scroll reveals split lazily, when the heading is about a screen away, and play when it
+ * crosses the reveal line; both use IntersectionObserver, so headings add no ScrollTriggers.
  */
 export function SplitReveal({ as: Tag = "h2", children, className, variant = "rise", trigger = "scroll", delay = 0, id }: Props) {
   const ref = useRef<HTMLElement>(null);
@@ -34,8 +37,8 @@ export function SplitReveal({ as: Tag = "h2", children, className, variant = "ri
     if (!el) return;
     const mm = gsap.matchMedia();
     mm.add(MQ.reduce, () => { gsap.set(el, { autoAlpha: 1 }); });
-    mm.add(MQ.motion, () => {
-      SplitText.create(el, {
+    mm.add(MQ.motion, (context) => {
+      const split = () => SplitText.create(el, {
         type: variant === "chars" ? "lines,chars" : "lines,words",
         mask: variant === "blur" ? undefined : "lines",
         linesClass: "split-line",
@@ -48,18 +51,23 @@ export function SplitReveal({ as: Tag = "h2", children, className, variant = "ri
             variant === "blur"
               ? { autoAlpha: 0, y: 10, filter: "blur(6px)" }
               : { yPercent: variant === "chars" ? 105 : 110 };
-          return gsap.from(targets, {
+          const tween = gsap.from(targets, {
             ...from,
             duration: variant === "blur" ? dur.base + 0.2 : dur.slow,
             ease: "pilot",
             delay,
             stagger: variant === "chars" ? st.chars : variant === "blur" ? st.words : st.lines,
-            // GSAP reads the mere presence of clearProps/scrollTrigger keys, so only add them when set
+            paused: trigger === "scroll",
+            // GSAP reads the mere presence of clearProps, so only add it when set
             ...(variant === "blur" ? { clearProps: "filter" } : {}),
-            ...(trigger === "scroll" ? { scrollTrigger: { trigger: el, start: revealStart, once: true } } : {}),
           });
+          if (trigger === "scroll") context.add(() => observeOnce([el], REVEAL_MARGIN, () => tween.play()));
+          return tween;
         },
       });
+      if (trigger === "mount") { split(); return; }
+      // context.add runs the late split inside this matchMedia context, so revert still undoes it
+      return observeOnce([el], NEAR_MARGIN, () => context.add(() => { split(); }));
     });
     return () => mm.revert();
   }, { scope: ref, dependencies: [variant, trigger, delay, aria] });

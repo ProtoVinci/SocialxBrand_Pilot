@@ -32,7 +32,7 @@ export default function WorkPage() {
         lede={
           <>
             <p>Reels, films, photography and design, presented in the formats they were made for. We show categories, not invented case studies: what you see is the work.</p>
-            <p className="label mt-6 text-muted">{partnerCredit}</p>
+            <p className="label mt-6 text-blue">{partnerCredit}</p>
           </>
         }
       />

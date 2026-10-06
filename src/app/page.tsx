@@ -34,7 +34,7 @@ export default function Home() {
 
         <section aria-labelledby="capabilities-title" className="relative bg-shell py-28 md:py-36">
           <div className="gutter">
-            <p className="label text-muted">[ 04 ] Capabilities — 18 divisions</p>
+            <p className="label text-blue">[ 04 ] Capabilities — 18 divisions</p>
             <SplitReveal as="h2" id="capabilities-title" className="mt-4 max-w-[18ch] font-display text-display font-semibold [font-stretch:80%]">
               Not every business needs <span className="serif-accent font-normal text-signal">every</span> service.
             </SplitReveal>

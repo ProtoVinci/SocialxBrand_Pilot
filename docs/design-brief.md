@@ -41,6 +41,10 @@ A second motif comes from the logo's **multi-line inline stencil** in BRAND PILO
 | signal-ink | `#B01C22` | small red text and red accents on soft acts (AA) |
 | violet | `#8C52FF` | the logo's SOCIAL violet: "selected", the AI accent |
 
+**Type in colour.** Blue `#3651E6` (`text-blue`) for section labels, links, buttons and every other accent word; the logo red for the rest. Wordmarks follow the logo: SOCIAL blue, BRAND PILOT red.
+
+**Textures.** No flat fills: cornflower fields carry a white dot matrix, red fields a white grid, the periwinkle tint a blue grid, the rose tint red dots; plain shell surfaces use the faded `grid-paper` grid.
+
 **Rules.**
 
 - Bold acts are blurred radial-gradient fields (`.act-iris`, `.act-rouge`) with dark type. Inside them red accents become white (display) or ink (small).

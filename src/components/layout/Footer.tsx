@@ -8,28 +8,29 @@ const whatsapp = `https://wa.me/${site.phoneE164.replace("+", "")}`;
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-ink/10 bg-shell pt-20" aria-labelledby="footer-title">
+    <footer className="relative isolate overflow-hidden border-t border-ink/10 bg-shell pt-20" aria-labelledby="footer-title">
+      <div aria-hidden className="grid-paper pointer-events-none absolute inset-0 -z-10" />
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-6">
-          <p className="label text-muted">Let&apos;s grow together</p>
+          <p className="label text-blue">Let&apos;s grow together</p>
           <h2 id="footer-title" className="mt-5 max-w-xl font-display text-headline font-semibold [font-stretch:85%]">
-            {closing.lead} <span className="serif-accent text-signal">{closing.turn}</span>
+            {closing.lead} <span className="serif-accent text-blue">{closing.turn}</span>
           </h2>
         </div>
         <dl className="grid gap-8 text-sm sm:grid-cols-3 md:col-span-6">
           <div>
-            <dt className="label text-muted">Email us</dt>
+            <dt className="label text-blue">Email us</dt>
             <dd className="mt-3"><a className="link-underline text-base" href={`mailto:${site.email}`}>{site.email}</a></dd>
           </div>
           <div>
-            <dt className="label text-muted">Call or WhatsApp</dt>
+            <dt className="label text-blue">Call or WhatsApp</dt>
             <dd className="mt-3 flex flex-col gap-1 text-base">
               <a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a>
               <a className="link-underline text-muted" href={whatsapp} target="_blank" rel="noopener">WhatsApp ↗</a>
             </dd>
           </div>
           <div>
-            <dt className="label text-muted">Visit</dt>
+            <dt className="label text-blue">Visit</dt>
             <dd className="mt-3 text-base">www.sxbp.com</dd>
           </div>
         </dl>

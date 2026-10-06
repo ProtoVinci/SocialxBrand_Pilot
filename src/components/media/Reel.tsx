@@ -47,7 +47,8 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && entry.intersectionRatio > 0.35) {
-          if (el.preload !== "auto") el.preload = "auto";
+          // no preload here: the budget calls play() only for videos it grants a slot, and play()
+          // starts the download, so reels that stay on their poster never fetch a byte
           requestPlay(el, entry.intersectionRatio, priority);
         } else {
           release(el);
@@ -62,7 +63,7 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
   const hoverHandlers =
     mode === "hover" && !reduced
       ? {
-          onPointerEnter: () => { const el = videoRef.current; if (el) { el.preload = "auto"; requestPlay(el, 1, priority + 5); } },
+          onPointerEnter: () => { const el = videoRef.current; if (el) requestPlay(el, 1, priority + 5); },
           onPointerLeave: () => { const el = videoRef.current; if (el) { release(el); el.currentTime = 0; } },
         }
       : {};
@@ -85,6 +86,8 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
           width={asset.width}
           height={asset.height}
           loading={eager ? "eager" : "lazy"}
+          // the hero's centre reel (priority 5) is the page's largest first image: fetch it first
+          fetchPriority={eager && priority >= 5 ? "high" : undefined}
           decoding="async"
           className={`absolute inset-0 h-full w-full ${objectFit}`}
         />

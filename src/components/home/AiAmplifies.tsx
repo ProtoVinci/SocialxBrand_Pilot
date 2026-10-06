@@ -30,9 +30,9 @@ export function AiAmplifies() {
     <section ref={root} aria-labelledby="ai-title" className="relative bg-shell py-28 md:py-40">
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-4">
-          <p className="label text-muted">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>
+          <p className="label text-blue">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>
           <h2 id="ai-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
-            Our <span className="serif-accent font-normal text-violet">AI</span> philosophy.
+            Our <span className="serif-accent font-normal text-blue">AI</span> philosophy.
           </h2>
           <p className="mt-6 max-w-sm text-ink/70">
             AI is treated as a marketing and productivity layer supporting human strategy, creativity and execution.

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRef, useState, ViewTransition } from "react";
+import { useRef, ViewTransition } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
 import { clusters, divisions, pad } from "@/content/divisions";
@@ -18,34 +18,44 @@ type Props = {
  * The 18 divisions as an index, grouped into the four clusters of the company profile.
  * Fine pointers get a 9:16 preview that follows the cursor (quickTo, lerped); each row
  * links to its division page and carries an add-to-route toggle.
+ * Hover never touches React state: the active preview is a data attribute and the row
+ * nudge is CSS, so moving across 18 rows re-renders nothing.
  */
 export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const cursor = useRef<HTMLDivElement>(null);
   const reels = useRef<Record<string, ReelHandle | null>>({});
-  const [active, setActive] = useState<string | null>(null);
+  // set while the preview is enabled (fine pointer + motion); null otherwise
+  const follow = useRef<{ x: (v: number) => void; y: (v: number) => void } | null>(null);
   const H = headingLevel;
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
     mm.add(`${MQ.finePointer} and ${MQ.motion}`, () => {
       gsap.set(cursor.current, { xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 });
+      follow.current = {
+        x: gsap.quickTo(cursor.current, "x", { duration: 0.6, ease: "pilot" }),
+        y: gsap.quickTo(cursor.current, "y", { duration: 0.6, ease: "pilot" }),
+      };
+      return () => { follow.current = null; };
     });
     return () => mm.revert();
   }, { scope: root });
 
   // Plain event handlers: refs are read only when an event fires, never during render.
-  const previewable = () => window.matchMedia(`${MQ.finePointer} and ${MQ.motion}`).matches;
-
   function move(e: React.PointerEvent) {
-    if (!previewable() || !root.current) return;
+    if (!follow.current || !root.current) return;
     const box = root.current.getBoundingClientRect();
-    gsap.to(cursor.current, { x: e.clientX - box.left, y: e.clientY - box.top, duration: 0.6, ease: "pilot", overwrite: "auto" });
+    follow.current.x(e.clientX - box.left);
+    follow.current.y(e.clientY - box.top);
   }
 
+  const showPreview = (slug: string | null) =>
+    cursor.current?.querySelectorAll<HTMLElement>("[data-preview]").forEach((el) => el.toggleAttribute("data-on", el.dataset.preview === slug));
+
   function enter(slug: string) {
-    if (!previewable()) return;
-    setActive(slug);
+    if (!follow.current) return;
+    showPreview(slug);
     if (previews[slug]) {
       gsap.to(cursor.current, { scale: 1, autoAlpha: 1, duration: 0.5, ease: "pilot" });
       Object.entries(reels.current).forEach(([k, r]) => (k === slug ? r?.play() : r?.pause()));
@@ -55,7 +65,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
   }
 
   function leave() {
-    setActive(null);
+    showPreview(null);
     gsap.to(cursor.current, { scale: 0, autoAlpha: 0, duration: 0.35, ease: "snap" });
     Object.values(reels.current).forEach((r) => r?.pause());
   }
@@ -84,9 +94,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
                       <span className="label text-signal-ink transition-colors duration-300 [@media(hover:hover)]:group-hover:text-ink">[ {pad(d.number)} ]</span>
                       <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
                         <span
-                          className={`font-display text-title font-semibold transition-[transform,color] duration-500 ease-[var(--ease-pilot)] [font-stretch:85%] md:text-[clamp(1.6rem,2.6vw,2.6rem)] ${
-                            active === d.slug ? "translate-x-3" : ""
-                          }`}
+                          className="font-display text-title font-semibold transition-[transform,color] duration-500 ease-[var(--ease-pilot)] [font-stretch:85%] md:text-[clamp(1.6rem,2.6vw,2.6rem)] [@media(hover:hover)]:group-hover:translate-x-3"
                         >
                           {d.shortName}
                         </span>
@@ -106,7 +114,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
       <div ref={cursor} aria-hidden className="pointer-events-none absolute left-0 top-0 z-20 hidden aspect-[9/16] w-44 overflow-hidden rounded-xl shadow-2xl [@media(hover:hover)]:block" style={{ visibility: "hidden" }}>
         {Object.entries(previews).map(([slug, asset]) =>
           asset ? (
-            <div key={slug} className={`absolute inset-0 transition-opacity duration-300 ${active === slug ? "opacity-100" : "opacity-0"}`}>
+            <div key={slug} data-preview={slug} className="absolute inset-0 opacity-0 transition-opacity duration-300 data-[on]:opacity-100">
               <Reel ref={(r) => { reels.current[slug] = r; }} asset={asset} mode="manual" className="h-full w-full" />
             </div>
           ) : null,

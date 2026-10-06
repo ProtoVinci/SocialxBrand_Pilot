@@ -40,8 +40,13 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
         ticks.forEach((t, k) => t.toggleAttribute("data-on", k <= i));
         current = i;
       };
+      // first rung set directly (no tweens at load: each tween would read computed styles)
       gsap.set(words, { yPercent: 130, y: 0, autoAlpha: 0 });
-      show(0);
+      gsap.set(words[0], { yPercent: 0, autoAlpha: 1 });
+      gsap.set(layers, { autoAlpha: 0, scale: 1.06 });
+      gsap.set(layers[0], { autoAlpha: 1, scale: 1 });
+      ticks[0]?.toggleAttribute("data-on", true);
+      current = 0;
       const st = ScrollTrigger.create({
         trigger: root.current,
         start: "top top",
@@ -77,7 +82,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
             <ol aria-hidden className="mt-8 hidden max-w-lg md:mt-12 grid-cols-5 gap-2 [html.js-motion_&]:grid">
               {steps.map((s) => (
                 <li key={s} data-tick className="group">
-                  <span className="block h-[2px] bg-ink/15 transition-colors duration-500 group-data-[on]:bg-ink" />
+                  <span className="block h-[2px] bg-ink/15 transition-colors duration-500 group-data-[on]:bg-signal" />
                   <span className="label mt-2 hidden text-ink/75 transition-colors duration-500 group-data-[on]:text-ink md:block">{s}</span>
                 </li>
               ))}
