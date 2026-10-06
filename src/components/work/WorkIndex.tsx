@@ -53,7 +53,7 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
             type="button"
             aria-pressed={filter === f.id}
             onClick={() => choose(f.id)}
-            className={`rounded-full border px-5 py-2.5 text-sm transition-colors duration-300 ${filter === f.id ? "border-ink bg-ink text-cream" : "border-ink/20 hover:border-ink"}`}
+            className={`rounded-full border px-5 py-2.5 text-sm transition-colors duration-300 ${filter === f.id ? "border-ink bg-ink text-shell" : "border-ink/20 hover:border-ink"}`}
           >
             {f.label}
             <span className="label ml-2 opacity-60">{f.id === "all" ? items.length : items.filter((i) => i.family === f.id).length}</span>
@@ -69,7 +69,7 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
           const tall = cover.orientation === "portrait" && !span.endsWith("5");
           return (
             <li key={screening.slug} data-tile data-flip-id={screening.slug} className={`${span} ${i % 3 === 1 ? "md:mt-24" : ""}`}>
-              <Link href={`/work/${screening.slug}`} transitionTypes={["nav-forward"]} className="group block">
+              <Link href={`/work/${screening.slug}`} transitionTypes={["nav-forward"]} data-cursor="View" className="group block">
                 <ViewTransition name={`screening-${screening.slug}`} share="morph" default="none">
                   <div className={`overflow-hidden rounded-[16px] ${tall ? "aspect-[9/16]" : "aspect-[4/5]"}`}>
                     {cover.kind === "video" ? (

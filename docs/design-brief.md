@@ -25,27 +25,32 @@ A second motif comes from the logo's **multi-line inline stencil** in BRAND PILO
 
 ## Colour
 
-**Daylight, not dark (changed 2026-10-06 at the client's request).** The original navy-black theme read as one long dark tunnel and buried the real footage under dimming overlays. The site is now bright and warm: a cream canvas, broken by full-bleed colour acts. The logo red and violet are unchanged.
+**Red + blue, from the logo, in lighter and warmer shades (2026-10-06).** The logo is a red mark with a violet-blue "SOCIAL"; the palette lifts both into daylight. (History: the original navy-black theme was dropped at the client's request, then a warm cream/yellow pass was judged too repetitive in colour.)
 
 | Token | Hex | Role |
 |---|---|---|
-| cream | `#FFF5E8` | base canvas |
-| sand / sand-2 | `#F8E7D0` / `#F1D9B8` | raised surfaces, cards, the method act |
-| sun | `#FFD45C` | colour act: butter yellow (manifesto wash, audiences) |
-| peach | `#FFB892` | colour act: apricot (deliverables, a ladder rung) |
-| blush | `#FFD3CB` | colour act: rose (capabilities, approach philosophy) |
-| ink | `#23150F` | text: warm espresso |
-| muted | `#6F5B4F` | secondary text on cream |
-| signal | `#FF3131` | logo red: action, the route, display accents on cream, the finale act |
-| signal-ink | `#B01818` | small red text anywhere, and red accents on colour acts (AA) |
-| violet | `#8C52FF` | wordmark purple: "selected / on your route", the AI accent |
+| shell | `#FFF6F2` | base canvas: warm white with a rosy tint |
+| petal / petal-2 | `#FBE8E4` / `#F4D6D0` | raised surfaces, cards, the method act |
+| rose | `#FFD3CA` | colour act: light warm red (audiences, approach philosophy) |
+| periwinkle | `#D9D1FF` | colour act: light warm blue (the philosophy ladder, the hero badge) |
+| iris | `#6E40F2` | bold act: the logo violet-blue deepened for white type (manifesto wash, marquee, deliverables) |
+| coral | `#FFB3A6` | the accent on iris |
+| ink | `#1D1338` | text: deep indigo |
+| muted | `#5A4F6E` | secondary text |
+| signal | `#FF3131` | logo red: action, the route, display accents on shell, the finale act |
+| signal-ink | `#B01818` | small red text, and red accents on rose/periwinkle (AA) |
+| violet | `#8C52FF` | the logo's SOCIAL violet: "selected", the AI accent |
 
 **Rules.**
 
-- Red appears at most once per headline. Logo red only clears contrast on cream; on sun, peach and blush, red accents use signal-ink (the `.act-*` classes do this automatically for `text-signal`).
-- Purple means *selected*.
-- Colour acts (`.act-sun`, `.act-peach`, `.act-blush`) alternate with cream. The philosophy ladder walks through blush → peach → sun → sand → cream as its word changes. The finale is the one full-red act, right before the cream footer.
-- Real footage is never dimmed: it sits in framed 9:16 cards at full brightness. The only wash is the manifesto takeover, where the reel sinks under a butter-yellow layer.
+- Red and blue alternate down the page: shell → iris → periwinkle → shell → iris → shell → petal → rose → shell → red → shell.
+- `.act-iris` re-scopes the colour variables, so inside it `text-ink` is white, `bg-ink` is a white pill and red accents turn coral. `.act-rose` / `.act-periwinkle` deepen `text-signal` to signal-ink.
+- Red appears at most once per headline. Purple means *selected*.
+- Real footage is never dimmed, except for the manifesto takeover where the reel sinks under the iris wash.
+
+## Interaction gimmicks
+
+Taken from the reference research (`design-research.md`): a velocity marquee (Sol tickers) with inline reel stickers; a cursor follower that becomes a labelled bubble over `[data-cursor]` (fine pointers only, never hiding the native cursor); magnetic `.magnetic` CTAs; a spinning "Start your Pilot Route" badge; tilted stickers on the hero fan (Hanzo); hover tilt on screening cards; an iris flood on capability rows. All are off under reduced motion and on touch.
 
 ## Typography
 

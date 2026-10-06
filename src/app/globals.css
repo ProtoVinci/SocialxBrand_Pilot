@@ -14,18 +14,19 @@
 }
 
 @theme {
-  /* Warm daylight palette. The logo red and violet are kept; everything else is sunlit. */
-  --color-cream: #fff5e8;        /* base canvas */
-  --color-sand: #f8e7d0;         /* raised surfaces, cards */
-  --color-sand-2: #f1d9b8;
-  --color-sun: #ffd45c;          /* colour act: butter yellow */
-  --color-peach: #ffb892;        /* colour act: apricot */
-  --color-blush: #ffd3cb;        /* colour act: rose */
-  --color-ink: #23150f;          /* text: warm espresso */
-  --color-muted: #6f5b4f;        /* secondary text on cream (≥ 5.5:1) */
+  /* Red + blue, from the logo (red mark, violet-blue SOCIAL), in lighter, warmer shades. */
+  --color-shell: #fff6f2;        /* base canvas: warm white with a rosy tint */
+  --color-petal: #fbe8e4;        /* raised surfaces, cards */
+  --color-petal-2: #f4d6d0;
+  --color-rose: #ffd3ca;         /* colour act: light warm red */
+  --color-periwinkle: #d9d1ff;   /* colour act: light warm blue (the logo violet, lifted) */
+  --color-iris: #6e40f2;         /* bold act: the logo violet-blue, deepened for white type */
+  --color-coral: #ffb3a6;        /* accent on iris */
+  --color-ink: #1d1338;          /* text: deep indigo */
+  --color-muted: #5a4f6e;        /* secondary text (≥ 4.5:1 on shell, rose, periwinkle) */
   --color-signal: #ff3131;       /* logo red: action, the route, display accents */
-  --color-signal-ink: #b01818;   /* deep red for small text and accents on colour acts (AA on cream, sun, peach, blush) */
-  --color-violet: #8c52ff;       /* wordmark purple: selected / AI */
+  --color-signal-ink: #b01818;   /* deep red for small text and accents on colour acts (AA) */
+  --color-violet: #8c52ff;       /* the logo's SOCIAL violet: selected / AI */
   --color-violet-ink: #6b34e0;
 
   /* motion tokens mirrored from src/lib/motion/tokens.ts */
@@ -114,14 +115,14 @@
 }
 
 html {
-  background: var(--color-cream);
+  background: var(--color-shell);
   color: var(--color-ink);
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
-  background: var(--color-cream);
+  background: var(--color-shell);
   color: var(--color-ink);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -130,7 +131,7 @@ body {
 
 ::selection {
   background: var(--color-signal);
-  color: var(--color-cream);
+  color: var(--color-shell);
 }
 
 :focus-visible {
@@ -139,13 +140,23 @@ body {
   border-radius: 2px;
 }
 
-/* Colour acts: full-bleed sections that break the cream rhythm. Muted text uses ink/75 on these. */
-.act-sun { background: var(--color-sun); color: var(--color-ink); }
-.act-peach { background: var(--color-peach); color: var(--color-ink); }
-.act-blush { background: var(--color-blush); color: var(--color-ink); }
-.act-sun .text-muted, .act-peach .text-muted, .act-blush .text-muted { color: color-mix(in oklab, var(--color-ink) 78%, transparent); }
-/* logo red only clears contrast on cream; on colour acts accents deepen to signal-ink */
-.act-sun .text-signal, .act-peach .text-signal, .act-blush .text-signal { color: var(--color-signal-ink); }
+/* Colour acts: full-bleed sections that break the shell rhythm, alternating the logo's red and blue. */
+.act-rose { background: var(--color-rose); color: var(--color-ink); }
+.act-periwinkle { background: var(--color-periwinkle); color: var(--color-ink); }
+.act-rose .text-muted, .act-periwinkle .text-muted { color: color-mix(in oklab, var(--color-ink) 80%, transparent); }
+/* logo red only clears contrast on shell; on pastel acts red accents deepen to signal-ink */
+.act-rose .text-signal, .act-periwinkle .text-signal { color: var(--color-signal-ink); }
+/* Iris flips the palette inside it: the utilities read these variables at runtime, so
+   text-ink becomes white, bg-ink becomes a white pill with iris text, and red accents turn coral. */
+.act-iris {
+  --color-ink: #ffffff;
+  --color-shell: var(--color-iris);
+  --color-muted: color-mix(in oklab, #fff 88%, transparent);
+  --color-signal: var(--color-coral);
+  --color-signal-ink: var(--color-coral);
+  background: var(--color-iris);
+  color: #fff;
+}
 
 /* Split-text lines get a mask so words can rise from below the baseline */
 .split-line { overflow: clip; padding-bottom: 0.06em; margin-bottom: -0.06em; }
@@ -169,7 +180,7 @@ video::-webkit-media-controls { display: none !important; }
 
 .skip-link {
   position: fixed; left: 1rem; top: -4rem; z-index: 200;
-  background: var(--color-ink); color: var(--color-cream);
+  background: var(--color-ink); color: var(--color-shell);
   padding: 0.6rem 1rem; font-weight: 600; transition: top 0.2s var(--ease-pilot);
 }
 .skip-link:focus { top: 1rem; }

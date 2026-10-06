@@ -32,10 +32,10 @@ export function Finale() {
             <span className="lane block text-ink/45" aria-hidden>We will show.</span>
             <span data-fill className="absolute inset-0 block text-ink">We will show.</span>
           </span>
-          <span data-grow className="relative block w-max max-w-full text-cream">
+          <span data-grow className="relative block w-max max-w-full text-shell">
             You will grow.
             <svg aria-hidden viewBox="0 0 1000 40" preserveAspectRatio="none" className="absolute -bottom-3 left-0 h-6 w-full overflow-visible">
-              <path data-underline d="M0 30 C 200 10, 400 38, 620 22 S 900 6, 1000 16" fill="none" stroke="#fff5e8" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+              <path data-underline d="M0 30 C 200 10, 400 38, 620 22 S 900 6, 1000 16" fill="none" stroke="#ffffff" strokeWidth="2" vectorEffect="non-scaling-stroke" />
             </svg>
           </span>
         </h2>
@@ -44,7 +44,7 @@ export function Finale() {
             We don&apos;t simply aim to create digital activity. We aim to create digital impact.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-4 font-semibold text-cream transition-transform duration-300 hover:-translate-y-0.5">
+            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-ink px-6 py-4 font-semibold text-shell transition-transform duration-300 hover:-translate-y-0.5">
               Start your Pilot Route <span aria-hidden>→</span>
             </Link>
             <a href="mailto:socialxbrandpilot@gmail.com" className="inline-flex items-center gap-3 rounded-full border border-ink/40 px-6 py-4 font-medium transition-colors hover:border-ink">

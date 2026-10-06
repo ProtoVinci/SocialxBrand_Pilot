@@ -55,7 +55,7 @@ export default function ApproachPage() {
       </section>
 
       {/* philosophy outcomes */}
-      <section aria-labelledby="philosophy-title" className="act-blush py-24">
+      <section aria-labelledby="philosophy-title" className="act-rose py-24">
         <div className="gutter grid gap-12 md:grid-cols-12">
           <div className="md:col-span-4">
             <h2 id="philosophy-title" className="label text-muted">Our marketing philosophy</h2>
@@ -76,7 +76,7 @@ export default function ApproachPage() {
       {/* vision + mission */}
       <section aria-label="Vision and mission" className="gutter grid gap-6 py-24 md:grid-cols-2">
         {[{ k: "Our vision", v: vision }, { k: "Our mission", v: mission }].map((x) => (
-          <Reveal key={x.k} className="rounded-[22px] border border-ink/10 bg-sand p-8 md:p-12">
+          <Reveal key={x.k} className="rounded-[22px] border border-ink/10 bg-petal p-8 md:p-12">
             <h2 className="label text-signal-ink">{x.k}</h2>
             <p className="mt-6 font-display text-title font-semibold leading-snug [font-stretch:88%]">“{x.v}”</p>
           </Reveal>

@@ -6,6 +6,7 @@ import { MQ, dur } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { Mark } from "@/components/brand/Mark";
 import { Clock } from "@/components/layout/Clock";
+import { SpinBadge } from "@/components/fx/SpinBadge";
 import type { VideoAsset } from "@/content/work";
 import { impact } from "@/content/site";
 
@@ -19,7 +20,7 @@ const FAN_ANGLES = [-13, -6.5, 0, 6.5, 13];
  *   load:   the logomark ribbons slide in, the curtain lifts, the headline rises,
  *           the fan of real reels rotates in (-75° → 0) and the signal line draws.
  *   scroll: headline lines part in counter-motion, side reels fall away, the centre reel
- *           takes over the screen ("digital activity"), a butter-yellow wash rises over it, and the manifesto fills in
+ *           takes over the screen ("digital activity"), an iris (logo violet-blue) wash rises over it, and the manifesto fills in
  *           character by character until "impact" lands in signal red.
  * Mobile and reduced motion: no pin; hero and manifesto simply stack.
  */
@@ -61,7 +62,10 @@ export function Opening({ fan }: Props) {
         .from(cards, { rotate: 0, duration: 1.4 }, "<")
         .from(q("[data-hero-meta] > *"), { autoAlpha: 0, y: 14, duration: dur.base, stagger: 0.06 }, "<0.3")
         .from(q("[data-hero-cta] > *"), { autoAlpha: 0, y: 24, duration: dur.base, stagger: 0.08 }, "<0.1")
-        .from(q("[data-signal]"), { drawSVG: "0%", duration: 1.4, ease: "glide" }, "<");
+        .from(q("[data-badge]"), { scale: 0, rotate: -90, duration: dur.slow }, "<0.2")
+        .from(q("[data-signal]"), { drawSVG: "0%", duration: 1.4, ease: "glide" }, "<")
+        // stickers slap onto the fan once it has landed: oversized and twisted, then pressed flat
+        .from(q("[data-sticker]"), { scale: 1.8, rotate: (i) => (i ? 24 : -24), autoAlpha: 0, duration: dur.base, stagger: 0.14 }, "-=0.7");
 
       if (!cinema) return;
 
@@ -83,17 +87,18 @@ export function Opening({ fan }: Props) {
       tl.to(split.lines[0], { xPercent: -16, autoAlpha: 0, duration: 0.3 }, 0)
         .to(split.lines[1], { xPercent: 12, autoAlpha: 0, duration: 0.3 }, 0)
         .to(split.lines.slice(2), { xPercent: -6, autoAlpha: 0, duration: 0.3 }, 0.02)
-        .to(q("[data-hero-cta], [data-hero-meta], [data-signal-wrap]"), { autoAlpha: 0, y: -30, duration: 0.18 }, 0)
+        .to(q("[data-hero-cta], [data-hero-meta], [data-signal-wrap], [data-badge]"), { autoAlpha: 0, y: -30, duration: 0.18 }, 0)
+        .to(q("[data-sticker]"), { autoAlpha: 0, scale: 0.6, y: -40, duration: 0.16 }, 0)
         .to(q("[data-fan-card]:not([data-fan-card='2'])"), { yPercent: 40, autoAlpha: 0, rotate: (i) => (i < 2 ? -24 : 24), duration: 0.3 }, 0.02)
         .to(q("[data-fan]"), { rotate: 0, duration: 0.25 }, 0.04)
         .set(centre, { transformOrigin: "50% 50%" }, 0.05)
         .to(centre, { rotate: 0, x: () => toCentre().x, y: () => toCentre().y, scale: coverScale, borderRadius: 0, duration: 0.34 }, 0.06)
         .to(q("[data-dim]"), { autoAlpha: 0.86, duration: 0.14 }, 0.34)
         .set(q("[data-manifesto]"), { autoAlpha: 1 }, 0.4)
-        .from(chars, { color: "rgba(35,21,15,0.16)", stagger: { amount: 0.36 }, duration: 0.05 }, 0.42)
+        .from(chars, { color: "rgba(255,255,255,0.18)", stagger: { amount: 0.36 }, duration: 0.05 }, 0.42)
         .to(q("[data-strike]"), { scaleX: 1, duration: 0.08 }, 0.6)
         .to(q("[data-activity]"), { opacity: 0.42, duration: 0.08 }, 0.6)
-        .to(q("[data-impact], [data-impact] *"), { color: "#ff3131", duration: 0.06 }, 0.82)
+        .to(q("[data-impact], [data-impact] *"), { color: "#ffb3a6", duration: 0.06 }, 0.82)
         .to(q("[data-dim]"), { autoAlpha: 0.96, duration: 0.12 }, 0.84)
         .to({}, { duration: 0.08 });
     });
@@ -102,9 +107,9 @@ export function Opening({ fan }: Props) {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-cream cinema:h-svh">
+    <section ref={root} aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-shell cinema:h-svh">
       {/* Act 0: intro curtain (first visit only; removed under reduced motion) */}
-      <div data-curtain aria-hidden className="curtain pointer-events-none fixed inset-0 z-[60] hidden place-items-center bg-cream [html.js-motion.intro_&]:grid">
+      <div data-curtain aria-hidden className="curtain pointer-events-none fixed inset-0 z-[60] hidden place-items-center bg-shell [html.js-motion.intro_&]:grid">
         <div data-curtain-mark className="w-16 text-signal">
           <Mark className="w-full" />
         </div>
@@ -117,18 +122,25 @@ export function Opening({ fan }: Props) {
           data-fan
           className="absolute left-1/2 top-[20%] h-[45svh] w-[25.3svh] -translate-x-1/2 max-md:top-auto max-md:bottom-[6%] max-md:h-[34svh] max-md:w-[19.1svh] md:left-[78%]"
         >
+          {/* stickers: true statements only (all work is the client's own, shot vertical) */}
+          <span data-sticker className="absolute -left-[22%] top-[6%] z-10 -rotate-[9deg] rounded-full bg-signal px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-white shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-md:-left-[30%] max-md:px-3 max-md:py-1.5">
+            Real work · no stock
+          </span>
+          <span data-sticker className="absolute -right-[18%] bottom-[12%] z-10 rotate-[7deg] rounded-[14px] bg-periwinkle px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-ink shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-md:-right-[26%] max-md:px-3 max-md:py-1.5">
+            Made in 9:16 ✦
+          </span>
           {fan.slice(0, 5).map((asset, i) => (
             <div
               key={asset.id}
               data-fan-card={i}
-              className="absolute inset-0 overflow-hidden rounded-[22px] shadow-[0_30px_70px_-24px_rgba(120,52,20,0.45)] will-change-transform"
+              className="absolute inset-0 overflow-hidden rounded-[22px] shadow-[0_30px_70px_-24px_rgba(80,40,150,0.32)] will-change-transform"
               style={{ transformOrigin: "50% 260%", zIndex: i === 2 ? 3 : 2 - Math.abs(i - 2) }}
             >
               <Reel asset={asset} eager={i === 2} priority={i === 2 ? 5 : 1} className="h-full w-full" />
             </div>
           ))}
         </div>
-        <div data-dim className="absolute inset-0 bg-sun opacity-0" />
+        <div data-dim className="absolute inset-0 bg-iris opacity-0" />
       </div>
 
       {/* Act 1: hero */}
@@ -163,17 +175,23 @@ export function Opening({ fan }: Props) {
             <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-signal px-6 py-4 font-semibold text-ink transition-transform duration-300 hover:-translate-y-0.5">
               Start your Pilot Route <span aria-hidden>→</span>
             </Link>
-            <Link href="/work" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full border border-ink/25 px-6 py-4 font-medium transition-colors hover:border-ink">
+            <Link href="/work" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full border border-ink/25 px-6 py-4 font-medium transition-colors hover:border-ink">
               See the work
             </Link>
           </div>
         </div>
       </div>
 
+      {/* outside the CTA row on purpose (that row is transformed, which would re-anchor an absolute child);
+          cinema only, since the section grows to hold the stacked manifesto otherwise */}
+      <div data-badge className="absolute bottom-[9%] right-[clamp(1rem,4vw,3.5rem)] z-10 hidden cinema:block">
+        <SpinBadge />
+      </div>
+
       {/* Act 2: manifesto (overlaid + scrubbed in cinema; stacked below the hero otherwise) */}
       <div
         data-manifesto
-        className="gutter relative z-20 grid bg-sun py-28 cinema:pointer-events-none cinema:bg-transparent cinema:absolute cinema:inset-0 cinema:place-items-center cinema:py-0 cinema:opacity-0"
+        className="act-iris gutter relative z-20 grid py-28 cinema:pointer-events-none cinema:!bg-transparent cinema:absolute cinema:inset-0 cinema:place-items-center cinema:py-0 cinema:opacity-0"
       >
         <p className="max-w-[18ch] font-display text-display font-semibold [font-stretch:82%] md:max-w-[16ch]">
           <span data-manifesto-line className="block">
@@ -185,7 +203,7 @@ export function Opening({ fan }: Props) {
           </span>
           <span data-manifesto-line className="mt-[0.35em] block">
             {impact.turn.replace("impact.", "")}
-            <span data-impact className="serif-accent font-normal text-ink [html:not(.js-motion)_&]:text-signal">impact.</span>
+            <span data-impact className="serif-accent font-normal text-white [html:not(.js-motion)_&]:text-coral">impact.</span>
           </span>
         </p>
       </div>

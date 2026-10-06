@@ -33,7 +33,7 @@ export function Audiences() {
   });
 
   return (
-    <section ref={root} aria-labelledby="audiences-title" className="act-sun py-28 md:py-36">
+    <section ref={root} aria-labelledby="audiences-title" className="act-rose py-28 md:py-36">
       <div className="gutter grid gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
           <p className="label text-muted">[ 06 ] Who we work with</p>
@@ -55,7 +55,7 @@ export function Audiences() {
                 aria-selected={a.id === active}
                 aria-controls="audience-panel"
                 onClick={() => choose(a.id)}
-                className={`rounded-full border px-5 py-3 text-sm font-medium transition-colors duration-300 ${a.id === active ? "border-ink bg-cream text-ink" : "border-ink/20 hover:border-ink"}`}
+                className={`rounded-full border px-5 py-3 text-sm font-medium transition-colors duration-300 ${a.id === active ? "border-ink bg-shell text-ink" : "border-ink/20 hover:border-ink"}`}
               >
                 {a.name}
               </button>
@@ -70,7 +70,7 @@ export function Audiences() {
               <ul className="mt-4 flex flex-wrap gap-2">
                 {route.map((d) => (
                   <li key={d!.slug} data-chip data-flip-id={d!.slug}>
-                    <Link href={`/capabilities/${d!.slug}`} className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm text-cream transition-colors hover:bg-signal-ink">
+                    <Link href={`/capabilities/${d!.slug}`} className="inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2.5 text-sm text-shell transition-colors hover:bg-signal-ink">
                       <span className="label opacity-80">{pad(d!.number)}</span>{d!.shortName}
                     </Link>
                   </li>

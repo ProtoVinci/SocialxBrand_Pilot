@@ -16,9 +16,9 @@ export function AiAmplifies() {
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {
       gsap.utils.toArray<HTMLElement>("[data-pair]").forEach((pair) => {
-        const tl = gsap.timeline({ scrollTrigger: { trigger: pair, start: "top 72%", once: true } });
+        const tl = gsap.timeline({ scrollTrigger: { trigger: pair, start: "top 85%", once: true } });
         tl.from(pair.querySelector("[data-not]"), { autoAlpha: 0, y: 20, duration: dur.base })
-          .from(pair.querySelector("[data-strike]"), { scaleX: 0, duration: dur.base, ease: "glide" }, "+=0.15")
+          .from(pair.querySelector("[data-strike]"), { scaleX: 0, duration: dur.base, ease: "glide" }, "-=0.2")
           .to(pair.querySelector("[data-not]"), { opacity: 0.35, duration: dur.quick }, "<0.2")
           .from(pair.querySelector("[data-should]"), { yPercent: 110, duration: dur.slow }, "<0.1");
       });
@@ -27,7 +27,7 @@ export function AiAmplifies() {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="ai-title" className="relative bg-cream py-28 md:py-40">
+    <section ref={root} aria-labelledby="ai-title" className="relative bg-shell py-28 md:py-40">
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-4">
           <p className="label text-muted">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>

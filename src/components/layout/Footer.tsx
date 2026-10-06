@@ -8,7 +8,7 @@ const whatsapp = `https://wa.me/${site.phoneE164.replace("+", "")}`;
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-ink/10 bg-cream pt-20" aria-labelledby="footer-title">
+    <footer className="relative overflow-hidden border-t border-ink/10 bg-shell pt-20" aria-labelledby="footer-title">
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-6">
           <p className="label text-muted">Let&apos;s grow together</p>

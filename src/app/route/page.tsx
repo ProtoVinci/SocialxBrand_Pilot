@@ -27,7 +27,7 @@ export default function RoutePage() {
       />
       <div className="gutter grid gap-10 pb-32 lg:grid-cols-12">
         <div className="lg:col-span-8">
-          <Suspense fallback={<div className="h-[40rem] rounded-[24px] border border-ink/10 bg-sand" />}>
+          <Suspense fallback={<div className="h-[40rem] rounded-[24px] border border-ink/10 bg-petal" />}>
             <RouteBuilder />
           </Suspense>
         </div>

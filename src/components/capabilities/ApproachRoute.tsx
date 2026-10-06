@@ -38,7 +38,7 @@ export function ApproachRoute({ steps }: { steps: string[] }) {
       >
         {steps.map((s, i) => (
           <li key={s} data-stop className="group flex flex-col gap-4 max-md:flex-row max-md:items-center max-md:gap-4">
-            <span className="block h-3.5 w-3.5 shrink-0 rounded-full border border-current/40 bg-cream transition-[background-color,border-color,transform] duration-500 group-data-[on]:scale-110 group-data-[on]:border-signal group-data-[on]:bg-signal" />
+            <span className="block h-3.5 w-3.5 shrink-0 rounded-full border border-current/40 bg-shell transition-[background-color,border-color,transform] duration-500 group-data-[on]:scale-110 group-data-[on]:border-signal group-data-[on]:bg-signal" />
             <span>
               <span className="label block text-muted">{String(i + 1).padStart(2, "0")}</span>
               <span className="mt-1 block font-display text-[1.05rem] font-semibold leading-tight [font-stretch:88%] transition-colors duration-500 group-data-[on]:text-ink md:text-[clamp(0.95rem,1.15vw,1.2rem)]">{s}</span>

@@ -59,14 +59,14 @@ export function RouteBuilder() {
   const canContinue = [true, true, route.length > 0, true, true][step];
 
   return (
-    <div ref={root} className="rounded-[24px] border border-ink/10 bg-sand p-6 md:p-10">
+    <div ref={root} className="rounded-[24px] border border-ink/10 bg-petal p-6 md:p-10">
       {/* the route so far */}
       <ol className="relative mb-10 grid grid-cols-5" aria-label="Progress">
         <span aria-hidden className="absolute left-[10%] right-[10%] top-[7px] h-px bg-ink/15" />
         <span aria-hidden data-progress className="absolute left-[10%] right-[10%] top-[7px] h-px origin-left scale-x-0 bg-signal" />
         {STEPS.map((s, i) => (
           <li key={s} className="relative flex flex-col items-center gap-2" aria-current={i === step ? "step" : undefined}>
-            <span className={`h-3.5 w-3.5 rounded-full border transition-colors duration-500 ${i <= step ? "border-signal bg-signal" : "border-ink/30 bg-sand"}`} />
+            <span className={`h-3.5 w-3.5 rounded-full border transition-colors duration-500 ${i <= step ? "border-signal bg-signal" : "border-ink/30 bg-petal"}`} />
             <span className={`label ${i === step ? "text-ink" : "text-muted"}`}>{s}</span>
           </li>
         ))}
@@ -133,7 +133,7 @@ export function RouteBuilder() {
                           type="button"
                           aria-pressed={on}
                           onClick={() => routeStore.toggle(d.slug)}
-                          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm transition-colors duration-300 ${on ? "border-violet bg-violet text-cream" : "border-ink/15 hover:border-ink/50"}`}
+                          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm transition-colors duration-300 ${on ? "border-violet bg-violet text-shell" : "border-ink/15 hover:border-ink/50"}`}
                         >
                           <span className="label opacity-80">{pad(d.number)}</span>
                           {d.shortName}
@@ -166,13 +166,13 @@ export function RouteBuilder() {
                   onChange={(e) => setDetails({ ...details, [key]: e.target.value })}
                   aria-invalid={Boolean((key === "name" && errors.name) || (key === "email" && errors.email))}
                   aria-describedby={key === "email" || key === "phone" ? "contact-error" : key === "name" ? "name-error" : undefined}
-                  className="rounded-[12px] border border-ink/15 bg-cream px-4 py-3.5 text-ink outline-none transition-colors placeholder:text-ink/30 focus:border-signal"
+                  className="rounded-[12px] border border-ink/15 bg-shell px-4 py-3.5 text-ink outline-none transition-colors placeholder:text-ink/30 focus:border-signal"
                 />
               </label>
             ))}
             <label className="flex flex-col gap-2 md:col-span-2">
               <span className="label text-muted">Anything we should know? (optional)</span>
-              <textarea rows={4} value={details.message} onChange={(e) => setDetails({ ...details, message: e.target.value })} className="rounded-[12px] border border-ink/15 bg-cream px-4 py-3.5 text-ink outline-none transition-colors focus:border-signal" />
+              <textarea rows={4} value={details.message} onChange={(e) => setDetails({ ...details, message: e.target.value })} className="rounded-[12px] border border-ink/15 bg-shell px-4 py-3.5 text-ink outline-none transition-colors focus:border-signal" />
             </label>
             <div className="md:col-span-2" aria-live="assertive">
               {errors.name && <p id="name-error" className="text-sm text-signal-ink">{errors.name}</p>}
@@ -218,7 +218,7 @@ export function RouteBuilder() {
             type="button"
             onClick={() => go(step + 1)}
             disabled={!canContinue}
-            className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3.5 font-semibold text-cream transition-opacity disabled:opacity-40"
+            className="inline-flex items-center gap-3 rounded-full bg-ink px-6 py-3.5 font-semibold text-shell transition-opacity disabled:opacity-40"
           >
             {step === 3 ? "Review route" : "Continue"} <span aria-hidden>→</span>
           </button>

@@ -4,6 +4,7 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
+import { PointerFx } from "@/components/fx/PointerFx";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/content/site";
 import { organizationLd } from "@/lib/seo";
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export const viewport: Viewport = { themeColor: "#fff5e8", colorScheme: "light" };
+export const viewport: Viewport = { themeColor: "#fff6f2", colorScheme: "light" };
 
 // Marks the document for JS-driven reveals before first paint (skipped for reduced motion),
 // so headings never flash in their final state and then jump.
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main id="main">{children}</main>
           <Footer />
         </SmoothScroll>
+        <PointerFx />
       </body>
     </html>
   );

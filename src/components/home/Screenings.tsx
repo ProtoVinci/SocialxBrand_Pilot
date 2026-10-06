@@ -46,7 +46,7 @@ export function Screenings({ items }: { items: Item[] }) {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="screenings-title" className="relative overflow-hidden bg-cream py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0">
+    <section ref={root} aria-labelledby="screenings-title" className="relative overflow-hidden bg-shell py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0">
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="label text-muted">[ 03 ] Screenings — real work</p>
@@ -63,8 +63,9 @@ export function Screenings({ items }: { items: Item[] }) {
       >
         {items.map(({ screening, reel }, i) => (
           <li key={screening.slug} data-frame className="w-[62vw] shrink-0 snap-center sm:w-[42vw] md:w-[min(22vw,40svh)]">
-            <Link href={`/work/${screening.slug}`} transitionTypes={["nav-forward"]} className="group block">
-              <Reel asset={reel} label={`${screening.title} — ${screening.format}`} className="aspect-[9/16] w-full rounded-[18px] transition-[border-radius] duration-500 group-hover:rounded-[6px]" />
+            <Link href={`/work/${screening.slug}`} transitionTypes={["nav-forward"]} data-cursor="Watch" className="group block">
+              {/* hover: the card lifts and tips like a sticker being picked up (alternating sides) */}
+              <Reel asset={reel} eager label={`${screening.title} — ${screening.format}`} className={`aspect-[9/16] w-full rounded-[18px] shadow-[0_24px_50px_-28px_rgba(80,40,150,0.55)] transition-[rotate,scale,border-radius] duration-500 ease-[var(--ease-pilot)] group-hover:scale-[1.03] group-hover:rounded-[10px] ${i % 2 ? "group-hover:-rotate-2" : "group-hover:rotate-2"}`} />
               <span className="mt-4 flex items-baseline gap-3">
                 <span className="label text-signal-ink">[ {pad(i + 1)} ]</span>
                 <span className="font-display text-title font-semibold [font-stretch:85%] group-hover:text-signal">{screening.title}</span>

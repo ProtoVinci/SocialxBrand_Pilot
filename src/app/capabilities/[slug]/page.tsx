@@ -95,7 +95,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       </section>
 
       {/* deliverables */}
-      <section aria-labelledby="deliverables-title" className="act-peach py-20">
+      <section aria-labelledby="deliverables-title" className="act-iris py-20">
         <div className="gutter grid gap-10 md:grid-cols-12">
           <div className="md:col-span-3">
             <h2 id="deliverables-title" className="label text-muted">Key deliverables</h2>

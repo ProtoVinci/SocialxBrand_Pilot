@@ -87,7 +87,9 @@ The original brief (a very long prompt) asked for:
 - Test fixes: the reduced-motion selector was ambiguous (it is now an exact match), and the WhatsApp popup is now stubbed with `context.route("https://wa.me/**")`, so the test needs no network.
 - **Full suite: 33/33 pass** (`npm test`, desktop/mobile/reduced). `tsc`, `eslint` and `npm run build` (43 pages) are clean.
 
-**Light theme redesign (2026-10-06, cloud):** the client said the site "is ass" and asked to drop dark mode for something brighter, lighter and warmer. Done:
+**Red + blue palette and gimmicks (2026-10-06, cloud, latest):** after reviewing a screen recording, the client asked for eye-popping reference-style gimmicks and a bluer direction, then refined it to "red blue like the logo, lighter and warmer". Done: the palette in `docs/design-brief.md` § Colour (tokens shell/petal/rose/periwinkle/iris/coral), `.act-iris` variable re-scoping, `components/fx/PointerFx.tsx` (cursor follower + magnetic), `components/fx/SpinBadge.tsx`, `components/home/Marquee.tsx` (velocity marquee), hero stickers, card tilt and an iris row flood. Bugs fixed from the recording: method panel titles overlapping, blurry LQIP posters in the rail (now eager), the AI lines arriving late, no ladder reel on mobile, and the nav overlapping the headline. Screen recordings were made with Playwright `recordVideo` (wheel-scrolling the page) and converted with ffmpeg; they live in `qa-shots/` (gitignored), not in the repo.
+
+**Light theme redesign (2026-10-06, cloud, superseded palette):** the client said the site "is ass" and asked to drop dark mode for something brighter, lighter and warmer. Done:
 
 - New palette and colour acts (see `docs/design-brief.md` § Colour, which replaces the §4 colour table below). The dark tokens (`ink-2/3`, `paper`, `fog`, `smoke`) are gone.
 - Ladder rebuilt: the act background changes colour per word, the reel is a framed, undimmed 9:16 card, and the clipped red fragments under the word are fixed (±130% offsets plus a fade).

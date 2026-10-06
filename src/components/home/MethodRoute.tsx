@@ -35,7 +35,8 @@ export function MethodRoute() {
         if (i === current) return;
         stations.forEach((s, k) => s.toggleAttribute("data-on", k <= i));
         panels.forEach((p, k) => {
-          if (k === i) gsap.fromTo(p, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: dur.base, ease: "pilot", overwrite: true });
+          // the incoming panel waits for the outgoing one to clear, so two titles never overlap
+          if (k === i) gsap.fromTo(p, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: dur.base, delay: dur.quick, ease: "pilot", overwrite: true });
           else gsap.to(p, { autoAlpha: 0, y: k < i ? -20 : 20, duration: dur.quick, ease: "snap", overwrite: true });
         });
         current = i;
@@ -59,7 +60,7 @@ export function MethodRoute() {
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="method-title" className="relative overflow-hidden bg-sand py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-between cinema:py-0 cinema:pb-14 cinema:pt-[calc(var(--nav-h)+2.5rem)]">
+    <section ref={root} aria-labelledby="method-title" className="relative overflow-hidden bg-petal py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-between cinema:py-0 cinema:pb-14 cinema:pt-[calc(var(--nav-h)+2.5rem)]">
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="label text-muted">[ 05 ] How we work — the route</p>
@@ -73,7 +74,7 @@ export function MethodRoute() {
       {/* desktop: the drawn route */}
       <div className="relative mx-[clamp(1rem,4vw,3.5rem)] hidden h-[34svh] cinema:block" aria-hidden>
         <svg viewBox="0 0 1000 300" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
-          <path d={PATH} fill="none" stroke="rgba(35,21,15,0.14)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <path d={PATH} fill="none" stroke="rgba(29,19,56,0.14)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
           <path data-route-path d={PATH} fill="none" stroke="#ff3131" strokeWidth="2" vectorEffect="non-scaling-stroke" />
         </svg>
         {PTS.map((p, i) => (
@@ -83,7 +84,7 @@ export function MethodRoute() {
             className="group absolute -translate-x-1/2 -translate-y-1/2"
             style={{ left: `${p.x / 10}%`, top: `${p.y / 3}%` }}
           >
-            <span className="block h-3.5 w-3.5 rounded-full border border-ink/40 bg-sand transition-[background-color,border-color,transform] duration-500 group-data-[on]:scale-125 group-data-[on]:border-signal group-data-[on]:bg-signal" />
+            <span className="block h-3.5 w-3.5 rounded-full border border-ink/40 bg-petal transition-[background-color,border-color,transform] duration-500 group-data-[on]:scale-125 group-data-[on]:border-signal group-data-[on]:bg-signal" />
             <span className={`label absolute left-1/2 w-max -translate-x-1/2 text-muted transition-colors duration-500 group-data-[on]:text-ink ${i % 2 === 0 ? "top-6" : "bottom-6"}`}>
               {pad(i + 1)} {method[i].name}
             </span>
@@ -110,7 +111,7 @@ export function MethodRoute() {
         <span data-rail aria-hidden className="absolute bottom-2 left-[calc(clamp(1rem,4vw,3.5rem)+0.4rem)] top-2 w-px origin-top bg-signal" />
         {method.map((m, i) => (
           <li key={m.id} data-step className="relative pl-10">
-            <span aria-hidden className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border border-signal bg-sand" />
+            <span aria-hidden className="absolute left-0 top-1.5 h-3.5 w-3.5 rounded-full border border-signal bg-petal" />
             <span className="label text-signal-ink">{pad(i + 1)}</span>
             <h3 className="mt-1 font-display text-title font-semibold [font-stretch:85%]">{m.name}</h3>
             <p className="mt-2 text-ink/75">{m.body}</p>
