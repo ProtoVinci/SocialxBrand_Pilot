@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# media pipeline (raw downloads + working files)
+media-source/
+/public/__contact/
+
+/qa-shots/
