@@ -39,7 +39,7 @@ export function Opening({ fan }: Props) {
       gsap.set(q("[data-reveal]"), { autoAlpha: 1 });
 
       const title = q("[data-hero-title]")[0];
-      const split = SplitText.create(title.querySelectorAll("[data-line]"), { type: "lines", mask: "lines", linesClass: "split-line" });
+      const split = SplitText.create(title.querySelectorAll("[data-line]"), { type: "lines", mask: "lines", linesClass: "split-line", aria: "none" }); // line wrappers keep the text readable; aria-label is invalid on these spans
       const cards = q("[data-fan-card]");
       const centre = q("[data-fan-card='2']")[0];
       const fanEl = q("[data-fan]")[0];

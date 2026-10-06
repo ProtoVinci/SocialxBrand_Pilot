@@ -39,13 +39,15 @@ test("reduced motion: content complete, nothing left hidden", async ({ page }, i
     [...document.querySelectorAll("[data-reveal]")].filter((el) => getComputedStyle(el).visibility === "hidden").length,
   );
   expect(hidden).toBe(0);
-  await expect(page.getByText("We aim to create digital")).toBeVisible();
+  await expect(page.getByText("We aim to create digital impact.", { exact: true })).toBeVisible();
   const pins = await page.evaluate(() => document.querySelectorAll(".pin-spacer").length);
   expect(pins).toBe(0);
 });
 
 test("route builder: selection persists to the nav badge and produces a WhatsApp brief", async ({ page, context }, info) => {
   test.skip(info.project.name !== "desktop", "run once");
+  // Never hit the real wa.me from tests: answer it locally so the popup URL is inspectable offline too.
+  await context.route("https://wa.me/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "ok" }));
   await page.goto("/route", { waitUntil: "networkidle" });
   await page.getByText("Local Businesses").click();
   await page.getByRole("button", { name: /continue/i }).click();

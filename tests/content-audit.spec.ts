@@ -42,7 +42,7 @@ test("no invented-proof patterns in site source", () => {
   const banned = [
     /testimonial/i, /\bawards?\b/i, /\baward-winning\b/i, /\b\d+\+?\s*(happy\s+)?clients\b/i,
     /\b\d+\s*years?\s+(of\s+)?experience\b/i, /\btrusted by\b/i, /\b\d+(\.\d+)?\s*%\s*(growth|increase|roi)\b/i,
-    /\b(4|5)(\.\d)?\s*\/\s*5\b/, /\bmumbai\b|\bpune\b|\bdelhi\b|\bbangalore\b/i,
+    /(?<!\[)\b(4|5)(\.\d)?\s*\/\s*5\b(?!\])/, /\bmumbai\b|\bpune\b|\bdelhi\b|\bbangalore\b/i,
   ];
   const offenders: string[] = [];
   // divisions.ts is the PDF service catalogue ("Testimonials" there is a content type the agency

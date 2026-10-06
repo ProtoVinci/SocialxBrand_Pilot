@@ -21,10 +21,13 @@ type Props = {
  *  rise  — masked lines climb from below the baseline (display headings)
  *  blur  — words come into focus (secondary headings, quotes)
  *  chars — masked characters, hero only
- * Splitting is aria-safe: SplitText labels the parent and hides the fragments.
+ * Splitting is aria-safe: on headings SplitText labels the parent and hides the fragments.
+ * aria-label is not permitted on generic tags (p, span, div), so there the fragments are left
+ * readable instead (aria: "none").
  */
 export function SplitReveal({ as: Tag = "h2", children, className, variant = "rise", trigger = "scroll", delay = 0, id }: Props) {
   const ref = useRef<HTMLElement>(null);
+  const aria = typeof Tag === "string" && /^h[1-6]$/.test(Tag) ? "auto" : "none";
 
   useGSAP(() => {
     const el = ref.current;
@@ -36,6 +39,7 @@ export function SplitReveal({ as: Tag = "h2", children, className, variant = "ri
         type: variant === "chars" ? "lines,chars" : "lines,words",
         mask: variant === "blur" ? undefined : "lines",
         linesClass: "split-line",
+        aria,
         autoSplit: true,
         onSplit(self) {
           gsap.set(el, { autoAlpha: 1 });
@@ -58,7 +62,7 @@ export function SplitReveal({ as: Tag = "h2", children, className, variant = "ri
       });
     });
     return () => mm.revert();
-  }, { scope: ref, dependencies: [variant, trigger, delay] });
+  }, { scope: ref, dependencies: [variant, trigger, delay, aria] });
 
   return (
     <Tag ref={ref} id={id} className={className} data-reveal="">

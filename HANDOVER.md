@@ -2,7 +2,7 @@
 
 > **If you are a new session told only "continue": read this whole file first.** Then read `AGENTS.md` and `docs/plan.md` (the approved plan). Pick up at **§6 Next steps**, in order. Keep this file updated as you work and commit it with your changes.
 
-Last updated: 2026-10-06, local Windows session (Claude Code desktop). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot (branch `main`).
+Last updated: 2026-10-06, cloud session (branch `claude/epic-einstein-dj8x13`, based on `main` @ b2f0f77). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot.
 
 ---
 
@@ -78,6 +78,16 @@ The original brief (a very long prompt) asked for:
 - The content audit's division and contact tests pass. **The "no invented-proof patterns" test currently FAILS.** Run `npx playwright test tests/content-audit.spec.ts --project=desktop` to see which file and regex. It is likely a false positive (for example "trusted by" or a city regex matching real copy), but check it: fix the copy if it's a real claim, otherwise narrow the regex.
 - `tests/site.spec.ts` has **not been run yet**.
 - Reviewer round 1 was launched but its results did not reach the repo. Re-run it with `scripts/tooling/review-workflow.js`.
+
+**Cloud session (2026-10-06):**
+
+- `suggestRoute()` implemented with the §6.1 mapping. Without a goal it returns the audience's 4 core divisions. With a goal, the goal's divisions lead, the audience's divisions follow, the list is deduplicated and capped at 6, and the audience's top pick is always kept.
+- Content-audit failure fixed. It was a false positive: the `4/5` star-rating regex matched Tailwind's `aspect-[4/5]`. The regex now ignores bracketed values.
+- **Real a11y bug fixed:** SplitText's default `aria: "auto"` put `aria-label` on plain spans and paragraphs, which axe flags as `aria-prohibited-attr` (serious). `SplitReveal` now keeps `auto` only on h1–h6 and uses `none` elsewhere. The hero line split uses `none`.
+- Test fixes: the reduced-motion selector was ambiguous (it is now an exact match), and the WhatsApp popup is now stubbed with `context.route("https://wa.me/**")`, so the test needs no network.
+- **Full suite: 33/33 pass** (`npm test`, desktop/mobile/reduced). `tsc`, `eslint` and `npm run build` (43 pages) are clean.
+
+**Cloud gotchas:** run `npx next typegen` before `tsc` on a fresh checkout, or `PageProps`/`LayoutProps` won't be found. The preinstalled Chromium does not match this Playwright version, so run tests with `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome npm test` (it's an optional override in `playwright.config.ts`). Do not run `playwright install`.
 
 **To re-run the reviewers**: use the Workflow tool with `scriptPath: scripts/tooling/review-workflow.js`. It runs the 5 personas from `.claude/agents/` in parallel, read-only, with the model pinned, and needs the dev server on :3100.
 
@@ -206,17 +216,17 @@ The routes are `/`, `/work`, `/work/[slug]` (14 slugs), `/capabilities`, `/capab
 
 ## 6. Next steps (do in order)
 
-1. **TODO(human): `src/lib/route/suggest.ts` → `suggestRoute(audience, goal?)`.** It is left for the user (Learning mode). It must return 3–6 division slugs from `src/content/divisions.ts`, most important first. It is used by the home Audiences act (audience only) and the `/route` builder (audience + goal). Until it's implemented, those UIs show a graceful "build it on the route planner" fallback. **If the user says to just continue without contributing, implement a sensible mapping yourself** (for example: local → search-seo, whatsapp-marketing, social-media-management, photography; startups → branding-identity, strategy-consulting, social-media-marketing, content-creation; growing → performance-marketing, content-marketing, creator-brand-growth; established → reputation-pr-community, youtube-organic-video, creative-advertising-campaigns, ai-marketing-automation; then adjust by goal: seen → social/performance/seo; remembered → branding/content; trusted → reputation/youtube/content-marketing; chosen → performance/whatsapp/seo; grow → strategy/ai/youtube). Remove the eslint-disable line once the params are used.
+1. ~~**TODO(human): `src/lib/route/suggest.ts` → `suggestRoute(audience, goal?)`.** It is left for the user (Learning mode). It must return 3–6 division slugs from `src/content/divisions.ts`, most important first. It is used by the home Audiences act (audience only) and the `/route` builder (audience + goal). Until it's implemented, those UIs show a graceful "build it on the route planner" fallback. **If the user says to just continue without contributing, implement a sensible mapping yourself** (for example: local → search-seo, whatsapp-marketing, social-media-management, photography; startups → branding-identity, strategy-consulting, social-media-marketing, content-creation; growing → performance-marketing, content-marketing, creator-brand-growth; established → reputation-pr-community, youtube-organic-video, creative-advertising-campaigns, ai-marketing-automation; then adjust by goal: seen → social/performance/seo; remembered → branding/content; trusted → reputation/youtube/content-marketing; chosen → performance/whatsapp/seo; grow → strategy/ai/youtube). Remove the eslint-disable line once the params are used.~~ **Done** (cloud session). The user can still refine the mapping.
 2. ~~Verify recent fixes visually~~ **Done** (mobile fan, lane type, division "What it is" size). Still to eyeball: ladder ticks <md, the reduced-motion screenings rail, wide work tiles at 4:5.
 3. **Full QA sweep** at 1440×900, 1280×720, 1024×768, 768×1024, 390×844 and 360×800, plus `--reduce`, for every route (`/`, `/work`, one `/work/<slug>`, `/capabilities`, one `/capabilities/<slug>`, `/approach`, `/route`). Check `overflowX:false` and `errors:[]`. Use the `visual-qa` skill checklist.
-4. **Test the route builder end to end** in Playwright: pick an audience and goal, toggle divisions (check the nav badge count), check validation errors, and check that the WhatsApp/mailto URLs are well-formed.
+4. ~~**Test the route builder end to end**~~ **Mostly covered** by `tests/site.spec.ts` (audience → goal → toggle → validation → WhatsApp URL). Still missing: the mailto and copy adapters. in Playwright: pick an audience and goal, toggle divisions (check the nav badge count), check validation errors, and check that the WhatsApp/mailto URLs are well-formed.
 5. **Run the 5 reviewer agents in parallel** (creative-director, motion-director, conversion-critic, frontend-reviewer, visual-qa) with the model pinned (gotcha 8). Fix every substantive finding, then run a **second review round**.
 6. **`npm run build` passes ✓.** Still to do: `npm run start` and a prod smoke test. Check the static generation of all 14 + 18 slugs, the sitemap output and the OG image render.
 7. **Performance pass**:
    - CLS < 0.05, hero poster ≤ 200 KB, ≤ 4 MB of video on first view.
    - No long tasks > 200 ms while scrolling the pins (Playwright trace with 4× CPU throttle).
    - Consider `fetchPriority="high"` on the hero centre poster.
-8. **Tests**: add `tests/` with `@playwright/test` (already a devDependency):
+8. ~~**Tests**~~ **Done: suite exists and is green (33/33).** Originally: add `tests/` with `@playwright/test` (already a devDependency):
    - route smoke tests;
    - no horizontal overflow at 360px;
    - reduced-motion completeness;
