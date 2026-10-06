@@ -75,8 +75,8 @@ export default function ApproachPage() {
 
       {/* vision + mission */}
       <section aria-label="Vision and mission" className="gutter grid gap-6 py-24 md:grid-cols-2">
-        {[{ k: "Our vision", v: vision }, { k: "Our mission", v: mission }].map((x) => (
-          <Reveal key={x.k} className="rounded-[22px] border border-ink/10 bg-petal p-8 md:p-12">
+        {[{ k: "Our vision", v: vision }, { k: "Our mission", v: mission }].map((x, i) => (
+          <Reveal key={x.k} className={`overflow-hidden rounded-[22px] p-8 md:p-12 ${i === 0 ? "act-iris" : "act-rouge"}`}>
             <h2 className="label text-signal-ink">{x.k}</h2>
             <p className="mt-6 font-display text-title font-semibold leading-snug [font-stretch:88%]">“{x.v}”</p>
           </Reveal>
