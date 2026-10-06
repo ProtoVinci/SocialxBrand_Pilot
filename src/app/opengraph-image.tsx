@@ -19,8 +19,9 @@ export default function OpengraphImage() {
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 92, fontWeight: 800, lineHeight: 0.95, letterSpacing: -3 }}>EVERY BUSINESS HAS</div>
-          <div style={{ fontSize: 92, fontWeight: 800, lineHeight: 0.95, letterSpacing: -3 }}>
-            SOMETHING <span style={{ color: "#ff3131", marginLeft: 22 }}>WORTH SHOWING.</span>
+          <div style={{ display: "flex", fontSize: 92, fontWeight: 800, lineHeight: 0.95, letterSpacing: -3 }}>
+            <span>SOMETHING</span>
+            <span style={{ color: "#ff3131", marginLeft: 22 }}>WORTH SHOWING.</span>
           </div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#a9a5b6" }}>

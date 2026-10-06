@@ -186,6 +186,8 @@ The routes are `/`, `/work`, `/work/[slug]` (14 slugs), `/capabilities`, `/capab
 9. **PowerShell `Set-Content` re-encodes UTF-8.** It corrupted `▶`/`…` once. Use the Edit tool, or `[IO.File]::WriteAllText` with UTF8 (no BOM).
 10. **The built-in browser pane renders 1440×900 emulation tiny.** Use the Playwright `shoot.mjs` for visual judgement.
 11. **Next 16**: `params` is a Promise, so use `PageProps<"/route/[slug]">` and `await params`. View transitions need no flag. `next lint` no longer exists.
+12. **Commit messages on Windows PowerShell 5.1.** Embedded double quotes in a `-m` here-string get split into separate args, and git then treats the words as pathspecs. Write the message to a file and use `git commit -F <file>`.
+13. **Pushing**: the remote is `origin` → https://github.com/ProtoVinci/SocialxBrand_Pilot.git, branch `main`. Commit and push after each meaningful step.
 
 ---
 
