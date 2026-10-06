@@ -20,22 +20,37 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {
       const tracks = q("[data-track]");
+      // Paused one-cycle tweens whose progress we advance ourselves. A repeating tween played
+      // at a negative timeScale runs back to time 0 and stops; wrapping progress manually
+      // keeps both rows moving forever in either direction.
       const loops = tracks.map((t, i) => {
         const fwd = i % 2 === 0;
         gsap.set(t, { xPercent: fwd ? 0 : -50 });
-        return gsap.to(t, { xPercent: fwd ? -50 : 0, duration: fwd ? 34 : 48, ease: "none", repeat: -1 });
+        return gsap.to(t, { xPercent: fwd ? -50 : 0, duration: fwd ? 34 : 48, ease: "none", paused: true });
       });
+      const wrap = gsap.utils.wrap(0, 1);
+      const drive = { speed: 1 }; // 1 = natural speed forward; negative = reversed
+      const tick = (_time: number, deltaMs: number) => {
+        loops.forEach((l) => l.progress(wrap(l.progress() + (deltaMs / 1000 / l.duration()) * drive.speed)));
+      };
       const lean = q("[data-lean]");
       const skewTo = gsap.quickTo(lean, "skewX", { duration: dur.base, ease: "pilot" });
       let dir = 1;
       let lastBoost = 1;
       let settle: gsap.core.Tween | undefined;
+      let running = false;
+      const run = (on: boolean) => {
+        if (on === running) return;
+        running = on;
+        if (on) gsap.ticker.add(tick);
+        else gsap.ticker.remove(tick);
+      };
 
       const st = ScrollTrigger.create({
         trigger: root.current,
         start: "top bottom",
         end: "bottom top",
-        onToggle: (self) => loops.forEach((l) => (self.isActive ? l.play() : l.pause())),
+        onToggle: (self) => run(self.isActive),
         onUpdate: (self) => {
           const v = self.getVelocity();
           const boost = Math.round((1 + Math.min(Math.abs(v) / 350, 6)) * 4) / 4; // quarter steps
@@ -43,18 +58,19 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
           if (boost !== lastBoost || self.direction !== dir) {
             dir = self.direction;
             lastBoost = boost;
-            loops.forEach((l) => gsap.to(l, { timeScale: dir * boost, duration: dur.quick, overwrite: true }));
+            gsap.to(drive, { speed: dir * boost, duration: dur.quick, overwrite: true });
           }
           skewTo(gsap.utils.clamp(-10, 10, -v / 220));
           settle?.kill();
           settle = gsap.delayedCall(0.18, () => {
             lastBoost = 1;
-            loops.forEach((l) => gsap.to(l, { timeScale: dir, duration: dur.slow, ease: "pilot", overwrite: true }));
+            gsap.to(drive, { speed: dir, duration: dur.slow, ease: "pilot", overwrite: true });
             skewTo(0);
           });
         },
       });
-      return () => { st.kill(); settle?.kill(); };
+      run(st.isActive);
+      return () => { st.kill(); settle?.kill(); run(false); };
     });
     return () => mm.revert();
   }, { scope: root });

@@ -19,7 +19,8 @@ export const metadata: Metadata = {
     "SOCIALxBRAND PILOT is an Indian digital marketing agency. Strategy, creativity, technology and execution across 18 marketing divisions — built around what your business actually needs. We will show, you will grow.",
   applicationName: site.name,
   alternates: { canonical: "/" },
-  openGraph: { type: "website", siteName: site.name, locale: "en_IN", url: "/" },
+  // no og:url here: child routes inherit it, and "/" would mislabel every inner page
+  openGraph: { type: "website", siteName: site.name, locale: "en_IN" },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
 };

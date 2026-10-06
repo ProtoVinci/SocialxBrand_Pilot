@@ -13,7 +13,8 @@ export function Clock({ className = "" }: { className?: string }) {
     return () => window.clearInterval(id);
   }, []);
   return (
-    <span className={`label inline-flex items-center gap-2 ${className}`}>
+    // a caller's `hidden` must win: Tailwind's order would let a base inline-flex override it
+    <span className={`label ${/\bhidden\b/.test(className) ? "" : "inline-flex"} items-center gap-2 whitespace-nowrap ${className}`}>
       <span className="relative inline-flex h-1.5 w-1.5">
         <span className="absolute inset-0 animate-ping rounded-full bg-signal/70 motion-reduce:hidden" />
         <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-signal" />

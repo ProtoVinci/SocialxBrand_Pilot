@@ -30,6 +30,7 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
 ) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [reduced, setReduced] = useState(false);
+  const [inLink, setInLink] = useState(false);
   const [userPlaying, setUserPlaying] = useState(false);
 
   useImperativeHandle(handle, () => ({
@@ -42,7 +43,10 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
     const el = videoRef.current;
     if (!el) return;
     const isReduced = window.matchMedia(MQ.reduce).matches;
+    // a reel inside a link is a navigation tile: a nested Play button would be invalid
+    // interactive content and would steal the click, so it only appears on standalone reels
     setReduced(isReduced);
+    setInLink(Boolean(el.closest("a")));
     if (isReduced || mode !== "inview") return;
     const io = new IntersectionObserver(
       ([entry]) => {
@@ -107,7 +111,7 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
         {asset.src.webm && <source src={asset.src.webm} type='video/webm; codecs="av01.0.05M.08"' />}
         <source src={asset.src.mp4} type="video/mp4" />
       </video>
-      {reduced && (
+      {reduced && !inLink && mode !== "manual" && (
         <button
           type="button"
           onClick={toggle}

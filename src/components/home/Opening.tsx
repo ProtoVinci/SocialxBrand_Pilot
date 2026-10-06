@@ -9,6 +9,7 @@ import { Clock } from "@/components/layout/Clock";
 import { SpinBadge } from "@/components/fx/SpinBadge";
 import type { VideoAsset } from "@/content/work";
 import { impact } from "@/content/site";
+import { observeOnce, REVEAL_MARGIN } from "@/lib/motion/observe";
 
 type Props = { fan: VideoAsset[] };
 
@@ -67,7 +68,16 @@ export function Opening({ fan }: Props) {
         // stickers slap onto the fan once it has landed: oversized and twisted, then pressed flat
         .from(q("[data-sticker]"), { scale: 1.8, rotate: (i) => (i ? 24 : -24), autoAlpha: 0, duration: dur.base, stagger: 0.14 }, "-=0.7");
 
-      if (!cinema) return;
+      if (!cinema) {
+        // phones: no pin, but the manifesto still lands its argument once it is in view:
+        // "activity" is struck through, then "impact" turns white
+        return observeOnce(q("[data-manifesto] p"), REVEAL_MARGIN, () => {
+          gsap.timeline({ defaults: { ease: "glide" } })
+            .to(q("[data-strike]"), { scaleX: 1, duration: dur.base })
+            .to(q("[data-activity]"), { opacity: 0.55, duration: dur.quick }, "<0.2")
+            .to(q("[data-impact]"), { color: "#ffffff", duration: dur.base }, "+=0.15");
+        });
+      }
 
       // ── scroll choreography (desktop only) ────────────────────────
       // Geometry comes from layout boxes (offset*), which ignore transforms, so a refresh
@@ -79,20 +89,23 @@ export function Opening({ fan }: Props) {
         y: root.current!.clientHeight / 2 - (fanEl.offsetTop + fanEl.offsetHeight / 2),
       });
 
-      const chars = SplitText.create(q("[data-manifesto-line]"), { type: "words,chars" }).chars;
+      // aria "none": the visible lines are aria-hidden and an sr-only sentence carries the text
+      const chars = SplitText.create(q("[data-manifesto-line]"), { type: "words,chars", aria: "none" }).chars;
       const tl = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: { trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: 0.8, invalidateOnRefresh: true },
       });
-      tl.to(split.lines[0], { xPercent: -16, autoAlpha: 0, duration: 0.3 }, 0)
-        .to(split.lines[1], { xPercent: 12, autoAlpha: 0, duration: 0.3 }, 0)
-        .to(split.lines.slice(2), { xPercent: -6, autoAlpha: 0, duration: 0.3 }, 0.02)
+      // the headline clears out (0–0.16) before the centre reel grows past it (from 0.1),
+      // so the two never sit half-transparent on top of each other
+      tl.to(split.lines[0], { xPercent: -16, autoAlpha: 0, duration: 0.16 }, 0)
+        .to(split.lines[1], { xPercent: 12, autoAlpha: 0, duration: 0.16 }, 0)
+        .to(split.lines.slice(2), { xPercent: -6, autoAlpha: 0, duration: 0.16 }, 0.02)
         .to(q("[data-hero-cta], [data-hero-meta], [data-signal-wrap], [data-badge]"), { autoAlpha: 0, y: -30, duration: 0.18 }, 0)
         .to(q("[data-sticker]"), { autoAlpha: 0, scale: 0.6, y: -40, duration: 0.16 }, 0)
         .to(q("[data-fan-card]:not([data-fan-card='2'])"), { yPercent: 40, autoAlpha: 0, rotate: (i) => (i < 2 ? -24 : 24), duration: 0.3 }, 0.02)
         .to(q("[data-fan]"), { rotate: 0, duration: 0.25 }, 0.04)
         .set(centre, { transformOrigin: "50% 50%" }, 0.05)
-        .to(centre, { rotate: 0, x: () => toCentre().x, y: () => toCentre().y, scale: coverScale, borderRadius: 0, duration: 0.34 }, 0.06)
+        .to(centre, { rotate: 0, x: () => toCentre().x, y: () => toCentre().y, scale: coverScale, borderRadius: 0, duration: 0.3 }, 0.1)
         .to(q("[data-dim]"), { autoAlpha: 0.86, duration: 0.14 }, 0.34)
         .set(q("[data-manifesto]"), { autoAlpha: 1 }, 0.4)
         .from(chars, { color: "rgba(18,18,26,0.16)", stagger: { amount: 0.36 }, duration: 0.05 }, 0.42)
@@ -169,7 +182,7 @@ export function Opening({ fan }: Props) {
           {/* the signal line: leaves the headline and runs into the fan of work */}
           <div data-signal-wrap aria-hidden className="pointer-events-none absolute -bottom-7 left-0 h-20 w-[min(62vw,60rem)] max-lg:hidden">
             <svg viewBox="0 0 1000 80" preserveAspectRatio="none" className="h-full w-full overflow-visible">
-              <path data-signal d="M0 40 C 160 40, 260 66, 470 58 S 820 14, 1000 6" fill="none" stroke="#ff3131" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+              <path data-signal d="M0 40 C 160 40, 260 66, 470 58 S 820 14, 1000 6" fill="none" stroke="#ff3131" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -179,7 +192,7 @@ export function Opening({ fan }: Props) {
             We build the strategy, creative and growth systems that help the right people see it.
           </p>
           <div className="flex shrink-0 flex-wrap gap-3">
-            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-blue px-6 py-4 font-semibold text-white transition-transform duration-300 hover:-translate-y-0.5">
+            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-blue px-6 py-4 font-semibold text-white transition-colors duration-300 hover:bg-blue-ink">
               Start your Pilot Route <span aria-hidden>→</span>
             </Link>
             <Link href="/work" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full border border-ink/25 px-6 py-4 font-medium transition-colors hover:border-ink">
@@ -201,14 +214,15 @@ export function Opening({ fan }: Props) {
         className="act-iris gutter relative z-20 grid py-28 cinema:pointer-events-none cinema:!bg-transparent cinema:absolute cinema:inset-0 cinema:place-items-center cinema:py-0 cinema:opacity-0"
       >
         <p className="max-w-[18ch] font-display text-display font-semibold [font-stretch:82%] md:max-w-[16ch]">
-          <span data-manifesto-line className="block">
+          <span className="sr-only">We don&apos;t simply aim to create digital activity. {impact.turn}</span>
+          <span data-manifesto-line aria-hidden className="block">
             We don&apos;t simply aim to create digital{" "}
             <span data-activity className="relative inline-block">
               activity.
               <span data-strike aria-hidden className="absolute left-0 right-0 top-[55%] h-[0.08em] origin-left scale-x-0 bg-signal [html:not(.js-motion)_&]:scale-x-100" />
             </span>
           </span>
-          <span data-manifesto-line className="mt-[0.35em] block">
+          <span data-manifesto-line aria-hidden className="mt-[0.35em] block">
             {impact.turn.replace("impact.", "")}
             <span data-impact className="serif-accent font-normal text-ink [html:not(.js-motion)_&]:text-white">impact.</span>
           </span>

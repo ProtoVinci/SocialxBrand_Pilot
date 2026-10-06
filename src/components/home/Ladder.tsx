@@ -2,7 +2,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
 import { MQ, dur } from "@/lib/motion/tokens";
-import { Reel } from "@/components/media/Reel";
+import { Reel, type ReelHandle } from "@/components/media/Reel";
 import type { VideoAsset } from "@/content/work";
 import { philosophy } from "@/content/site";
 
@@ -15,6 +15,7 @@ import { philosophy } from "@/content/site";
  */
 export function Ladder({ reels }: { reels: VideoAsset[] }) {
   const root = useRef<HTMLElement>(null);
+  const players = useRef<(ReelHandle | null)[]>([]);
   const steps = philosophy.ladder;
 
   useGSAP(() => {
@@ -25,6 +26,10 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
       const layers = q("[data-layer]");
       const ticks = q("[data-tick]");
       let current = -1;
+      let visible = false;
+      // only the rung on screen decodes video: the stacked layers are manual reels, so the shared
+      // budget never spends a slot on an invisible layer
+      const sync = () => players.current.forEach((p, k) => (visible && k === current ? p?.play() : p?.pause()));
       const show = (i: number) => {
         if (i === current) return;
         const dir = i > current ? 1 : -1;
@@ -39,6 +44,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
         layers.forEach((l, k) => gsap.to(l, { autoAlpha: k === i ? 1 : 0, scale: k === i ? 1 : 1.06, duration: dur.cinematic, ease: "glide", overwrite: true }));
         ticks.forEach((t, k) => t.toggleAttribute("data-on", k <= i));
         current = i;
+        sync();
       };
       // first rung set directly (no tweens at load: each tween would read computed styles)
       gsap.set(words, { yPercent: 130, y: 0, autoAlpha: 0 });
@@ -53,13 +59,15 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
         end: "bottom bottom",
         onUpdate: (self) => show(Math.min(steps.length - 1, Math.floor(self.progress * steps.length))),
       });
-      return () => st.kill();
+      const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }, { threshold: 0.15 });
+      io.observe(root.current!.querySelector("[data-frame]")!);
+      return () => { st.kill(); io.disconnect(); players.current.forEach((p) => p?.pause()); };
     });
     return () => mm.revert();
   }, { scope: root });
 
   return (
-    <section ref={root} aria-labelledby="ladder-title" className="relative [html.js-motion_&]:h-[440svh]">
+    <section ref={root} aria-labelledby="ladder-title" className="relative [html.js-motion_&]:h-[340svh]">
       <div className="act-periwinkle sticky top-0 flex min-h-svh items-center overflow-hidden py-20 md:py-24">
         <div className="gutter relative grid w-full items-center gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:gap-16">
           <div>
@@ -90,12 +98,13 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
           </div>
 
           {/* the framed reel: real work at full brightness, changing with the word */}
-          <div aria-hidden className="relative mx-auto aspect-[9/16] h-[26svh] -rotate-2 overflow-hidden rounded-[20px] shadow-[0_40px_80px_-30px_rgba(80,40,150,0.38)] max-md:ml-0 md:h-[min(72svh,46rem)] md:rounded-[26px] [html:not(.js-motion)_&]:hidden">
+          <div data-frame aria-hidden className="relative mx-auto aspect-[9/16] h-[34svh] -rotate-2 overflow-hidden rounded-[20px] shadow-[0_40px_80px_-30px_rgba(80,40,150,0.38)] max-md:ml-2 md:h-[min(72svh,46rem)] md:rounded-[26px]">
             {steps.map((s, i) => {
               const reel = reels[i % Math.max(1, reels.length)];
               return (
-                <div key={s} data-layer className="absolute inset-0 opacity-0">
-                  {reel && <Reel asset={reel} className="absolute inset-0 h-full w-full" />}
+                // without JS motion the first rung stays visible as a still frame
+                <div key={s} data-layer className={`absolute inset-0 opacity-0 ${i === 0 ? "[html:not(.js-motion)_&]:opacity-100" : ""}`}>
+                  {reel && <Reel ref={(r) => { players.current[i] = r; }} asset={reel} mode="manual" className="absolute inset-0 h-full w-full" />}
                 </div>
               );
             })}

@@ -1,0 +1,771 @@
+﻿[
+    {
+        "reviewer":  "conversion-critic",
+        "verdict":  "The site passes the 10-second test. The hero, the \"Not every business needs every service\" act and the audience tabs make it clear what SxBP does, and I found no fabricated proof anywhere. Conversion breaks at the handoffs. The most direct buy signal on the site (\"Plan a route with this\" on a division page) silently drops the division the visitor just chose. The route builder\u0027s last screen says \"Your route is ready.\" before anything has been sent. The pages where intent peaks (/work, every screening, and the bottom of every division page) end without a call to action.",
+        "findings":  [
+                         {
+                             "severity":  "critical",
+                             "where":  "/capabilities/[slug] hero, \"Plan a route with this â†’\" (src/app/capabilities/[slug]/page.tsx:60) â†’ /route builder (src/components/route/RouteBuilder.tsx:49)",
+                             "problem":  "The link is a plain \u003cLink href=\"/route\"\u003e, so the division is never added. Probe: localStorage cleared, then clicked \"Plan a route with this\" on /capabilities/performance-marketing. The store was still null on /route. After picking Startups, step 3 showed only Strategy, Social Media Marketing, Content Creation and Branding. Performance Marketing was missing.",
+                             "why":  "This is the highest-intent click on the site. The visitor has just read a service and said \"this one\", and the builder discards it and swaps in a generic suggestion. It breaks the ACTION step and makes the route feature look broken.",
+                             "fix":  "Turn it into a client link that calls routeStore.add(d.slug) in onClick before navigating (put it in RouteToggle.tsx as \u003cPlanWith slug=â€¦/\u003e), or link to /route?add=${d.slug} and in RouteBuilder seed with useState(() =\u003e { const a = params.get(\u0027add\u0027); if (a \u0026\u0026 divisionBySlug(a)) routeStore.add(a); }). Then change go(): when n===2, merge instead of replace with routeStore.set([...new Set([...route, ...suggested])]) when the route has fewer than 3 items.",
+                             "evidence":  "scratchpad probe route2.mjs output b={store:null}, b2.pressed lacks Performance Marketing; qa-shots/conversion-critic-perf-1440x900-0.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/route step 3 \"Choose the divisions\" (RouteBuilder.tsx:49 and 118-122)",
+                             "problem":  "The suggestion is only applied when the route is empty, but the copy \"We\u0027ve started you with a suggested route\" shows whenever suggestions exist. A visitor with one division collected earlier (Photography) who chose Startups + Be chosen saw \"1 on your route\". Only Photography was selected, the 5 suggestions showed as unselected \"SUGGESTED\" tags, and the copy still claimed a route had been started.",
+                             "why":  "The copy says one thing and the screen shows another. This hits returning or engaged visitors, the warmest leads.",
+                             "fix":  "Render the paragraph only when the suggestion was actually applied: track const [seeded, setSeeded] = useState(false) and set it in go(). Otherwise show \"You already have {route.length} on your route. Tap a SUGGESTED division to add it.\" Also add an \"Add all suggested\" text button: onClick={() =\u003e routeStore.set([...route, ...suggested])}.",
+                             "evidence":  "qa-shots/conversion-critic-route-390x844-toggle-2.png (only Photography pressed, SUGGESTED tags on the others); probe step2 = \"1 on your route\""
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/work (src/app/work/page.tsx:39-41), /work/[slug] (src/app/work/[slug]/page.tsx:79-93), bottom of /capabilities/[slug]",
+                             "problem":  "These pages are dead ends. /work ends with an empty gap and then the footer. Each screening ends with \"Next screening\". Division pages end with \"Often combined with\" and prev/next. None of them has a route or contact CTA in the body. The footer\u0027s only route link is 14px muted text (\"Start your route\" in the footer nav).",
+                             "why":  "The brief builds TRUST from real work. These are the moments trust peaks, and the page offers no next step. DESIRE never becomes ACTION.",
+                             "fix":  "On /work/[slug], above the Next-screening link, add a band: \u003csection className=\"gutter py-20 border-t\"\u003e \"Want work like this?\" + a primary blue pill \"Plan a route with {s.divisions.map(shortName).join(\u0027, \u0027)}\" that does routeStore.set(s.divisions) and then router.push(\u0027/route\u0027), plus a secondary WhatsApp link. On /work, after WorkIndex, add the same band as /capabilities (\"Not sure where to start? â€¦\" + \"Plan your route â†’\"). On division pages, before prev/next, add \"Start a route with {d.shortName}\" as the primary pill (adds the slug, as in finding 1).",
+                             "evidence":  "qa-shots/conversion-critic-work-1440x900-100%.png, conversion-critic-perf-1440x900-85%.png; code at the cited lines"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/route step 5 heading (RouteBuilder.tsx:82)",
+                             "problem":  "The final screen\u0027s h2 is \"Your route is ready.\" while nothing has been sent yet. The stepper calls this step \"Send\", and the three send buttons sit below a drawn route and a collapsed \"Read the brief\".",
+                             "why":  "\"Ready\" reads like a confirmation, so visitors may think they are finished and leave. The honest handoff exists in the button hints, but the headline undoes it.",
+                             "fix":  "Change it to \"Last step: send your route.\" and add a lede under it: \"Pick a channel. WhatsApp or email opens with your brief written; nothing reaches us until you press send there.\" After an adapter click, change the status (line 200) to \"WhatsApp opened in a new tab. Press send there and it reaches us at +91 8432935877.\"",
+                             "evidence":  "qa-shots/conversion-critic-route-1440x900-4.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/route every step change (RouteBuilder.tsx:46)",
+                             "problem":  "headingRef.current.focus() scrolls the h2 to the top of the viewport. Because the nav hides on scroll-down, the 5-station progress bar ends up off-screen on every step from 2 to 5, on both desktop and mobile.",
+                             "why":  "Visitors lose track of where they are and how much is left in a multi-step form. That is a classic abandonment trigger, and it hides the route-line motif the builder is themed on.",
+                             "fix":  "Use headingRef.current?.focus({ preventScroll: true }), then root.current?.scrollIntoView({ block: \u0027start\u0027 }) with scroll-margin-top: calc(var(--nav-h) + 1rem) on the root, so the stepper stays in view. Or make the \u003col aria-label=\"Progress\"\u003e sticky inside the card: className=\"sticky top-0 z-10 bg-petal py-3\".",
+                             "evidence":  "qa-shots/conversion-critic-route-1440x900-1.png, -2.png, -3-err.png, -4.png (no stepper visible)"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home capabilities index + /capabilities (src/components/capabilities/DivisionIndex.tsx rows, RouteToggle.tsx)",
+                             "problem":  "18 identical outlined \"+ ROUTE\" pills stack down the right edge of every row, on both home and /capabilities. \"Route\" alone does not say what it does (add to a shortlist), and the only feedback is a small counter on the nav pill, which is hidden while scrolling down.",
+                             "why":  "The persona rule says never ship 10 identical buttons. Here a repeated unexplained control buries the one action that matters.",
+                             "fix":  "On md+, hide the toggle until the row is hovered or focused: add `md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100` (keep it visible when aria-pressed=true). Relabel it \"+ Add to route\" / \"âœ“ On your route\". On the first add, show a toast at bottom-right: \"Added {name}. {n} on your route Â· Review â†’\" linking to /route.",
+                             "evidence":  "qa-shots/conversion-critic-home-1440x900-60%.png, conversion-critic-home2-1440x900-#screenings-title+2500.png, conversion-critic-caps-1440x900-85%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/route step 4 Details (RouteBuilder.tsx:162-170, 177-180)",
+                             "problem":  "When validation fails, only red text appears at the bottom, below the textarea. The inputs set aria-invalid but nothing styles it, so the Name and Email fields look unchanged. Only Name is marked required, though one of Email/Phone is also required.",
+                             "why":  "Visitors have to read the bottom of the form to find out which field failed, which adds friction at the last data step.",
+                             "fix":  "Add `aria-[invalid=true]:border-signal-ink aria-[invalid=true]:bg-signal/5` to the input className. Render each error directly under its field. Change the labels to \"Email *\" and \"Phone / WhatsApp *\", with a helper line \"* name, plus email or phone\". Focus the first invalid field on failure.",
+                             "evidence":  "qa-shots/conversion-critic-route-1440x900-3-err.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/route step 3 when steps 1-2 are skipped (RouteBuilder.tsx:59, 148)",
+                             "problem":  "Steps 1 and 2 allow Continue with nothing chosen. Step 3 then has no suggestion, the Continue button is disabled at 40% opacity, and \"0 on your route\" gives no reason.",
+                             "why":  "The disabled button has no explanation, so the visitor hits a silent wall.",
+                             "fix":  "When route.length===0, render the live text as \"Pick at least one division to continue, or go back and choose your business for a suggestion.\" Alternatively, require an audience on step 1: canContinue[0] = Boolean(audience).",
+                             "evidence":  "probe route2.mjs a={continueDisabled:true, hint:\u00270 on your route\u0027, introPara:false}"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/route step 5 route drawing (RouteBuilder.tsx:233-236)",
+                             "problem":  "Stations are drawn in insertion order, goal-first. Startup + Be chosen draws Performance Marketing â†’ WhatsApp â†’ SEO â†’ Branding â†’ Strategy \u0026 Consulting (5th) â†’ Social. The end labels also spill past the card padding: \"PERFORMANCE MARKETING\" starts left of the content edge, and \"SOCIAL MEDIA MARKETING\" collides with the line\u0027s exit.",
+                             "why":  "A route implies a sequence, and putting strategy 5th contradicts the departures board\u0027s \"Strategy comes before execution\". It undermines the method that is supposed to build trust.",
+                             "fix":  "Sort before drawing: items.sort((a,b)=\u003ea.number-b.number). Inset the points to 8% to 92% (x: 8 + i*84/(n-1)) and give labels max-w-24.",
+                             "evidence":  "qa-shots/conversion-critic-route-1440x900-4.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Home departures board, station 07 GROW (src/components/home/MethodBoard.tsx:133)",
+                             "problem":  "cinema:line-clamp-1 cuts the payoff line to \"Use insights, execution and continuous improvement to support sustainablâ€¦\" at 1440 wide.",
+                             "why":  "The outcome station is the promise of the whole method, and its key word is cut off.",
+                             "fix":  "Use `cinema:line-clamp-2` for the body, or shorten the column split: grid template \u0027what happens\u0027 column min 44ch. Keep the detail line clamped.",
+                             "evidence":  "qa-shots/conversion-critic-board-1440x900-#method-title+2900.png, conversion-critic-home-1440x900-75%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Capabilities index row descriptions (DivisionIndex.tsx:102)",
+                             "problem":  "Each row shows whatItIs[0] clamped to 2 lines. It mostly repeats the title (\"Digital Marketing Strategy \u0026 Consulting helps businesses understand their current digital position,â€¦\") and is cut before the benefit.",
+                             "why":  "For a scanner this is filler. It is the spot where specificity should help them pick.",
+                             "fix":  "Show the first three sourced deliverables instead: d.deliverables.slice(0,3).join(\u0027 Â· \u0027) (for example \"Marketing strategy Â· Audit report Â· Competitor analysis\"), set as text-sm opacity-70, with no clamp needed.",
+                             "evidence":  "qa-shots/conversion-critic-home-1440x900-60%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Footer (src/components/layout/Footer.tsx:28-34) and /route aside (src/app/route/page.tsx:41)",
+                             "problem":  "WhatsApp, the primary channel for an Indian SMB audience, is styled text-muted grey under the phone number, while email is blue. \"Visit www.sxbp.com\" is unlinked plain text that points to the site the visitor is already on. The footer has no button-weight CTA.",
+                             "why":  "Direct contact should always be one obvious tap away, and the most-used channel is the least visible.",
+                             "fix":  "Drop text-muted from the WhatsApp link and render it as a pill: `inline-flex rounded-full bg-blue px-4 py-2 text-white`, labelled \"Message on WhatsApp â†—\". Replace the \"Visit\" column with a \"Plan your route â†’\" blue pill linking to /route, or remove it.",
+                             "evidence":  "qa-shots/conversion-critic-home-1440x900-100%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Hero CTA (src/components/home/Opening.tsx ~177) and finale CTA",
+                             "problem":  "The primary CTA \"Start your Pilot Route\" is brand jargon. Nothing near it says that it means a 1-minute brief sent by WhatsApp or email. The explanation only appears on /route.",
+                             "why":  "Visitors click jargon less when they cannot tell the cost of the click.",
+                             "fix":  "Add a one-line hint under or next to the hero and finale primary buttons, in `label text-muted mt-2`: \"1-minute brief Â· sent by WhatsApp or email\".",
+                             "evidence":  "qa-shots/conversion-critic-home-1440x900-0.png, conversion-critic-home2-1440x900-#finale-title+-300.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/route email adapter (RouteBuilder.tsx:196-200, src/lib/route/enquiry.ts emailAdapter)",
+                             "problem":  "Clicking \"Send by email\" sets the status to \"Opening emailâ€¦\" permanently. On machines with no mail client (common on Windows), nothing happens and there is no fallback.",
+                             "why":  "The visitor is left at a dead end at the very last click.",
+                             "fix":  "After window.open, run setTimeout(() =\u003e setStatus(`No email app opened? Write to ${site.email} or use Copy the brief.`), 2000), and render the email as a mailto link inside the status.",
+                             "evidence":  "code at RouteBuilder.tsx:199-200"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/approach Audiences section (src/components/home/Audiences.tsx:37)",
+                             "problem":  "The label \"[ 06 ] Who we work with\" is hard-coded, so on /approach it shows a stray \"06\" where no other section is numbered.",
+                             "why":  "It is a small polish issue, and the numbering only makes sense in the home sequence.",
+                             "fix":  "Add an `index?: string` prop and render `[ {index} ]` only when it is passed. Home passes \"06\"; /approach omits it.",
+                             "evidence":  "qa-shots/conversion-critic-appr-1440x900-80%.png"
+                         }
+                     ],
+        "top3":  [
+                     "Fix the route handoff bugs. Make \"Plan a route with this\" add the division (routeStore.add or /route?add=slug). Merge suggestions instead of replacing them. Only claim \"we\u0027ve started you with a suggested route\" when that actually happened.",
+                     "Add primary CTA bands where intent peaks: /work, each /work/[slug] (\"Want work like this? Plan a route with {its divisions}\", pre-filled), and the bottom of every division page. Promote WhatsApp to a button in the footer.",
+                     "Make the builder\u0027s last mile honest and legible. Rename step 5 to \"Last step: send your route.\" with the hand-off lede. Keep the progress stepper in view (focus with preventScroll, or a sticky stepper). Mark invalid fields inline. Sort the drawn route by division number."
+                 ]
+    },
+    {
+        "reviewer":  "creative-director",
+        "verdict":  "Home is the strongest part of the site. The hero fan, the cornflower manifesto takeover, the marquee with inline reel stickers and the departures board read as one memorable world. The inner pages fall back to a single template (headline on the left, empty right half, no work on screen), and polish slips at the moments that should land hardest: clipped descenders on the /approach H1, a broken finale underline, truncated board copy, an orphaned ticket row and a crushed footer wordmark. The red-and-blue system is executed with discipline. What\u0027s missing is the real 9:16 work, which disappears after home, and the \"route\" metaphor, which never reaches the one page named after it (/route).",
+        "findings":  [
+                         {
+                             "severity":  "critical",
+                             "where":  "/capabilities/[slug] (all 18 division pages), e.g. /capabilities/performance-marketing",
+                             "problem":  "Division pages contain no work at all. A probe found 0 \u003cvideo\u003e/\u003cimg\u003e in \u003cmain\u003e. The hero is type plus a striped \u002712\u0027 numeral. Below it come chip clouds, an iris deliverables list, tickets and \u0027Often combined with\u0027 cards. It reads as a text brochure.",
+                             "why":  "The brief says the real 9:16 work is the hero and \u0027the motion IS the website\u0027. These 18 pages are the SEO and service landing pages a prospect lands on first, and they show zero proof.",
+                             "fix":  "In the division hero (right column, md:col-span-4), render 1-2 Reels from screenings whose \u0027capabilities shown\u0027 include this division (work.ts already maps capabilities to screenings; filter by slug). Use the same tilt + sticker treatment as the home fan (rotate -4deg/+3deg, \u0027Real work Â· no stock\u0027 sticker). Keep the striped numeral behind them at opacity .5. If a division has no mapped screening, fall back to the closest category reel.",
+                             "evidence":  "qa-shots/creative-director-capslug-1440x900-0.png, -20%, -40%, -60%; debug probe \u00270 media\u0027 on /capabilities/performance-marketing"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/approach hero H1 \u0027Business first. Then everything else.\u0027 (1440x900 and 390x844); src/components/motion/SplitReveal.tsx:43",
+                             "problem":  "The descenders of \u0027y\u0027 and \u0027g\u0027 in the italic \u0027everything\u0027 are sliced flat. SplitText mask:\u0027lines\u0027 wraps every line in .split-line-mask with overflow:clip, and the line box (337-478px) is shorter than the Instrument Serif italic descenders at mega size.",
+                             "why":  "A clipped glyph in the page\u0027s H1 is the first thing a typography-led client will notice, and it repeats at mobile.",
+                             "fix":  "In globals.css add `.split-line-mask{padding-bottom:.22em;margin-bottom:-.22em}` (plus `padding-inline:.06em;margin-inline:-.06em` for italic overhang), or in SplitReveal onSplit add `onComplete:()=\u003egsap.set(self.lines.map(l=\u003el.parentElement),{overflow:\u0027visible\u0027})` for the rise/chars variants.",
+                             "evidence":  "qa-shots/creative-director-approach-1440x900-0.png; creative-director-m-approach-390x844-0.png; probe: split-line-mask overflow:clip 337-478 \u0027Then everything\u0027"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/ Finale \u0027YOU WILL GROW.\u0027 underline; src/components/home/Finale.tsx (svg className \u0027-bottom-3 h-6\u0027)",
+                             "problem":  "The white route underline is visibly broken into two pieces, with a ~90px gap under \u0027W\u0027 at xâ‰ˆ630-715. The SVG spans 222-246px while the white glyphs end at 234px, so the curve rises behind the white letterforms and disappears (white on white).",
+                             "why":  "The red/white signal line is the site\u0027s signature motif. On the final promise it reads as a rendering glitch.",
+                             "fix":  "Move the SVG fully below the glyph box: className \u0027absolute -bottom-7 left-0 h-6 w-full\u0027, or flatten the path to stay in the lower half: d=\u0027M0 30 C 200 22, 400 36, 620 28 S 900 22, 1000 26\u0027.",
+                             "evidence":  "qa-shots/creative-director-finale-1440x900-#finale-title+-250.png; creative-director-home-1440x900-96%.png; probe svg 221.9-245.9 vs grow bottom 233.9"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/ and /approach Departures board rows; src/components/home/MethodBoard.tsx:133-134",
+                             "problem":  "(a) The \u0027What happens\u0027 copy is truncated at 1440px: \u0027support sustainablâ€¦\u0027 and the active detail \u0027current digitalâ€¦\u0027. This comes from cinema:line-clamp-1. (b) The body line sits at the top of each row while the flap tiles are vertically centred, so every row looks misregistered. The invisible (opacity-0) detail line still reserves space underneath.",
+                             "why":  "The board is the signature set piece. Ellipses on a primary content line and misaligned rows make it look like a broken table, not a precise split-flap.",
+                             "fix":  "Remove `cinema:line-clamp-1` from the body \u003cp\u003e and drop the station column to minmax(0,1fr) so the body gets about 1.6fr. Collapse the detail line on non-active rows instead of hiding it with opacity: wrap it in `grid grid-rows-[0fr] group-data-[state=now]:grid-rows-[1fr] transition-[grid-template-rows] duration-500` with an inner `overflow-hidden`. Then items-center centres the body against the tiles. Raise the cinema row height to clamp(3.4rem,7.4svh,5rem) for the active row.",
+                             "evidence":  "qa-shots/creative-director-home-1440x900-72%.png, -80%.png, -88%.png; creative-director-approach-1440x900-40%.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/work, /capabilities, /approach, /route heroes, plus the home Capabilities intro and the Finale",
+                             "problem":  "Every inner-page hero uses the same layout: mono label, big headline and lede on the left, and the right 45% of the viewport (â‰ˆx 760-1440, y 100-700) completely empty. The home capabilities intro and the finale\u0027s red field repeat the same empty right half.",
+                             "why":  "This is the \u0027generic Framer template\u0027 pattern the persona is asked to flag. /work in particular is titled \u0027The work, as it was made.\u0027 but has no work above the fold.",
+                             "fix":  "Give each hero a right-column object from the existing kit: /work, a 3-reel mini fan reusing the Opening fan (scale .62, rotations -6/0/5deg, stickers); /capabilities, the striped `.lane` numeral \u002718\u0027 used on division pages; /approach, one framed 9:16 Reel at rotate(2deg) with the \u0027Made in 9:16 âœ¦\u0027 sticker; /route, the live boarding-pass preview (see the /route finding). Finale: put the SpinBadge or 2 inline reel stickers in the right third (xâ‰ˆ1000-1300) at md+.",
+                             "evidence":  "qa-shots/creative-director-work-1440x900-0.png; creative-director-caps-1440x900-0.png; creative-director-approach-1440x900-0.png; creative-director-route-1440x900-0.png; creative-director-home-1440x900-56%.png; creative-director-finale-1440x900-#finale-title+-250.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/capabilities/[slug] \u0027Our approach\u0027 boarding-pass tickets; src/components/capabilities/ApproachRoute.tsx (--cols: Math.min(steps.length, 8))",
+                             "problem":  "With 10 stations the deck lays out 8 + 2, leaving \u0027Optimize\u0027 and \u0027Scale\u0027 orphaned on a second row with 1000px of empty space beside them. Each ticket is also mostly blank white: a 35px header, an empty body, then one word. There is no route line connecting them, so they read as generic small cards rather than boarding passes.",
+                             "why":  "The tickets are the division pages\u0027 only motion set piece and the main carrier of the Pilot Route metaphor there.",
+                             "fix":  "Set cols = steps.length \u003c= 8 ? steps.length : Math.ceil(steps.length / 2) (5+5 for 10). Fill the ticket body with boarding-pass data that is already available: \u0027FROM\u0027 = previous station name, \u0027TO\u0027 = this station, in the label style, and a 2px signal-red route line drawn across the row behind the tickets (DrawSVG on scroll, the same ease as the deal). Raise min-h to 9rem and the station name to clamp(1.1rem,1.4vw,1.4rem).",
+                             "evidence":  "qa-shots/creative-director-tickets-1440x900-68%.png; creative-director-capslug-1440x900-80%.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/route builder (RouteBuilder)",
+                             "problem":  "The page named after the brand\u0027s core metaphor is a generic form wizard: a grey dots-on-a-line stepper, white option cards, a blue Continue pill. There is no signal line, departures-board or boarding-pass language anywhere in the flow.",
+                             "why":  "/route is the conversion endpoint. It is where \u0027The Pilot Route\u0027 should pay off, and right now it is the most forgettable screen on the site.",
+                             "fix":  "Draw the stepper connector as the red signal line, filling with stroke #FF3131 as steps complete (DrawSVG, glide ease), with dots styled as the board\u0027s [ 01 ] station markers. In the empty right column above \u0027Or just talk to us\u0027, render a live boarding pass in the ApproachRoute ticket style: FROM = chosen business type, TO = goal, ROUTE = the selected division chips. It updates as the user picks options and becomes the summary on the Send step.",
+                             "evidence":  "qa-shots/creative-director-route-1440x900-0.png, -45%.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Footer giant wordmark; src/components/layout/FooterWordmark.tsx (tracking-[-0.06em], [font-stretch:75%])",
+                             "problem":  "At 1440px the letters collide: O/C/I/A/L in SOCIAL and A/N/D in BRAND overlap into blobs. The wordmark is also inset (â‰ˆx 130-1325), so it is neither aligned to the 56px gutter nor the \u0027edge-to-edge\u0027 sign-off its own comment describes.",
+                             "why":  "The footer wordmark is the last frame of every page. Fused glyphs look like a font-rendering bug, not a stencil.",
+                             "fix":  "Change tracking to -0.028em, remove the `gutter` padding on [data-word] and size it to the viewport: [font-size:clamp(3rem,16.4vw,19rem)] with text-left and pl-[calc(var(--gutter)-0.04em)], so it bleeds exactly gutter-to-edge. Verify with a probe that scrollWidth equals clientWidth.",
+                             "evidence":  "qa-shots/creative-director-home2-1440x900-100%.png; creative-director-work-1440x900-100%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Footer headline (closing.turn), /work H1, /capabilities H1, /approach H1",
+                             "problem":  "The \u0027one accent word per headline\u0027 rule is broken in four places. The footer sets a whole sentence across 3 lines in blue serif italic (\u0027Every audience has something worth connecting with.\u0027). /work italicises \u0027as it was made.\u0027, /capabilities \u0027not the full menu.\u0027 and /approach \u0027Then everything else.\u0027.",
+                             "why":  "The serif accent works because it is scarce. Whole italic sentences flatten the hierarchy and make the display face look secondary.",
+                             "fix":  "Keep the copy but italicise one word: footer \u0027connecting\u0027, /work \u0027made\u0027, /capabilities \u0027mix\u0027 (or \u0027not\u0027), /approach \u0027everything\u0027. Set the rest of the turn in the display face at weight 600, blue for the footer.",
+                             "evidence":  "qa-shots/creative-director-home2-1440x900-100%.png; creative-director-work-1440x900-0.png; creative-director-caps-1440x900-0.png; creative-director-approach-1440x900-0.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/ Capabilities index (and /capabilities): 18 text rows, â‰ˆ2000px",
+                             "problem":  "Without a hover (and always on touch), the index is roughly two screens of plain ink rows on shell: number, name, a clamped grey description and a \u0027+ ROUTE\u0027 pill. No image, no colour field and no motion appear in the static frames. The cursor reel preview is the only visual, and it is hover-only.",
+                             "why":  "This is the longest stretch of the home film with nothing alive in it, between the iris marquee and the departures board.",
+                             "fix":  "Add a 56x100 (9:16) thumbnail reel at the left of each row, after the number, on md+. Show it as a poster only, play on row flood, and reuse the preview map already in src/lib/previews.ts. Alternatively, collapse each cluster to 4 visible rows plus \u0027Show all 11\u0027 on home only.",
+                             "evidence":  "qa-shots/creative-director-home2-1440x900-60%.png; creative-director-home-1440x900-64%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/work grid \u0027Logo \u0026 Identity\u0027 card; media/p/logo-identity-01-480.avif",
+                             "problem":  "A 475x475 square logo lockup is forced into a 9:16 card with object-fit:cover, so \u0027SOCIAL CREATOR PIâ€¦\u0027 is cut off on both sides.",
+                             "why":  "Cropping the agency\u0027s own logo work undercuts the design-and-identity proof.",
+                             "fix":  "For photo items with aspect \u003c= 1, use object-fit:contain on a petal (#F3ECE9) card with p-6, or render that card as aspect-square in the masonry.",
+                             "evidence":  "qa-shots/creative-director-work-1440x900-65%.png; probe: IMG logo-identity-01-480.avif fit:cover nat:475x475"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/work \u0027Celebrations\u0027 card and home Screenings card [08]; media/v/family-celebrations-01-poster.avif",
+                             "problem":  "The poster frame was grabbed mid-motion. The \u0027Riyansh Ayansh\u0027 sign is heavily motion-blurred, so it looks out of focus while every neighbouring card is sharp.",
+                             "why":  "A blurry thumbnail reads as low-quality work, the opposite of \u0027photos that feel alive\u0027.",
+                             "fix":  "Re-extract the poster at a still moment: `ffmpeg -ss \u003ct\u003e -i src -frames:v 1` at a timestamp with a low motion score (pick from 3-4 candidates), then re-run transcode.mjs for that asset only.",
+                             "evidence":  "qa-shots/creative-director-work-1440x900-65%.png; creative-director-home-1440x900-40%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Footer contact columns; src/components/layout/Footer.tsx dl \u0027sm:grid-cols-3 md:col-span-6\u0027",
+                             "problem":  "At 1440px \u0027socialxbrandpilot@gmail.com\u0027 runs to xâ‰ˆ962 and \u0027+91 8432935877\u0027 starts at xâ‰ˆ971, leaving a 9px gap, so the two links read as one line.",
+                             "why":  "This is a contact block on every page. It looks cramped and uncared-for.",
+                             "fix":  "Use `md:grid-cols-[1.4fr_1fr_0.8fr] gap-x-10` on the dl, or move the dl to md:col-span-7 and the headline to col-span-5.",
+                             "evidence":  "qa-shots/creative-director-home2-1440x900-100%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/ Screenings rail card titles",
+                             "problem":  "The \u0027[ 05 ]\u0027 index label wraps, leaving the closing \u0027]\u0027 alone on a second line under \u0027[ 05\u0027 next to \u0027Wedding \u0026 Pre-Wedding Films\u0027.",
+                             "why":  "Broken mono labels weaken the precise, systematised feel the [ 01 ] labels exist for.",
+                             "fix":  "Add `whitespace-nowrap shrink-0` to the index label span in Screenings.tsx card titles.",
+                             "evidence":  "qa-shots/creative-director-home-1440x900-40%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/ Manifesto takeover start (â‰ˆ4% scroll)",
+                             "problem":  "Before the field rises, the manifesto sits as unfilled ink at low alpha directly over the full-bright dancing-couple reel. For that stretch it is unreadable mush rather than a deliberate \u0027empty\u0027 state.",
+                             "why":  "The first scroll after the hero is the moment the brand states its thesis.",
+                             "fix":  "Start the unfilled characters as white/35 (not ink) while the video is behind them, and add a 0â†’.35 ink scrim (`bg-ink/35`) under the text that fades out as the cornflower field rises.",
+                             "evidence":  "qa-shots/creative-director-home2-1440x900-4%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/approach section labels",
+                             "problem":  "/approach opens with \u0027[ A ]\u0027 and then shows the home sections with their home numbering: \u0027[ 05 ] HOW WE WORK\u0027 and \u0027[ 06 ] WHO WE WORK WITH\u0027. Out of context, the numbering jumps.",
+                             "why":  "The [ nn ] index system implies a sequence. A reader landing on /approach sees 05 and 06 with no 01-04.",
+                             "fix":  "Pass the label index as a prop to MethodBoard and Audiences and render \u0027[ A2 ]\u0027/\u0027[ A3 ]\u0027 on /approach, or drop the number there.",
+                             "evidence":  "qa-shots/creative-director-approach-1440x900-40%.png, -80%.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/ Screenings rail end card",
+                             "problem":  "The rail end card reads \u002711 screenings, from creator reelsâ€¦\u0027 while /work\u0027s filter says \u0027Everything 14\u0027. The copy reports items.length of the home subset.",
+                             "why":  "The two counts contradict each other on adjacent pages.",
+                             "fix":  "Use the full count (work.length) in Screenings.tsx:113 (\u0027All 14 screenings, â€¦\u0027) or drop the number.",
+                             "evidence":  "src/components/home/Screenings.tsx:113; qa-shots/creative-director-home-1440x900-48%.png vs creative-director-work-1440x900-0.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/ Ladder reel vs Screenings rail",
+                             "problem":  "The ladder\u0027s \u0027seen\u0027 and \u0027chosen\u0027 frames (the sideways portrait and the Shree Furnishing founder) are the same assets as rail cards 07 and 04 two screens later. The founder also appears again on /work.",
+                             "why":  "With 95 curated assets, repeats within one scroll make the portfolio feel thinner than it is.",
+                             "fix":  "Point the Ladder\u0027s 5 frames at photos or reels not used in the home rail (e.g. the family-celebration, restaurant and theatre stills).",
+                             "evidence":  "qa-shots/creative-director-home-1440x900-16%.png, -24%.png, -40%.png"
+                         }
+                     ],
+        "top3":  [
+                     "Put the real 9:16 work on every inner page. Fill the empty right half of the /work, /capabilities, /approach and /route heroes with existing kit (mini reel fan, lane numeral, framed reel, live boarding pass), and add mapped reels to all 18 division pages, which currently show 0 media.",
+                     "Fix the polish breaks at the signature moments: unclip the SplitText line masks (.split-line-mask padding-bottom:.22em / margin-bottom:-.22em), move the finale underline below the glyphs (-bottom-7), and remove the board\u0027s line-clamp and top-alignment so the departures board reads as one clean, centred table.",
+                     "Carry the Pilot Route metaphor into /route and the tickets. Use a red signal-line stepper plus a live boarding pass (FROM business / TO goal / ROUTE chips) on /route, and lay out the division tickets as balanced 5+5 rows with FROM/TO data and a red route line drawn through them."
+                 ]
+    },
+    {
+        "reviewer":  "visual-qa",
+        "verdict":  "At 1440 and 1280 the desktop build looks clean, and there is no horizontal overflow on any route or viewport tested. Tablet sizes are where it breaks. At 768x1024 and 1024x768 the hero fan covers the headline, the departures board splits words across rows (\"UNDERST/AND\"), the ladder labels overlap and the nav wraps. There are also systemic small-scale defects on every viewport: index labels wrap to \"[ 05 / ]\", serif descenders are clipped by the split-line mask, board copy is truncated with an ellipsis, and many mobile tap targets are under 44px.",
+        "findings":  [
+                         {
+                             "severity":  "critical",
+                             "where":  "/ hero (Opening.tsx:130 reel fan; :177-178 CTA row) at 768x1024 and 1024x768",
+                             "problem":  "At 768x1024 the 5-reel fan sits on top of the headline and covers most of \u0027BUSINESS\u0027, \u0027SOMETHING\u0027 and \u0027showing.\u0027. The subcopy is squeezed into a column about 70px wide (one word per line: \u0027We / build / the / strategyâ€¦\u0027), and its last line runs under the CTA. At 1024x768 the fan still clips the S of BUSINESS, the G of SOMETHING and the period of \u0027showing.\u0027, and the subcopy is about 110px wide over 6 lines.",
+                             "why":  "This is the first frame of the site on every iPad. The brand promise is unreadable and the layout looks broken.",
+                             "evidence":  "qa-shots/visual-qa-home-768x1024-0.png, qa-shots/visual-qa-home-1024x768-0.png; Opening.tsx:130 \u0027md:left-[78%]\u0027 with h-[45svh] w-[25.3svh] (461x259px at 768x1024); :177 \u0027md:max-w-[58%] md:flex-row\u0027 with the buttons \u0027shrink-0\u0027",
+                             "fix":  "Use the stacked mobile layout for portrait tablets. Add `@custom-variant tab-portrait (@media (min-width:768px) and (max-width:1199px) and (orientation:portrait));` and apply the max-md values there too: `tab-portrait:top-auto tab-portrait:bottom-[6%] tab-portrait:left-1/2 tab-portrait:h-[34svh] tab-portrait:w-[19.1svh]`, plus `tab-portrait:pb-[42svh]` on the gutter (line 154). For landscape widths under 1280, cap the fan with `h-[min(45svh,34vw)] w-[min(25.3svh,19.1vw)]` and `lg:left-[80%]`. Move the CTA row from `md:flex-row md:max-w-[58%]` to `lg:flex-row lg:max-w-[58%]`, and give the paragraph `md:min-w-[18rem]`."
+                         },
+                         {
+                             "severity":  "critical",
+                             "where":  "/ and /approach departures board (MethodBoard.tsx:103,115,120,133) at 768x1024, 1024x768 and 1440x900",
+                             "problem":  "At 768 the station column (minmax(0,1.1fr) is about 150px) is too narrow for the split-flap tiles. flex-wrap breaks the words mid-word: \u0027UNDERST / AND\u0027, \u0027STRATEG / IZE\u0027, \u0027OPTIMIZ / E\u0027. On all cinema viewports `cinema:line-clamp-1` cuts every \u0027What happens\u0027 line with an ellipsis (\u0027Understand the business,â€¦\u0027 at 768, \u0027Track performance andâ€¦\u0027 at 1024). Even at 1440 the GROW row ends \u0027support sustainablâ€¦\u0027.",
+                             "why":  "The departures board is the signature act. Breaking words mid-tile defeats the board, and the client\u0027s method copy is cut off at every desktop size.",
+                             "evidence":  "qa-shots/visual-qa-home-768x1024-75%.png, qa-shots/visual-qa-home-1024x768-75%.png, qa-shots/visual-qa-home-1440x900-80%.png, qa-shots/visual-qa-approach-1440x900-40%.png",
+                             "fix":  "Use the 4-column grid only at lg: change `md:grid-cols-[4.5rem_minmax(0,1.1fr)_minmax(0,1.4fr)_8.5rem]` (lines 103 and 115) to `lg:` and keep the 2-column mobile layout through 1023px. On the h3 (line 120) use `flex-nowrap` and size the tiles with `w-[1.05em]` plus font-size `clamp(0.85rem,1.3vw,1.45rem)`, so an 11-letter word (\u0027UNDERSTAND\u0027, \u0027STRATEGIZE\u0027) fits in about 15em. Replace `cinema:line-clamp-1` on the body with `cinema:line-clamp-2` and raise the row height to `cinema:h-[clamp(3.4rem,8svh,5.2rem)]`."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/approach PageHeader h1 \u0027Then everything else.\u0027 (globals.css:216 .split-line), all viewports",
+                             "problem":  "The split-line mask cuts the descenders of \u0027y\u0027 and \u0027g\u0027 in \u0027everything\u0027 flat at the line box (about y=478 at 1440, y=263 at 390). With the serif italic at line-height 0.86-0.9, the 0.06em bottom padding is not enough.",
+                             "why":  "The persona checks for clipped descenders. This is the hero headline of /approach and it looks like a rendering bug.",
+                             "evidence":  "qa-shots/visual-qa-approach-1440x900-0.png, qa-shots/visual-qa-approach-390x844-0.png; globals.css:216 `.split-line { overflow: clip; padding-bottom: 0.06em; margin-bottom: -0.06em; }`",
+                             "fix":  "Change it to `.split-line { overflow: clip; padding-bottom: 0.22em; margin-bottom: -0.22em; }`, or keep 0.06em and add `.serif-accent .split-line, .split-line:has(.serif-accent) { padding-bottom: 0.24em; margin-bottom: -0.24em; }`. Then re-check that the home hero \u0027showing.\u0027 and /work \u0027was made.\u0027 still mask cleanly."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/ and /approach departures board inactive rows (MethodBoard.tsx:134)",
+                             "problem":  "In inactive rows the \u0027What happens\u0027 sentence sits about 12px above the row\u0027s centre line, while the station tiles and the status pill are centred (1440: text at y=419, tiles and pill at y=431). The detail paragraph is hidden with `cinema:opacity-0` but still takes up its height, which pushes the visible line up.",
+                             "why":  "This vertical misalignment repeats on 6 of 7 rows, so the board looks unaligned.",
+                             "evidence":  "qa-shots/visual-qa-home-1440x900-80%.png, qa-shots/visual-qa-approach-1440x900-40%.png",
+                             "fix":  "Take the hidden detail out of the layout flow. Swap `cinema:opacity-0 â€¦ group-data-[state=now]:opacity-100` for a collapsing grid: put the wrapper on `cinema:grid cinema:grid-rows-[auto_0fr] cinema:transition-[grid-template-rows] cinema:group-data-[state=now]:grid-rows-[auto_1fr]` and add `overflow-hidden` to the detail. Alternatively make the detail `cinema:absolute cinema:top-full` inside a `relative` wrapper."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/ Screenings rail card index (Screenings.tsx:101), all viewports",
+                             "problem":  "The \u0027[ NN ]\u0027 label wraps so the closing bracket drops to its own line (\u0027[ 05\u0027 / \u0027]\u0027) whenever the title runs to 2 lines. Seen on \u0027Wedding \u0026 Pre-Wedding Films\u0027 and \u0027Restaurants \u0026 Hospitality\u0027 at 1440 and 1440 reduced, at 390, and on every card at 768 (\u0027[ 04\u0027 / \u0027]\u0027 over 3 lines).",
+                             "why":  "Broken label typography on the main work showcase.",
+                             "evidence":  "qa-shots/visual-qa-home-1440x900-40%.png, qa-shots/visual-qa-home-1440x900-reduce-30%.png, qa-shots/visual-qa-home-390x844-40%.png, qa-shots/visual-qa-home-768x1024-40%.png",
+                             "fix":  "Screenings.tsx:101: `\u003cspan className=\"label shrink-0 whitespace-nowrap text-signal-ink\"\u003e`. Also add `min-w-0` to the title span (line 102)."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Global Nav (Nav.tsx:102,132) at 768x1024, every route",
+                             "problem":  "At 768 the wordmark wraps to \u0027SOCIALxBRAND / PILOT\u0027. The \u0027Start your route\u0027 pill also wraps to 2 lines and grows to 64px tall, beside a 40px MENU pill.",
+                             "why":  "The persistent nav looks broken on every tablet page.",
+                             "evidence":  "qa-shots/visual-qa-home-768x1024-0.png, qa-shots/visual-qa-caps-768x1024-0.png, qa-shots/visual-qa-route-768x1024-0.png",
+                             "fix":  "Line 102: change `sm:block` to `lg:block` (mark only below 1024) and add `whitespace-nowrap`. Line 132: change the CTA label to `hidden lg:inline` / `lg:hidden` (\u0027Start\u0027 below 1024) and add `whitespace-nowrap` to the pill."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Global Footer contact grid (Footer.tsx:20), 768x1024 (also 1440)",
+                             "problem":  "The `sm:grid-cols-3` grid inside `md:col-span-6` gives about 110px columns at 768. The email \u0027socialxbrandpilot@gmail.com\u0027 runs into the phone column, \u0027+91 / 8432935877\u0027 and \u0027WhatsApp / â†—\u0027 wrap, and \u0027www.sxbp.com\u0027 runs past the right gutter to x=761. At 1440 the email ends about 8px from \u0027+91\u0027.",
+                             "why":  "Contact details are the conversion endpoint, and here they collide and wrap.",
+                             "evidence":  "qa-shots/visual-qa-home-768x1024-100%.png, qa-shots/visual-qa-home-1440x900-100%.png, qa-shots/visual-qa-route-1440x900-50%.png",
+                             "fix":  "Footer.tsx:14 `md:col-span-12 lg:col-span-6`; line 20 `md:col-span-12 lg:col-span-6 sm:grid-cols-[auto_auto_auto] sm:justify-between gap-x-10`. Add `whitespace-nowrap` to the phone link."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/ Ladder tick labels (Ladder.tsx:82,86) at 768x1024",
+                             "problem":  "The five step labels in a `max-w-lg grid-cols-5` row are each about 40px wide at 768. \u0027REMEMBERED\u0027, \u0027TRUSTED\u0027, \u0027CHOSEN\u0027 and \u0027MOVING FORWARD\u0027 print on top of each other (\u0027REMEMBERESTEDCHOSEN\u0027).",
+                             "why":  "Overlapping text inside the philosophy act.",
+                             "evidence":  "qa-shots/visual-qa-home-768x1024-25%.png",
+                             "fix":  "Ladder.tsx:86: change `md:block` to `lg:block` (bars only below 1024), or add `break-words text-[0.6rem] leading-tight` to the labels. Also on line 64, use the 2-column ladder grid at `lg:` instead of `md:`, so the copy column is not 230px wide next to a 72svh reel on portrait tablets."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Mobile tap targets, / at 390x844 (DivisionIndex RouteToggle, Nav logo, footer nav)",
+                             "problem":  "Measured sizes: all 18 \u0027+ ROUTE\u0027 toggles 91x36; home logo link 22x32; \u0027Start\u0027 66x40 and \u0027MENU\u0027 91x40; footer nav links Work/Capabilities/Approach/Start your route 20px tall; \u0027Explore every capability â†’\u0027 and \u0027Plan a route for startups\u0027 24px tall; audience route chips 40px tall.",
+                             "why":  "These are below 44px, and the route toggles are the primary in-list action on touch.",
+                             "evidence":  "debug probe of a,button,[role=tab] bounding boxes on / at 390x844",
+                             "fix":  "RouteToggle: `min-h-11 px-4` (44px). Nav logo link: `min-h-11 min-w-11 items-center`. Nav pills: `min-h-11`. Footer nav (Footer.tsx:40) links: `inline-flex min-h-11 items-center`. Text links: `py-2.5 -my-2.5` so the layout is unchanged."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/ hero meta row (Opening.tsx:157 + Clock.tsx:16) at 390x844 and 360x800",
+                             "problem":  "`\u003cClock className=\"hidden md:inline-flex\" /\u003e` does not hide the clock, because Clock always emits `inline-flex` and that overrides `hidden`. On phones the clock sits next to the 2-line agency label and wraps to \u0027INDIA / Â· IST 03:29\u0027. At 360 the meta block ends 8px above \u0027EVERY BUSINESS\u0027.",
+                             "why":  "The first mobile frame has crowded, broken wrapping right above the headline.",
+                             "evidence":  "qa-shots/visual-qa-home-390x844-0.png, qa-shots/visual-qa-home-360x800-0.png",
+                             "fix":  "Clock.tsx:16: drop the hard-coded `inline-flex` and let the caller pass it (default `className = \"inline-flex\"`), or wrap it in Opening.tsx: `\u003cspan className=\"hidden md:block\"\u003e\u003cClock /\u003e\u003c/span\u003e`. Also add `whitespace-nowrap` to the Clock root."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/capabilities/[slug] boarding-pass tickets (ApproachRoute.tsx:45-46,53)",
+                             "problem":  "With `--cols: min(n,8)`, 10 stations render as 8 plus a 2-ticket widow row at 1440. At 768 there are 8 columns of about 80px, so the headers wrap \u0027STN / 01\u0027 and the names wrap (\u0027Media / plan\u0027). At 390, 10 full-width tickets each 120px tall carry one 15px word, about 1300px of mostly empty white cards.",
+                             "why":  "Uneven grid on desktop, cramped on tablet, and hollow, long-scrolling cards on mobile.",
+                             "evidence":  "qa-shots/visual-qa-cap-tickets-1440x900-72%.png, qa-shots/visual-qa-cap-768x1024-60%.png, qa-shots/visual-qa-cap-390x844-60%.png",
+                             "fix":  "`--cols: n \u003e 8 ? Math.ceil(n / 2) : n` (10 becomes 5x2, 9 becomes 5+4). Use the column template from `lg:` rather than `md:`, with `md:grid-cols-4`. Mobile: `grid-cols-2` at base and `min-h-[5.5rem] max-sm:min-h-[5rem]` on the li."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "/ AI act struck lines (AiAmplifies.tsx:22)",
+                             "problem":  "\u0027AI should not replace creativity / strategy / people.\u0027 is set to `text-ink/80` and then tweened to opacity 0.35. That is about #BBB8B6 on #FDF9F7, roughly 1.8:1 contrast, for 27px semibold client copy.",
+                             "why":  "Fails even the 3:1 minimum for large text. These sentences are half of the client\u0027s AI statement.",
+                             "evidence":  "qa-shots/visual-qa-home-1280x720-93%.png, qa-shots/visual-qa-home-390x844-90%.png; AiAmplifies.tsx:22 `{ opacity: 0.35 }`",
+                             "fix":  "Tween to `opacity: 0.6` and set the base colour to `text-muted` (#55556A) instead of ink/80. That gives about 3.4:1, and the red strike line still reads as cancelled."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Display headings: / departures (\u0027â€¦the / business.\u0027), / audiences (\u0027Marketing is for every / business.\u0027), /approach hero (\u0027Then everything / else.\u0027), /approach \u0027Six principles, one / stance.\u0027, / AI mobile (\u0027â€¦work / better.\u0027), footer mobile (\u0027connecting / with.\u0027), / ladder mobile (\u0027more than / being / seen.\u0027)",
+                             "problem":  "A single word is left alone on the last line of the display heading.",
+                             "why":  "The persona checks for orphaned single words in display headings, and they weaken the typography.",
+                             "evidence":  "qa-shots/visual-qa-home-1440x900-80%.png, qa-shots/visual-qa-home-1440x900-90%.png, qa-shots/visual-qa-approach-1440x900-0.png, qa-shots/visual-qa-approach-1440x900-60%.png, qa-shots/visual-qa-home-390x844-90%.png, qa-shots/visual-qa-home-390x844-10%.png",
+                             "fix":  "Add `text-wrap: balance` to the display and headline utilities in globals.css (`--text-display`/`--text-headline` consumers, or `h1,h2 { text-wrap: balance; }`). For SplitText-split headings, where balance is set before the split, bind the last two words with `\u0026nbsp;` in the content (e.g. \u0027the\u0026nbsp;business.\u0027)."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/work grid wide tiles (WorkIndex.tsx:69-74)",
+                             "problem":  "Wide tiles crop 9:16 reels to 4:5, which cuts text burned into the footage. On \u0027Wedding Content\u0027 the \u0027POV\u0027 caption is sliced at the tile\u0027s top edge at 1440. At 768 the same tile reads as nearly square.",
+                             "why":  "The brief says \u0027vertical work stays vertical\u0027, and cropping off the creator\u0027s own on-screen caption makes the work look mishandled.",
+                             "evidence":  "qa-shots/visual-qa-work-1440x900-30%.png, qa-shots/visual-qa-work-768x1024-40%.png",
+                             "fix":  "Use `aspect-[3/4]` for the wide-tile crop and `object-position: 50% 30%` on the Reel video, or keep wide tiles 9:16 but cap them with `max-h-[80svh]` and centre them in the span."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/ reduced motion: Ladder (Ladder.tsx:93) and Marquee",
+                             "problem":  "With --reduce the ladder\u0027s framed reel is removed (`[html:not(.js-motion)_\u0026]:hidden`), leaving the right half of the periwinkle act empty. The static marquee is clipped mid-word at the viewport edge (\u0027you will g\u0027).",
+                             "why":  "Reduced-motion users get a visibly unfinished act and a word cut in half.",
+                             "evidence":  "qa-shots/visual-qa-home-1440x900-reduce-15%.png, qa-shots/visual-qa-home-1440x900-reduce-30%.png",
+                             "fix":  "Ladder: drop the `[html:not(.js-motion)_\u0026]:hidden` and show layer 0 at `opacity-100` when not js-motion (`[html:not(.js-motion)_\u0026]:first:opacity-100`). Marquee under reduce: `motion-reduce:w-auto motion-reduce:flex-wrap motion-reduce:justify-center motion-reduce:whitespace-normal`, and render only the first copy of the track."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Footer giant wordmark (FooterWordmark.tsx:26)",
+                             "problem":  "`tracking-[-0.06em]` at `font-stretch:75%` makes glyphs collide (\u0027OCIAL\u0027, \u0027x\u0027 touching both the L and the B, \u0027AND\u0027). The wordmark is also centred inside the gutter (130 to 1323 at 1440), so it is neither edge to edge nor aligned to the 56px gutters. At 390 the copyright line sits about 3px under it.",
+                             "why":  "Logo legibility on the last frame of every page.",
+                             "evidence":  "qa-shots/visual-qa-home-1440x900-100%.png, qa-shots/visual-qa-home-390x844-100%.png",
+                             "fix":  "Use `tracking-[-0.03em]` and size it to fill the gutter: `[font-size:clamp(3rem,14.4vw,16rem)]` with `text-left`. Add `pb-[0.04em]` to the data-word element and `mt-3` to the copyright row."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/ Ladder framed reel on mobile (Ladder.tsx:93) at 390x844",
+                             "problem":  "The reel is only 26svh tall (about 130x220), pinned left with `max-md:ml-0`. With the -2deg rotation it pokes past the 16px gutter (x=12), and the right 60% of the act is empty under it.",
+                             "why":  "Thumbnail-sized media in a full-screen sticky act. The work is the proof.",
+                             "evidence":  "qa-shots/visual-qa-home-390x844-10%.png, qa-shots/visual-qa-home-390x844-30%.png",
+                             "fix":  "`max-md:mx-auto max-md:h-[38svh]`, and change `-rotate-2` to `max-md:rotate-0 md:-rotate-2`."
+                         }
+                     ],
+        "top3":  [
+                     "Fix the tablet hero: below 1200px in portrait use the stacked mobile fan layout, and move the CTA row to lg:flex-row so the headline is not covered and the subcopy is not one word per line (Opening.tsx:130,154,177).",
+                     "Rebuild the departures board for tablets: use the 4-column grid only at lg, flex-nowrap tiles sized to fit 11 letters, line-clamp-2 instead of 1, and collapse the hidden detail row so inactive text centres (MethodBoard.tsx:103-134).",
+                     "Fix the global typography regressions in one pass: increase .split-line bottom padding to 0.22em (descender clipping), add whitespace-nowrap to the \u0027[ NN ]\u0027 labels, set text-wrap:balance on display headings, and stop the 768px nav and footer contact grid from wrapping (globals.css:216, Screenings.tsx:101, Nav.tsx:102/132, Footer.tsx:14/20)."
+                 ]
+    },
+    {
+        "reviewer":  "motion-director",
+        "verdict":  "The home pins mostly hold up: the departures board, the strike on the manifesto, the velocity marquee and the finale fill all do what they should. The problems are in execution. Every division page has a ticket \"deal\" that visibly snaps into place, the marquee freezes whenever you scroll up, and mobile loses the manifesto\u0027s key moment while spending a quarter of the page on a sticky word swap. Joins between sections are hard cuts, and the inner pages open on a still half-empty frame. On those pages motion stops being the website.",
+        "findings":  [
+                         {
+                             "severity":  "critical",
+                             "where":  "All 18 /capabilities/[slug] pages, \u0027Our approach\u0027 boarding-pass tickets: src/components/capabilities/ApproachRoute.tsx:22-30",
+                             "problem":  "The deck is never stacked before the trigger starts. Before \u0027top 85%\u0027, tickets 02-10 sit already laid out in their row and only 01 is rotated. When scrubbing begins they jump into the deck, then deal out again. The probe confirms it: at scroll 1700, tickets[1..4].style.transform is empty; at 1800 they are translate3d(-147pxâ€¦) and translate3d(-315pxâ€¦). The cause is a single staggered .from() combined with invalidateOnRefresh. After a refresh invalidates the tween, staggered children that have not started yet are no longer rendered at their from-values.",
+                             "why":  "This is the signature motion of every division page, and the first thing the user sees is the cards popping backwards. It reads as broken, not choreographed.",
+                             "fix":  "Build one tween per ticket so every \u0027from\u0027 is rendered at time 0, e.g. `const tl = gsap.timeline({defaults:{ease:\u0027none\u0027}, scrollTrigger:{â€¦same}}); tickets.forEach((t,i)=\u003e tl.fromTo(t, {x:()=\u003efirst()-t.offsetLeft+i*6, y:()=\u003etickets[0].offsetTop-t.offsetTop-i*3, rotate:(i%2?5:-5)+i*0.6}, {x:0,y:0,rotate:0,duration:0.5,immediateRender:true}, i*0.04));`. Alternatively, drop `stagger`, since scrub already spreads the motion over time. The y term also fixes the second-row problem below.",
+                             "evidence":  "qa-shots/motion-director-div2-1440x900-1700.png (row laid out) vs motion-director-div2-1440x900-1950.png (stacked), plus the debug.mjs transform probe"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home Marquee \u0027WE WILL SHOW / you will grow\u0027: src/components/home/Marquee.tsx:26,46,52",
+                             "problem":  "Scrolling upward into or inside the band freezes both rows. The repeat:-1 loop tweens run backwards to totalTime 0 and stop there. The probe scrolled up from 11250 to 10170 and both tracks came to rest at x=0 and x=-3715. They did not move during 1s of idle with the band fully on screen, and only restarted after scrolling down again. The loops are also created playing, so they run off-screen from page load until the first onToggle.",
+                             "why":  "This band is the brand line in motion, and a \u0027velocity-driven\u0027 marquee that dies on reverse looks broken. Backward scrolling is common: people scroll back to the work rail just above it.",
+                             "fix":  "Create each loop with `paused: true` and start it far from zero: `const l = gsap.to(t,{xPercent: fwd?-50:0, duration: fwd?34:48, ease:\u0027none\u0027, repeat:-1, paused:true}); l.totalTime(l.duration()*1000);`. Then onToggle play/pause as now. A negative timeScale then never reaches the start. Alternatively, add `onReverseComplete(){ this.totalTime(this.rawTime() + this.duration()*100); }` to each loop."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home Opening, mobile \u003c768 (pocket): src/components/home/Opening.tsx:70 (`if (!cinema) return;`) with lines 208 and 213",
+                             "problem":  "On phones the manifesto is completely static. With JS on, the `[data-strike]` bar stays at scale-x-0, so \u0027activity\u0027 is never struck, and \u0027impact\u0027 stays ink-coloured instead of landing in white. The reduced-motion version shows the struck line and the white \u0027impact\u0027. The motion version shows less story than the no-motion one.",
+                             "why":  "\u0027Activity â†’ impact\u0027 is the thesis of the site. On mobile, where most of this audience will view it, the beat is missing entirely.",
+                             "fix":  "In the pocket branch, before the cinema return, add a one-shot observeOnce on [data-manifesto] (REVEAL_MARGIN): `gsap.timeline().from(chars,{color:\u0027rgba(18,18,26,0.16)\u0027, stagger:{amount:0.5}, duration:dur.quick}).to(strike,{scaleX:1,duration:dur.base,ease:\u0027glide\u0027}).to(activity,{opacity:0.42,duration:dur.quick},\u0027\u003c\u0027).to(impact,{color:\u0027#fff\u0027,duration:dur.base,ease:\u0027pilot\u0027})`. This needs a chars split for pocket too: move the SplitText.create of chars above the `if (!cinema) return`.",
+                             "evidence":  "qa-shots/motion-director-m-390x844-700.png (no strike, ink \u0027impact\u0027) vs motion-director-rm-1440x900-reduce-900.png (struck, white)"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home Ladder (periwinkle act): src/components/home/Ladder.tsx:23 (MQ.motion includes mobile) and :62 (`[html.js-motion_\u0026]:h-[440svh]`)",
+                             "problem":  "The CSS-sticky ladder is a pin in everything but name. On a 390Ã—844 phone the section is 3714px of a 14321px page (26%) for four word swaps. On desktop it takes 3060px of scroll for four discrete swaps, about 612px per rung. Nothing on screen responds between swaps: the word, ticks and reel only change at the threshold.",
+                             "why":  "This breaks the \u0027no pins \u003c 768px\u0027 rule and creates the longest stretch on the page where scrolling has no visible effect.",
+                             "fix":  "Desktop: change to `cinema:h-[340svh]` (about 430px per rung) and scrub the active tick, e.g. `gsap.quickSetter(fill,\u0027scaleX\u0027)` driven by `(self.progress*steps.length)%1` on a per-tick inner span, so every pixel of scroll moves something. Mobile: drop the height (no `h-[440svh]` below md) and run the swap with observeOnce plus a 1.6s interval timer while the section intersects, or show the dealt list with the reel crossfading on a timer."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home hero â†’ takeover (pin +230%), first ~600px of scroll: src/components/home/Opening.tsx:87-95 (line exits, duration 0.3) vs the stage z-0 / hero z-10 stacking (lines 127, 154)",
+                             "problem":  "The headline sits at z-10 above the stage. Its exits run over 0.3 of the timeline (about 620px), while the centre reel expands underneath from 0.06 onwards. Mid-scroll, \u0027HAS SOMETHING\u0027 and \u0027worth showing.\u0027 are composited semi-transparent over the video, giving muddy blue and red type over the fireworks footage.",
+                             "why":  "This is the first scroll interaction every visitor makes. A primary action meant to read as \u0027the work takes over\u0027 instead reads as two layers fighting.",
+                             "fix":  "Finish the type before the reel reaches it: set the line exits (lines 87-89) to `duration: 0.14` and the CTA/meta to 0.12. Alternatively, lift the stage above the hero once the takeover starts: `.set(stageEl, { zIndex: 20 }, 0.06)`, with the stage div given a ref, plus `.set(heroEl,{pointerEvents:\u0027none\u0027},0.06)`.",
+                             "evidence":  "qa-shots/motion-director-hero2-1440x900-300.png, motion-director-hero-1440x900-500.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home hand-off manifesto â†’ ladder: src/components/home/Opening.tsx:102-103 / Ladder.tsx:63",
+                             "problem":  "The pin ends on a cornflower dot field that simply scrolls away. Its bottom edge is a flat horizontal seam against the periwinkle grid, and the takeover reel under the 0.96 dim never resolves. One act does not become the next; it is a hard cut between two blue fields.",
+                             "why":  "The brief asks for hand-offs where sections become each other. This is the most-scrolled seam on the site, and the cut makes the 230% pin feel like a detour instead of a transition.",
+                             "fix":  "Use the last 0.16 of the pinned timeline to turn the field into the ladder\u0027s colour: `.to(q(\u0027[data-dim]\u0027), { backgroundColor: \u0027var(--color-periwinkle)\u0027, duration: 0.12 }, 0.88)` with the texture cross-faded (dot â†’ grid via a second layer, opacity 0â†’1). Also add `.to(q(\u0027[data-manifesto]\u0027), { yPercent: -12, autoAlpha: 0, duration: 0.1 }, 0.9)` so the un-pin lands on a seamless periwinkle surface.",
+                             "evidence":  "qa-shots/motion-director-hero-1440x900-2600.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home, Marquee (10957) â†’ Capabilities tickers (11367) â†’ 18-row index: src/app/page.tsx with src/components/capabilities/DivisionTicker.tsx and DivisionIndex.tsx",
+                             "problem":  "Four infinite horizontal belts play back to back within about 600px of scroll: the marquee\u0027s 2 rows, then the ticker\u0027s 2 rows of the same 18 division names that the list repeats directly below. Then come about 1900px of 18 identical rows that only move on hover, so they never move on touch.",
+                             "why":  "Repeating one pattern four times is overload, and the static list right after is a dead stretch. Motion that repeats stops communicating.",
+                             "fix":  "Remove \u003cDivisionTicker\u003e from the home Capabilities section and keep it on /capabilities only. Give the index rows a one-shot observeOnce batch per cluster: the row rule scaleX 0â†’1 (origin-left, dur.base, glide) and the title x:-24â†’0 with autoAlpha (dur.base, pilot, cappedStagger(rows, stagger.cards)). That makes the list arrive instead of sitting there.",
+                             "evidence":  "qa-shots/motion-director-rail-1440x900-10900.png, motion-director-rail-1440x900-11400.png, motion-director-rail-1440x900-12300.png"
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Home Screenings rail â†’ /work/[slug]: src/components/home/Screenings.tsx:99",
+                             "problem":  "The rail reels have no shared ViewTransition name, while /work (WorkIndex.tsx:73) and /work/[slug]/page.tsx:67 both use `screening-${slug}` with share=\"morph\". Clicking a \u0027Watch\u0027 card on home, the most-used entry into a screening, gets the generic lift/rise instead of the reel morphing into the detail page\u0027s hero reel.",
+                             "why":  "The morph is how this site explains navigation, and it is missing from the path with the most traffic. That is an inconsistent grammar between two entry points to the same page.",
+                             "fix":  "Wrap the rail Reel: `\u003cViewTransition name={`screening-${screening.slug}`} share=\"morph\" default=\"none\"\u003e\u003cReel â€¦/\u003e\u003c/ViewTransition\u003e` (import ViewTransition from react), matching WorkIndex.tsx:73-81."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "Inner page openers /work, /capabilities, /approach, /route: src/components/layout/PageHeader.tsx",
+                             "problem":  "Every inner route opens on the same left-aligned split-headline with the right 45% of a 1440 frame empty and nothing moving once the mount reveal ends. Only the division pages have a hero object (the striped number).",
+                             "why":  "\u0027The motion IS the website\u0027 fails on the first frame of four of the seven routes. They read as a template, not as the cinematic home.",
+                             "fix":  "Add an optional `aside` slot to PageHeader at md:col-span-5 and fill it per route with one primary motion object built from existing grammar. /work: a 3-reel mini fan reusing FAN_ANGLES[1..3] with the home rotate-in (rotate -40â†’0, dur.cinematic, pilot). /approach: the Mark drawn with drawSVG (dur.cinematic, glide). /route: the route line SVG drawing to five stops (drawSVG 0â†’100%, dur.cinematic, plus stops scale-in with cappedStagger). /capabilities: the striped \u002718\u0027 used on the division pages.",
+                             "evidence":  "qa-shots/motion-director-work-1440x900-0.png, motion-director-caps-1440x900-0.png, motion-director-approach-1440x900-0.png, motion-director-route-1440x900-0.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Magnetic CTAs: Opening.tsx:182, Finale.tsx:47, Nav.tsx:130",
+                             "problem":  "GSAP writes x/y every pointermove (PointerFx.tsx:56), while these elements also have Tailwind `transition-transform duration-300`. Computed transition-property is \u0027transform, translate, scale, rotate\u0027 at 0.3s, so CSS eases each GSAP frame again. The primary CTAs feel laggy and rubbery, while \u0027See the work\u0027 (no transform transition) snaps differently.",
+                             "why":  "Inconsistent micro-interaction, with double-easing on the most important buttons.",
+                             "fix":  "Remove `transition-transform duration-300 hover:-translate-y-0.5` from the three .magnetic links (the magnet already gives lift), or add `.magnetic { transition-property: color, background-color, border-color; }` in globals.css.",
+                             "evidence":  "debug.mjs probe of getComputedStyle(.magnetic).transitionProperty"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Home Screenings pin end and card focus: Screenings.tsx:55-61, :93 (`cinema:pr-[30vw]`)",
+                             "problem":  "The rail pin finishes with \u0027Enter the work\u0027 at xâ‰ˆ790 and about 650px of empty shell on the right for the last part of the pin. Focus scaling only ramps cards in from the right; cards leaving on the left stay at 1.0 and full opacity, so there is no single \u0027now playing\u0027.",
+                             "why":  "It ends on a dead frame, and the stated hierarchy (one primary card) is not what renders.",
+                             "fix":  "Set `cinema:pr-[calc(50vw-min(13vw,23svh))]` so the CTA ends centred. Make the falloff symmetric: `const c = left + f.width/2; const p = 1 - gsap.utils.clamp(0,1,Math.abs(c - 0.5*vw)/(0.42*vw));`.",
+                             "evidence":  "qa-shots/motion-director-rail-1440x900-9900.png, motion-director-ladder-1440x900-7400.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Division tickets with \u003e8 stations (e.g. performance-marketing has 10): ApproachRoute.tsx:26-27, :46",
+                             "problem":  "With `--cols` capped at 8, stations 09-10 wrap to a second row. Their \u0027from\u0027 only offsets x, so they deal out of a second deck in row 2 instead of from the stack.",
+                             "why":  "The \u0027deck deals out\u0027 metaphor splits in two.",
+                             "fix":  "Include the row offset in the from y: `y: (i) =\u003e tickets[0].offsetTop - tickets[i].offsetTop - i*3` (this is folded into the critical fix above).",
+                             "evidence":  "qa-shots/motion-director-div-1440x900-2100.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Home Screenings card labels: Screenings.tsx:101",
+                             "problem":  "The index label wraps as \u0027[ 04\u0027 / \u0027]\u0027 beside two-line titles, at 1440 and at 390.",
+                             "why":  "It breaks the mono label rhythm in the most-watched act.",
+                             "fix":  "Add `shrink-0 whitespace-nowrap` to the label span (MethodBoard.tsx:119 already does this).",
+                             "evidence":  "qa-shots/motion-director-ladder-1440x900-7400.png, motion-director-m-390x844-5000.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Departures board end state: MethodBoard.tsx:62",
+                             "problem":  "The last station (GROW) gets 1/7 of the pin and the board scrolls away still showing \u0027Boarding\u0027. There is no arrival beat for the whole route.",
+                             "why":  "The board\u0027s narrative has no payoff, and the act ends mid-sentence.",
+                             "fix":  "Reserve the last 10% of progress for arrival: `const i = Math.min(method.length, Math.floor(self.progress/0.9 * method.length))`. When i === method.length, set every row to \u0027done\u0027 and flip the header status to \u0027ARRIVED\u0027 (flap the header word).",
+                             "evidence":  "qa-shots/motion-director-board-1440x900-18000.png"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "/route step transitions: RouteBuilder.tsx:39",
+                             "problem":  "Every step enters from x:36 (from the right), including when the user presses Back.",
+                             "why":  "Motion should explain direction, and here Back contradicts it.",
+                             "fix":  "Track the previous step in a ref: `const dir = Math.sign(step - prev.current) || 1; gsap.fromTo(stepRef.current,{autoAlpha:0,x:36*dir},{â€¦}); prev.current = step;`."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Values outside the grammar (tokens.ts: 0.2/0.35/0.6/0.9/1.3, staggers capped)",
+                             "problem":  "Opening.tsx:53 (0.45, stagger 0.07), :60 (stagger 0.09), :61 (1.6), :62/:66 (1.4), :68 (stagger 0.14); DivisionIndex.tsx:60 (0.5), :63 (0.3); ScreeningMedia.tsx:29 (literal 0.9, y:60 vs Reveal\u0027s 40); RouteBuilder.tsx:41 (1.2), :42 (back.out(1.6), stagger 0.12); MethodBoard.tsx:118 (duration-700); WorkIndex.tsx:76/78 (duration-[1.2s]); globals.css:104/219 (0.45s); view transitions 180/240/320/420ms.",
+                             "why":  "Off-token values add up to a site whose entrances feel subtly different from section to section.",
+                             "fix":  "Map each one to dur.* / var tokens: 0.45â†’dur.quick, 1.4/1.6â†’dur.cinematic, 0.5â†’dur.base, 0.3â†’dur.quick, 1.2sâ†’dur.cinematic, 700msâ†’600ms; replace back.out with \u0027pilot\u0027; route staggers through cappedStagger. Expose the durations as CSS vars (--dur-quick etc.) for the Tailwind classes."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "ScrollTrigger count (HANDOVER gotcha #12): ScreeningMedia.tsx:26,29; AiAmplifies.tsx:19; MethodBoard.tsx:72; ApproachRoute.tsx:36",
+                             "problem":  "One-shot reveals still use per-element ScrollTriggers: 2 per media item on /work/[slug], 3 for the AI pairs on home, 7 for the mobile board rows, plus 1 per division page. Each one adds to every refresh.",
+                             "why":  "This contradicts the documented performance rule and slows refreshes on the heaviest page.",
+                             "fix":  "Switch the one-shots to observeOnce(targets, REVEAL_MARGIN, batch =\u003e gsap.to/ from â€¦). Drive the photo drift from one ScrollTrigger on the photo list with a single onUpdate that sets each img\u0027s yPercent from cached offsetTop."
+                         }
+                     ],
+        "top3":  [
+                     "Fix the division-page ticket deal (ApproachRoute.tsx): build one fromTo per ticket with immediateRender:true and a row-aware y offset, so the deck is stacked before scrolling and deals without popping on all 18 pages.",
+                     "Fix the Marquee loops (Marquee.tsx): create them paused and pre-advance totalTime by duration*1000, or wrap on onReverseComplete, so upward scrolling never freezes the band; play only on toggle.",
+                     "Re-choreograph the Opening/Ladder seam and mobile. Give the pocket manifesto its strikeâ†’impact beat via observeOnce. Clear the headline before the reel passes under it (line exits â‰¤0.14 or lift the stage z at 0.06). End the pin by turning the iris field into periwinkle so it hands off into the Ladder. Shorten the Ladder to 340svh on desktop with a scrubbed tick fill, and remove its sticky height below 768px."
+                 ]
+    },
+    {
+        "reviewer":  "frontend-reviewer",
+        "verdict":  "The code is in good shape. `tsc` and `eslint` both pass, the GSAP calls are matchMedia-scoped and reverted, the Next 16 params / generateStaticParams / dynamicParams / JSON-LD escaping are all correct, and the view-transition names are unique per page. The problems are at the edges the brief cares about most. With reduced motion, the reel Play button sits inside the card link, so pressing it opens the work page instead of playing the reel. The menu dialog lets keyboard focus fall through to the page behind it. The video budget gives decode slots to invisible ladder layers. At 768 and 1024 wide, layout breaks: the departures board copy is cut to a few words, the hero\u0027s intro text is squeezed into a narrow column, and the ticket rows are split or crushed. The footer email collides with the phone number at 1280 and 1440 wide.",
+        "findings":  [
+                         {
+                             "severity":  "critical",
+                             "where":  "src/components/media/Reel.tsx:329-338 (used inside \u003cLink\u003e in Screenings.tsx:206, WorkIndex.tsx:76, capabilities/[slug]/page.tsx:133, work/[slug]/page.tsx:261)",
+                             "problem":  "With reduced motion, Reel shows a Play/Pause \u003cbutton\u003e inside a link. 15 nested buttons on home. Clicking Play on the first screening card went to /work/creator-content and no video played. Nested interactive content is also invalid HTML.",
+                             "why":  "AGENTS.md rule 4: reduced motion must be complete. These users get no way to watch the reels on home or /work, and pressing Play takes them to another page.",
+                             "evidence":  "qa-shots/frontend-reviewer-home-1440x900-reduce-#screenings-title+-150.png (PLAY pills on linked cards); probe: nestedButtonsInLinks=15, urlAfterPlayClick=http://localhost:3100/work/creator-content",
+                             "fix":  "Add a `controls?: boolean` prop to Reel (default true) and render the reduced-motion button only when `controls \u0026\u0026 reduced`. Pass `controls={false}` from Screenings, WorkIndex, the division \u0027Work that shows it\u0027 grid and the \u0027Next screening\u0027 tile; the poster stays and the link opens the detail page, where the featured Reel keeps its control. As a safety, start `toggle` with `(e) =\u003e { e.preventDefault(); e.stopPropagation(); ... }`."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/layout/Nav.tsx:80-86, 163-198 (site menu dialog)",
+                             "problem":  "The full-screen menu is role=dialog aria-modal=true but has no focus trap and does not make the page inert. After the 4 menu links, Tab moves to the hidden /work filter buttons behind the panel. The Close toggle sits in \u003cheader\u003e, outside the modal, so screen readers in modal mode cannot reach it.",
+                             "why":  "Keyboard and screen-reader users lose their place behind an opaque full-screen panel. The aria-modal claim is false.",
+                             "evidence":  "probe on /work: Tab sequence MENU:01 Work â€¦ MENU:04 Start your route â†’ PAGE:Everything14 â†’ PAGE:Reels \u0026 films11; main.inert=false",
+                             "fix":  "In the `open` effect, set `document.getElementById(\u0027main\u0027)!.inert = true` and `document.querySelector(\u0027footer\u0027)!.inert = true`, and set both back to false in cleanup. Add a keydown handler: Tab on the last menu link focuses `menuButton.current`, and Shift+Tab on menuButton focuses the last link. Either move the dialog role onto a wrapper that contains both the header toggle and the panel, or drop aria-modal and keep the inert approach."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/home/Ladder.tsx:94-101 + src/components/media/video-budget.ts:364-367",
+                             "problem":  "Each of the 5 stacked ladder layers mounts an in-view Reel. They all intersect equally, so the budget hands 2 of its 3 desktop decode slots to opacity-0 layers. At step 1, layers 0 and 2 (opacity 0) were PLAYing alongside visible layer 1. release() also never re-ranks, so a video paused for being over budget stays on its poster after a slot frees, until its own IntersectionObserver fires again.",
+                             "why":  "Two thirds of the decode budget is spent on video no one can see, which hurts the \u0027home load cost\u0027 item in the handover. The non-resuming budget can leave a visible reel frozen.",
+                             "evidence":  "probe step1: \u00270:op0.0:PLAY | 1:op1.0:PLAY | 2:op0.0:PLAY\u0027; step2: \u00270:op0.0:PLAY | 1:op0.0:PLAY | 2:op1.0:PLAY\u0027",
+                             "fix":  "Ladder: render `\u003cReel ref={(r)=\u003e{reelRefs.current[i]=r}} mode=\"manual\" â€¦/\u003e` and in `show(i)` call `reelRefs.current[i]?.play()` and `.pause()` on the others. Gate the play on an IntersectionObserver on the section so nothing plays off-screen. video-budget.ts: move the rank loop into `rebalance()` and call it from both requestPlay and release (after `playing.delete(el)`)."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/home/MethodBoard.tsx:115, 133-134 (cinema rows)",
+                             "problem":  "`cinema:line-clamp-1` on the station body cuts the content in the cinema layout. At 1024 and 768 wide, every row loses most of its text (\u0027Understand the business,â€¦\u0027, \u0027Track performance andâ€¦\u0027), and the detail line is cut too. At 1440 the Grow row still ends in \u0027sustainablâ€¦\u0027. Reduced motion shows the full text, but the main desktop and tablet path does not.",
+                             "why":  "The board explains the method, and the 8.5rem status column is taking the width the text needs.",
+                             "evidence":  "qa-shots/frontend-reviewer-home-768x1024-#method-title+600.png, qa-shots/frontend-reviewer-home-1024x768-#method-title+600.png, qa-shots/frontend-reviewer-home-1440x900-#method-title+-150.png",
+                             "fix":  "Below lg, drop the status column: `md:grid-cols-[4.5rem_minmax(0,1fr)_minmax(0,1.5fr)] lg:grid-cols-[4.5rem_minmax(0,1.1fr)_minmax(0,1.4fr)_8.5rem]`, and make the status cell `hidden lg:block` (the flood already shows the active station). Change the body to `cinema:line-clamp-2` and show the detail line only at `lg:` and up (`hidden lg:block`). Raise the row height to `cinema:h-[clamp(3.2rem,7.4svh,4.8rem)]`. The header grid on line 103 needs the same column change."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/layout/Footer.tsx:221 (contact \u003cdl\u003e)",
+                             "problem":  "`sm:grid-cols-3` inside md:col-span-6 gives each column about 190px. \u0027socialxbrandpilot@gmail.com\u0027 is wider than that and runs into \u0027+91 8432935877\u0027: the text reads \u0027gmail.com+91\u0027 at 1280 and the gap is about 9px at 1440.",
+                             "why":  "The main contact details are on every page and look broken where they matter most.",
+                             "evidence":  "qa-shots/frontend-reviewer-home-1280x720-100%.png, qa-shots/frontend-reviewer-home-1440x900-#finale-title+-100.png",
+                             "fix":  "Change the dl to `grid gap-8 text-sm sm:grid-cols-2 md:col-span-6`, put the email item in `sm:col-span-2`, and add `break-all sm:break-normal` to its link. Alternatively, use `sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,0.8fr)]`."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/home/Opening.tsx:177 and 130 (hero at 1024x768)",
+                             "problem":  "The CTA row turns into a row at md with `md:max-w-[58%]` and the buttons set to shrink-0. That leaves the lede about 110px wide, wrapping to 7 lines and colliding with the Next indicator. The mega headline also runs under the fan: the final S of BUSINESS and the \u0027g.\u0027 of showing overlap the left card.",
+                             "why":  "1024x768 counts as a cinema viewport, and the first frame there looks broken.",
+                             "evidence":  "qa-shots/frontend-reviewer-home-1024x768-0.png",
+                             "fix":  "Make the CTA row stack until lg: `flex flex-col items-start gap-6 lg:max-w-[58%] lg:flex-row lg:items-end lg:gap-10`. Move the fan right between md and lg with `md:left-[84%] lg:left-[78%]`, or cap the h1 with `md:max-lg:text-[clamp(3.25rem,8vw,5.5rem)]`."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/capabilities/ApproachRoute.tsx:333-342, 357-358, 367-369",
+                             "problem":  "`--cols` is capped at 8, so a 10-station route renders as 8 tickets plus 2 orphans. The deal tween only offsets x, so tickets 09 and 10 deal from their own row and the deck splits into two piles. At 768 the 8 columns are about 80px wide: the headers wrap to \u0027STN / 01\u0027 and \u0027STN ARR / 10\u0027 collides.",
+                             "why":  "The boarding-pass deck is the main motion idea on division pages. At these widths it looks like a bug instead of a deal.",
+                             "evidence":  "qa-shots/frontend-reviewer-perf-1440x900-#approach-title+-100.png, qa-shots/frontend-reviewer-perf-1440x900-#approach-title+-300.png (two piles mid-deal), qa-shots/frontend-reviewer-perf-768x1024-#approach-title+-100.png",
+                             "fix":  "Set `--cols = steps.length \u003e 6 ? Math.ceil(steps.length / 2) : steps.length` (10 becomes 5+5) and change the grid to `sm:grid-cols-2 md:grid-cols-3 lg:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]`. In the from-tween add `y: (i) =\u003e tickets[0].offsetTop - tickets[i].offsetTop - i * 3` so every ticket starts in one stack. Add `whitespace-nowrap` to both header labels and use \u0027Arr\u0027 only when the column is at least 7rem wide."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/home/Opening.tsx:82",
+                             "problem":  "The manifesto split `SplitText.create(q(\u0027[data-manifesto-line]\u0027), { type: \u0027words,chars\u0027 })` uses the default aria \u0027auto\u0027. It writes aria-label onto the two \u003cspan data-manifesto-line\u003e elements. This is the gotcha #9 axe violation, and it is back.",
+                             "why":  "aria-label is prohibited on generic spans (axe aria-prohibited-attr), and HANDOVER Â§6.9 already records this rule.",
+                             "evidence":  "probe: manifestoAria=[{tag:SPAN,label:\"We don\u0027t simply aim to create digital activity.\"},{tag:SPAN,label:\u0027We aim to create digital impact.\u0027}]",
+                             "fix":  "`SplitText.create(q(\u0027[data-manifesto-line]\u0027), { type: \u0027words,chars\u0027, aria: \u0027none\u0027 })`. The char spans stay readable text, as in SplitReveal for non-headings."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/components/home/Marquee.tsx:249-253, 264",
+                             "problem":  "The two loops start playing as soon as they are created. They are only paused from `onToggle`, which never fires until the trigger first becomes active and then inactive. Both tracks were already moving at scrollY=0, about 9 screens above the band, and they keep ticking until the user has scrolled through it once.",
+                             "why":  "Every page load runs two infinite transform tweens off-screen, during the hydration window the handover names as the load bottleneck. DivisionTicker already handles this correctly.",
+                             "evidence":  "probe at scroll 0: marqueeMovingAtTop=[true,true]",
+                             "fix":  "Create the loops with `paused: true`. After ScrollTrigger.create add `if (st.isActive) loops.forEach(l =\u003e l.play())`, or swap the ST toggle for an IntersectionObserver the way DivisionTicker.tsx:281 does."
+                         },
+                         {
+                             "severity":  "major",
+                             "where":  "src/app/layout.tsx:22 (metadata.openGraph.url)",
+                             "problem":  "Child routes do not set openGraph, so they inherit the root `url: \u0027/\u0027`. Every page emits `og:url=https://www.sxbp.com`, including /work, /capabilities/performance-marketing and /work/restaurant-hospitality, while their canonicals are correct.",
+                             "why":  "Social shares of any inner page credit the homepage URL, which weakens the per-division SEO that sitemap.ts sets up.",
+                             "evidence":  "curl /work and /capabilities/performance-marketing: \u003cmeta property=\"og:url\" content=\"https://www.sxbp.com\"/\u003e",
+                             "fix":  "Remove `url` from the root openGraph. Add a helper `ogFor(path)` to src/lib/seo.ts that returns `{ type:\u0027website\u0027, siteName: site.name, locale:\u0027en_IN\u0027, url: path }`. Set `openGraph: ogFor(\u0027/work\u0027)` (and so on) in each page\u0027s metadata and generateMetadata; child openGraph replaces the parent object, so the helper must carry siteName and locale."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/app/capabilities/[slug]/page.tsx:26",
+                             "problem":  "`description: d.whatItIs.join(\u0027 \u0027).slice(0, 300)` cuts mid-word. The performance-marketing meta and og description ends in \u0027Return on advertising investmen\u0027.",
+                             "why":  "A broken word in search snippets and share cards looks careless.",
+                             "evidence":  "curl /capabilities/performance-marketing og:description",
+                             "fix":  "Truncate at a word boundary near 155 characters: `const t = d.whatItIs.join(\u0027 \u0027); const desc = t.length \u003e 158 ? t.slice(0, t.lastIndexOf(\u0027 \u0027, 155)) + \u0027â€¦\u0027 : t;`"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/layout/Clock.tsx:305 + Opening.tsx:157",
+                             "problem":  "Clock always applies `inline-flex` and the hero passes `hidden md:inline-flex`. In Tailwind v4 order, `inline-flex` beats `hidden`, so the hero clock still shows at 390px and wraps to \u0027INDIA / Â· IST 03:36\u0027 next to the wrapped meta label. This is the same base-vs-caller problem as gotcha #2.",
+                             "why":  "The mobile hero\u0027s first line is cramped and the intent in the code is not met.",
+                             "evidence":  "qa-shots/frontend-reviewer-home-390x844-0.png",
+                             "fix":  "In Opening, wrap it instead: `\u003cspan className=\"hidden md:block\"\u003e\u003cClock /\u003e\u003c/span\u003e`. Alternatively, have Clock add `inline-flex` only when the className has no `hidden`, like the Reel/SpinBadge pattern."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/home/Screenings.tsx:208",
+                             "problem":  "The `[ 05 ]` index label wraps inside the baseline flex row when the title is two lines, leaving a lone \u0027]\u0027 on the next line. It happens on cards 02, 04 and 05.",
+                             "why":  "It breaks the bracketed-label system that runs through the whole site.",
+                             "evidence":  "qa-shots/frontend-reviewer-home-1440x900-#screenings-title+1200.png, qa-shots/frontend-reviewer-home-1440x900-reduce-#screenings-title+-150.png",
+                             "fix":  "`\u003cspan className=\"label shrink-0 whitespace-nowrap text-signal-ink\"\u003e`"
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/home/Audiences.tsx:198-214",
+                             "problem":  "It has the ARIA tab roles but not the tab pattern. There is no arrow-key, Home or End handling, every tab is in the Tab order (no roving tabindex), tabs have no id, the panel has no aria-labelledby, and `aria-live` on the tabpanel re-reads the whole panel on each change.",
+                             "why":  "Screen readers announce \u0027tab\u0027 but the keys they expect for tabs do nothing.",
+                             "evidence":  "code: buttons have role=tab and onClick only; the panel is role=tabpanel aria-live=polite",
+                             "fix":  "Give each tab `id={`aud-tab-${a.id}`}` and `tabIndex={a.id===active?0:-1}`, plus an onKeyDown handler where ArrowLeft/ArrowRight/Home/End call `choose()` and focus the next tab. Give the panel `aria-labelledby={`aud-tab-${active}`}` and remove aria-live."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/route/RouteBuilder.tsx:91, 106",
+                             "problem":  "The radio inputs are `sr-only`, so the global :focus-visible outline draws on a 1Ã—1 clipped box. The label cards get no focus style. Tabbing into the group with nothing selected shows no focus anywhere.",
+                             "why":  "The conversion form fails visible focus (WCAG 2.4.7).",
+                             "evidence":  "probe /route: activeElement INPUT 1Ã—1 with outline \u0027solid 2px\u0027, invisible in scratchpad route-focus.png",
+                             "fix":  "Add `has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue` to both label classNames."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/layout/Nav.tsx:137-138",
+                             "problem":  "The route-count badge is a plain \u003cspan\u003e carrying `aria-label=\u0027N divisions on your route\u0027`. aria-label is prohibited on generic elements (gotcha #9), so it is ignored and the link is announced as \u0027Start your route 3\u0027.",
+                             "why":  "It\u0027s the same axe violation class as above, and the count is meaningless without context.",
+                             "evidence":  "code",
+                             "fix":  "Remove the aria-label and render `\u003cspan aria-hidden\u003e{route.length}\u003c/span\u003e\u003cspan className=\"sr-only\"\u003e, {route.length} divisions on your route\u003c/span\u003e`."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/home/Opening.tsx:172, src/components/home/Finale.tsx:340",
+                             "problem":  "DrawSVG runs on paths with `vectorEffect=\u0027non-scaling-stroke\u0027` inside `preserveAspectRatio=\u0027none\u0027` SVGs. On every home load GSAP warns \u0027\u003cpath\u003e length cannot be measured when vector-effect is non-scaling-strokeâ€¦\u0027, so the draw lengths are estimates.",
+                             "why":  "The signal-line draw can finish early or late, and a console warning shows on every load.",
+                             "evidence":  "console on every home probe: \u0027Warning: \u003cpath\u003e length cannot be measured when vector-effect is non-scaling-strokeâ€¦\u0027",
+                             "fix":  "Remove vectorEffect and set `strokeWidth` in viewBox units (about 2 for the 1000Ã—80 box), or keep preserveAspectRatio default (\u0027xMidYMid meet\u0027) and size the SVG by aspect ratio."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/home/AiAmplifies.tsx:259, src/components/work/ScreeningMedia.tsx:122-124, src/components/home/MethodBoard.tsx:71-73",
+                             "problem":  "These create one ScrollTrigger per item for one-shot reveals: 3 on home, about 6 per work page for data-rise, and 7 on mobile for the board flaps. HANDOVER Â§6.12 says one-shots go through `observeOnce`.",
+                             "why":  "Each extra trigger adds to every ScrollTrigger.refresh(), and home already has three pins.",
+                             "evidence":  "code",
+                             "fix":  "Replace with `observeOnce(items, REVEAL_MARGIN, (batch) =\u003e batch.forEach(play))`. For example, in AiAmplifies build each pair\u0027s timeline `paused: true` and call `.play()` in the callback. Keep only the scrubbed data-drift triggers."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/capabilities/DivisionTicker.tsx:277-283",
+                             "problem":  "The pointerenter and pointerleave listeners are added inside the matchMedia handler and never removed. The cleanup only disconnects the IO, so after a revert or remount the listeners still call `slow()` on killed tweens.",
+                             "why":  "It leaks across matchMedia changes and React StrictMode remounts.",
+                             "evidence":  "code",
+                             "fix":  "Store the handlers and remove them in the returned cleanup, or use `{ signal }` from an AbortController and call `ac.abort()` in cleanup."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/capabilities/DivisionIndex.tsx:240-247",
+                             "problem":  "The hover preview mounts a Reel (with a lazy \u003cimg\u003e) for all 12 divisions that have previews. Because the box is laid out at the top of the index, all 12 posters download on /capabilities load with no hover.",
+                             "why":  "Wasted bytes on a page that is already image-heavy, for a feature only fine-pointer hover users ever see.",
+                             "evidence":  "probe /capabilities: preview posters {total:12, loaded:12} before any scroll or hover",
+                             "fix":  "Keep `const [armed, setArmed] = useState(false)`, set it on the root\u0027s first onPointerEnter, and render the previews map only when `armed`."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/work/WorkIndex.tsx:64",
+                             "problem":  "`aria-live=\u0027polite\u0027` is on the whole tile grid, so every filter change makes screen readers read every visible tile title, kicker and count.",
+                             "why":  "Too verbose; the change can be stated in one line.",
+                             "evidence":  "code",
+                             "fix":  "Remove aria-live from the \u003cul\u003e and add `\u003cp className=\"sr-only\" aria-live=\"polite\"\u003e{visible.length} screenings shown\u003c/p\u003e`."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "src/components/home/Opening.tsx:101,172; Finale.tsx:340,352",
+                             "problem":  "Colours and contact data are hard-coded: tween `color: \u0027#ffffff\u0027`, `stroke=\u0027#ff3131\u0027`/`\u0027#ffffff\u0027`, and `mailto:socialxbrandpilot@gmail.com` in Finale instead of `site.email`. That goes against the handover\u0027s \u0027use tokens so act overrides keep contrast\u0027.",
+                             "why":  "If a token or the email changes, these spots drift out of sync.",
+                             "evidence":  "code",
+                             "fix":  "Use `stroke=\"currentColor\"` with `text-signal` or `text-white` classes; tween to `\u0027var(--color-white)\u0027` or read the token once with getComputedStyle; use `href={`mailto:${site.email}`}`."
+                         },
+                         {
+                             "severity":  "minor",
+                             "where":  "Screenings rail, card [08] Celebrations (media: family-celebrations-01-poster)",
+                             "problem":  "The poster image has fully loaded (720w) but it was taken from a motion-blurred transition frame. Card 08 looks out of focus every time it enters the rail.",
+                             "why":  "It reads as a loading or LQIP failure on a \u0027real work\u0027 showcase.",
+                             "evidence":  "qa-shots/frontend-reviewer-railwait-1440x900-#screenings-title+1200.png; probe nw=720, complete=true",
+                             "fix":  "Re-extract the poster at a sharp timestamp (for example `-ss 2.5`) in scripts/media/transcode.mjs for family-celebrations-01, or add a per-asset `posterAt` override in selection.json."
+                         }
+                     ],
+        "top3":  [
+                     "Make reduced motion actually playable: stop rendering Reel\u0027s Play button inside card links (add a `controls={false}` prop for linked cards and preventDefault in toggle). Today, pressing Play opens the work page instead of playing.",
+                     "Fix the video budget and the ladder: drive the ladder\u0027s 5 layers as `mode=\"manual\"` reels played by `show(i)`, and add a `rebalance()` to video-budget.release(). Today, 2 of the 3 decode slots go to invisible videos.",
+                     "Repair the 768â€“1024 cinema layouts in one pass: departures board (drop the status column below lg, line-clamp-2), hero CTA row (stack until lg), ticket grid (5+5 columns plus a y-offset so the deal comes from one deck). Also fix the footer contact grid collision at 1280â€“1440."
+                 ]
+    }
+]

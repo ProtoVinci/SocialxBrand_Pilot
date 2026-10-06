@@ -3,6 +3,8 @@ import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
+import { site } from "@/content/site";
+import { SpinBadge } from "@/components/fx/SpinBadge";
 
 /**
  * ACT 9 — the promise. "WE WILL SHOW." begins as outlined lanes (the BRAND PILOT stencil)
@@ -26,6 +28,9 @@ export function Finale() {
 
   return (
     <section ref={root} aria-labelledby="finale-title" className="act-rouge relative overflow-hidden py-28 md:py-40">
+      <div className="absolute right-[clamp(1rem,6vw,6rem)] top-[18%] hidden scale-125 lg:block">
+        <SpinBadge />
+      </div>
       <div className="gutter">
         <h2 id="finale-title" className="font-display text-mega font-bold uppercase [font-stretch:76%]">
           <span className="relative block w-max max-w-full">
@@ -34,8 +39,9 @@ export function Finale() {
           </span>
           <span data-grow className="relative block w-max max-w-full text-white">
             You will grow.
-            <svg aria-hidden viewBox="0 0 1000 40" preserveAspectRatio="none" className="absolute -bottom-3 left-0 h-6 w-full overflow-visible">
-              <path data-underline d="M0 30 C 200 10, 400 38, 620 22 S 900 6, 1000 16" fill="none" stroke="#ffffff" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+            {/* sits fully below the glyph box (white on white would vanish) and stays in its lower half */}
+            <svg aria-hidden viewBox="0 0 1000 40" preserveAspectRatio="none" className="absolute -bottom-8 left-0 h-6 w-full overflow-visible">
+              <path data-underline d="M0 26 C 200 20, 400 32, 620 25 S 900 20, 1000 23" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
             </svg>
           </span>
         </h2>
@@ -44,10 +50,10 @@ export function Finale() {
             We don&apos;t simply aim to create digital activity. We aim to create digital impact.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-ink px-6 py-4 font-semibold text-shell transition-transform duration-300 hover:-translate-y-0.5">
+            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-ink px-6 py-4 font-semibold text-shell transition-colors duration-300 hover:bg-ink/85">
               Start your Pilot Route <span aria-hidden>→</span>
             </Link>
-            <a href="mailto:socialxbrandpilot@gmail.com" className="inline-flex items-center gap-3 rounded-full border border-ink/40 px-6 py-4 font-medium transition-colors hover:border-ink">
+            <a href={`mailto:${site.email}`} className="inline-flex items-center gap-3 rounded-full border border-ink/40 px-6 py-4 font-medium transition-colors hover:border-ink">
               Email us
             </a>
           </div>

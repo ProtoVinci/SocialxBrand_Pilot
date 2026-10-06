@@ -82,7 +82,14 @@ export function Nav() {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { setOpen(false); menuButton.current?.focus(); } };
     document.addEventListener("keydown", onKey);
     document.documentElement.style.overflow = "hidden";
-    return () => { document.removeEventListener("keydown", onKey); document.documentElement.style.overflow = ""; };
+    // a real modal: the page behind is inert, so Tab cycles between the bar and the menu only
+    const behind = [document.getElementById("main"), document.querySelector("body > footer, #main ~ footer")].filter(Boolean) as HTMLElement[];
+    behind.forEach((el) => el.setAttribute("inert", ""));
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.documentElement.style.overflow = "";
+      behind.forEach((el) => el.removeAttribute("inert"));
+    };
   }, [open]);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -127,19 +134,22 @@ export function Nav() {
             <Link
               href="/route"
               transitionTypes={["nav-forward"]}
-              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-transform duration-300 hover:-translate-y-0.5"
+              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-blue-ink"
             >
               <span className="whitespace-nowrap">
                 Start<span className="max-sm:hidden md:max-lg:hidden"> your route</span>
               </span>
               {route.length > 0 && (
-                <span
-                  key={route.length}
-                  className="grid h-5 min-w-5 animate-[badge-pop_0.45s_var(--ease-pilot)] place-items-center rounded-full bg-shell px-1 font-mono text-[0.68rem] text-ink"
-                  aria-label={`${route.length} divisions on your route`}
-                >
-                  {route.length}
-                </span>
+                <>
+                  <span
+                    key={route.length}
+                    aria-hidden
+                    className="grid h-5 min-w-5 animate-[badge-pop_0.45s_var(--ease-pilot)] place-items-center rounded-full bg-shell px-1 font-mono text-[0.68rem] text-ink"
+                  >
+                    {route.length}
+                  </span>
+                  <span className="sr-only">({route.length} {route.length === 1 ? "division" : "divisions"} on your route)</span>
+                </>
               )}
             </Link>
             <button

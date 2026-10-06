@@ -214,6 +214,9 @@ body {
 
 /* Split-text lines get a mask so words can rise from below the baseline */
 .split-line { overflow: clip; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+/* SplitText's mask wrappers clip at the line box: give serif-italic descenders (y, g) and the
+   italic overhang room, then pull the space back so line spacing is unchanged */
+.split-line-mask { padding: 0 0.08em 0.24em; margin: 0 -0.08em -0.24em; }
 
 /* Micro: rolling label (two stacked copies, the second climbs in on hover) */
 .roll-a, .roll-b { transition: transform 0.45s var(--ease-pilot); }

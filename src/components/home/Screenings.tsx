@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, ViewTransition } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { SplitReveal } from "@/components/motion/SplitReveal";
 import type { Screening, VideoAsset } from "@/content/work";
-import { partnerCredit } from "@/content/work";
+import { liveScreenings, partnerCredit } from "@/content/work";
 import { pad } from "@/content/divisions";
 
 type Item = { screening: Screening; reel: VideoAsset };
@@ -18,6 +18,7 @@ type Item = { screening: Screening; reel: VideoAsset };
  * Mobile/reduced: a native swipe rail with scroll-snap. No pin, no hijack.
  */
 export function Screenings({ items }: { items: Item[] }) {
+  const total = liveScreenings().length; // the rail shows reel screenings; /work has them all
   const root = useRef<HTMLElement>(null);
   const track = useRef<HTMLOListElement>(null);
 
@@ -90,15 +91,18 @@ export function Screenings({ items }: { items: Item[] }) {
 
       <ol
         ref={track}
-        className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-[clamp(1rem,4vw,3.5rem)] pb-4 [scrollbar-width:none] cinema:mt-12 cinema:w-max cinema:snap-none cinema:overflow-visible cinema:pr-[30vw]"
+        className="mt-10 flex snap-x snap-mandatory gap-5 overflow-x-auto px-[clamp(1rem,4vw,3.5rem)] pb-4 [scrollbar-width:none] cinema:mt-12 cinema:w-max cinema:snap-none cinema:overflow-visible cinema:pr-[10vw]"
       >
         {items.map(({ screening, reel }, i) => (
           <li key={screening.slug} data-frame className="w-[62vw] shrink-0 snap-center sm:w-[42vw] md:w-[min(22vw,40svh)]">
             <Link href={`/work/${screening.slug}`} transitionTypes={["nav-forward"]} data-cursor="Watch" className="group block">
               {/* hover: the card lifts and tips like a sticker being picked up (alternating sides) */}
-              <Reel asset={reel} eager={i < 4} label={`${screening.title} — ${screening.format}`} className={`aspect-[9/16] w-full rounded-[18px] shadow-[0_24px_50px_-28px_rgba(80,40,150,0.55)] transition-[rotate,scale,border-radius] duration-500 ease-[var(--ease-pilot)] group-hover:scale-[1.03] group-hover:rounded-[10px] ${i % 2 ? "group-hover:-rotate-2" : "group-hover:rotate-2"}`} />
+              {/* same shared name as the /work tile and the screening cover: the reel morphs into the page */}
+              <ViewTransition name={`screening-${screening.slug}`} share="morph" default="none">
+                <Reel asset={reel} eager={i < 4} label={`${screening.title} — ${screening.format}`} className={`aspect-[9/16] w-full rounded-[18px] shadow-[0_24px_50px_-28px_rgba(80,40,150,0.55)] transition-[rotate,scale,border-radius] duration-500 ease-[var(--ease-pilot)] group-hover:scale-[1.03] group-hover:rounded-[10px] ${i % 2 ? "group-hover:-rotate-2" : "group-hover:rotate-2"}`} />
+              </ViewTransition>
               <span className="mt-4 flex items-baseline gap-3">
-                <span className="label text-signal-ink">[ {pad(i + 1)} ]</span>
+                <span className="label shrink-0 whitespace-nowrap text-signal-ink">[ {pad(i + 1)} ]</span>
                 <span className="font-display text-title font-semibold [font-stretch:85%] group-hover:text-signal">{screening.title}</span>
               </span>
               <span className="label mt-1 block text-blue">{screening.kicker} · {screening.format}</span>
@@ -110,7 +114,7 @@ export function Screenings({ items }: { items: Item[] }) {
             <span className="font-display text-display font-semibold leading-none [font-stretch:78%] group-hover:text-signal">
               Enter the work <span className="inline-block transition-transform duration-500 group-hover:translate-x-3">→</span>
             </span>
-            <span className="mt-4 block max-w-xs text-sm text-muted">{items.length} screenings, from creator reels to wedding films, logos and menus.</span>
+            <span className="mt-4 block max-w-xs text-sm text-muted">{total} screenings, from creator reels to wedding films, logos and menus.</span>
           </Link>
         </li>
       </ol>

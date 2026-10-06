@@ -7,6 +7,7 @@ import { SplitReveal } from "@/components/motion/SplitReveal";
 import { Reveal } from "@/components/motion/Reveal";
 import { ApproachRoute } from "@/components/capabilities/ApproachRoute";
 import { RouteToggle } from "@/components/capabilities/RouteToggle";
+import { PlanRouteLink } from "@/components/capabilities/PlanRouteLink";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -23,7 +24,10 @@ export async function generateMetadata({ params }: PageProps<"/capabilities/[slu
   const { slug } = await params;
   const d = divisionBySlug(slug);
   if (!d) return {};
-  return { title: d.name, description: d.whatItIs.join(" ").slice(0, 300), alternates: { canonical: `/capabilities/${slug}` } };
+  // trim to ~160 chars on a word boundary (search snippets cut there anyway)
+  const full = d.whatItIs.join(" ");
+  const description = full.length <= 160 ? full : `${full.slice(0, 157).replace(/\s+\S*$/, "")}…`;
+  return { title: d.name, description, alternates: { canonical: `/capabilities/${slug}` } };
 }
 
 export default async function DivisionPage({ params }: PageProps<"/capabilities/[slug]">) {
@@ -57,7 +61,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
           </ViewTransition>
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <RouteToggle slug={d.slug} name={d.shortName} className="h-11 px-5 text-ink" />
-            <Link href="/route" transitionTypes={["nav-forward"]} className="link-underline text-sm text-ink/80">Plan a route with this →</Link>
+            <PlanRouteLink slug={d.slug} className="link-underline text-sm text-ink/80">Plan a route with this →</PlanRouteLink>
           </div>
         </div>
       </header>

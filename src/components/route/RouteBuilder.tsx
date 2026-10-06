@@ -28,31 +28,50 @@ export function RouteBuilder() {
   const [details, setDetails] = useState({ name: "", business: "", email: "", phone: "", message: "" });
   const [errors, setErrors] = useState<BriefErrors>({});
   const [status, setStatus] = useState<string | null>(null);
+  const [dir, setDir] = useState<1 | -1>(1);
+  const [merged, setMerged] = useState<"fresh" | "added" | null>(null);
 
   const brief: Brief = { audience, goal, divisions: route, ...details };
   const suggested = audience ? suggestRoute(audience, goal) : [];
 
-  // progress line + step entrance
+  // progress line + step entrance (direction-aware: Back slides in from the left)
   useGSAP(() => {
     const reduce = window.matchMedia(MQ.reduce).matches;
     gsap.to("[data-progress]", { scaleX: step / (STEPS.length - 1), duration: reduce ? 0 : dur.slow, ease: "glide" });
-    if (!reduce) gsap.fromTo(stepRef.current, { autoAlpha: 0, x: 36 }, { autoAlpha: 1, x: 0, duration: dur.base, ease: "pilot" });
+    if (!reduce) gsap.fromTo(stepRef.current, { autoAlpha: 0, x: 36 * dir }, { autoAlpha: 1, x: 0, duration: dur.base, ease: "pilot" });
     if (step === STEPS.length - 1 && !reduce) {
-      gsap.fromTo("[data-summary-line]", { drawSVG: "0%" }, { drawSVG: "100%", duration: 1.2, ease: "glide", delay: 0.2 });
-      gsap.from("[data-summary-stop]", { scale: 0, duration: dur.base, stagger: 0.12, delay: 0.3, ease: "back.out(1.6)" });
+      // a left-to-right wipe rather than DrawSVG: the path keeps a non-scaling stroke (the SVG is
+      // stretched ~7:1), and DrawSVG cannot measure non-scaling strokes
+      gsap.fromTo("[data-summary-svg]", { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: dur.cinematic, ease: "glide", delay: 0.2 });
+      gsap.from("[data-summary-stop]", { scale: 0, duration: dur.base, stagger: 0.07, delay: 0.3, ease: "back.out(1.6)" });
     }
   }, { scope: root, dependencies: [step] });
 
-  useEffect(() => { if (step > 0) headingRef.current?.focus(); }, [step]);
+  // Move focus to the new step's heading without letting the browser scroll the stepper away;
+  // instead bring the whole card's top (stepper included) into view below the nav.
+  useEffect(() => {
+    if (step === 0) return;
+    headingRef.current?.focus({ preventScroll: true });
+    const top = root.current!.getBoundingClientRect().top;
+    if (top < 0 || top > window.innerHeight * 0.4) window.scrollBy({ top: top - 96, behavior: window.matchMedia(MQ.reduce).matches ? "auto" : "smooth" });
+  }, [step]);
 
   const go = (n: number) => {
-    if (n === 2 && route.length === 0 && suggested.length) routeStore.set(suggested);
+    if (n === 2 && step === 1 && suggested.length) {
+      // suggestions join whatever the visitor collected elsewhere on the site
+      const added = suggested.filter((s) => !route.includes(s));
+      if (added.length) {
+        routeStore.set([...route, ...added]);
+        setMerged(route.length ? "added" : "fresh");
+      }
+    }
     if (n === 4) {
       const e = validate(brief);
       setErrors(e);
       if (Object.keys(e).length) return;
     }
     setStatus(null);
+    setDir(n < step ? -1 : 1);
     setStep(Math.max(0, Math.min(STEPS.length - 1, n)));
   };
 
@@ -79,7 +98,7 @@ export function RouteBuilder() {
             "What should marketing do for you right now?",
             "Choose the divisions on your route.",
             "Where should we reply?",
-            "Your route is ready.",
+            "Review and send your route.",
           ][step]}
         </h2>
 
@@ -88,7 +107,7 @@ export function RouteBuilder() {
             <legend className="sr-only">Business stage</legend>
             <div className="grid gap-3 sm:grid-cols-2">
               {audiences.map((a) => (
-                <label key={a.id} className={`cursor-pointer rounded-[16px] border p-5 transition-colors ${audience === a.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
+                <label key={a.id} className={`cursor-pointer rounded-[16px] border p-5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue has-[:focus-visible]:ring-offset-2 ${audience === a.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
                   <input type="radio" name="audience" value={a.id} checked={audience === a.id} onChange={() => setAudience(a.id)} className="sr-only" />
                   <span className="font-display text-title font-semibold [font-stretch:86%]">{a.name}</span>
                   <span className="mt-1 block text-sm text-ink/65">{a.need}</span>
@@ -103,7 +122,7 @@ export function RouteBuilder() {
             <legend className="sr-only">Goal</legend>
             <div className="grid gap-3">
               {goals.map((g) => (
-                <label key={g.id} className={`flex cursor-pointer items-baseline justify-between gap-6 rounded-[16px] border p-5 transition-colors ${goal === g.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
+                <label key={g.id} className={`flex cursor-pointer items-baseline justify-between gap-6 rounded-[16px] border p-5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue has-[:focus-visible]:ring-offset-2 ${goal === g.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
                   <input type="radio" name="goal" value={g.id} checked={goal === g.id} onChange={() => setGoal(g.id)} className="sr-only" />
                   <span className="font-display text-title font-semibold [font-stretch:86%]">{g.label}</span>
                   <span className="text-right text-sm text-ink/65">{g.prompt}</span>
@@ -115,9 +134,9 @@ export function RouteBuilder() {
 
         {step === 2 && (
           <div className="mt-8">
-            {suggested.length > 0 && (
+            {merged && (
               <p className="text-sm text-ink/70">
-                We&apos;ve started you with a suggested route. Add or remove anything; it&apos;s a starting point, and the real plan comes after we understand your business.
+                {merged === "fresh" ? "We've started you with a suggested route." : "We've added our suggestions to the divisions you'd already collected."} Add or remove anything; it&apos;s a starting point, and the real plan comes after we understand your business.
               </p>
             )}
             <div className="mt-6 flex flex-col gap-8">
@@ -145,7 +164,9 @@ export function RouteBuilder() {
                 </fieldset>
               ))}
             </div>
-            <p className="label mt-8 text-blue" aria-live="polite">{route.length} on your route</p>
+            <p className="label mt-8 text-blue" aria-live="polite">
+              {route.length ? `${route.length} on your route` : "Pick at least one division to continue. Not sure? Go back and choose a goal for a suggestion."}
+            </p>
           </div>
         )}
 
@@ -158,15 +179,18 @@ export function RouteBuilder() {
               ["phone", "Phone / WhatsApp", "tel", "tel"],
             ] as const).map(([key, label, type, auto]) => (
               <label key={key} className="flex flex-col gap-2">
-                <span className="label text-blue">{label}{key === "name" ? " *" : ""}</span>
+                <span className="label text-blue">
+                  {label}
+                  {key === "name" ? " *" : key === "email" || key === "phone" ? " (email or phone *)" : ""}
+                </span>
                 <input
                   type={type}
                   autoComplete={auto}
                   value={details[key]}
                   onChange={(e) => setDetails({ ...details, [key]: e.target.value })}
-                  aria-invalid={Boolean((key === "name" && errors.name) || (key === "email" && errors.email))}
+                  aria-invalid={Boolean((key === "name" && errors.name) || (key === "email" && (errors.email || errors.contact)) || (key === "phone" && errors.contact))}
                   aria-describedby={key === "email" || key === "phone" ? "contact-error" : key === "name" ? "name-error" : undefined}
-                  className="rounded-[12px] border border-ink/15 bg-shell px-4 py-3.5 text-ink outline-none transition-colors placeholder:text-ink/30 focus:border-signal"
+                  className="rounded-[12px] border border-ink/15 bg-shell px-4 py-3.5 text-ink outline-none transition-colors placeholder:text-ink/30 focus:border-blue aria-[invalid=true]:border-signal-ink aria-[invalid=true]:bg-rose/40"
                 />
               </label>
             ))}
@@ -197,7 +221,13 @@ export function RouteBuilder() {
                     const r = await a.deliver(brief);
                     if (!r.ok) return setStatus(r.error);
                     if (r.href) window.open(r.href, a.id === "whatsapp" ? "_blank" : "_self", "noopener");
-                    setStatus(a.id === "copy" ? "Brief copied." : `${a.label.replace("Send ", "Opening ")}…`);
+                    setStatus(
+                      a.id === "copy"
+                        ? "Brief copied. Paste it into an email or WhatsApp to us."
+                        : a.id === "email"
+                          ? "Opening your email app. If nothing opens, use Copy the brief and send it to socialxbrandpilot@gmail.com."
+                          : "Opening WhatsApp in a new tab. Press send there to reach us.",
+                    );
                   }}
                   className={`rounded-[16px] p-5 text-left transition-transform duration-300 hover:-translate-y-0.5 ${a.id === "whatsapp" ? "bg-signal text-ink" : "border border-ink/15"}`}
                 >
@@ -230,13 +260,14 @@ export function RouteBuilder() {
 
 /** The visitor's own route, drawn: stations are their chosen divisions, in order. */
 function RouteSummary({ slugs }: { slugs: string[] }) {
-  const items = slugs.map(divisionBySlug).filter(Boolean);
+  // drawn in division order (strategy first), the way the work would actually run
+  const items = slugs.map(divisionBySlug).filter(Boolean).sort((a, b) => a!.number - b!.number);
   if (!items.length) return null;
-  const pts = items.map((_, i) => ({ x: items.length === 1 ? 50 : 4 + (i * 92) / (items.length - 1), y: i % 2 === 0 ? 70 : 30 }));
+  const pts = items.map((_, i) => ({ x: items.length === 1 ? 50 : 10 + (i * 80) / (items.length - 1), y: i % 2 === 0 ? 70 : 30 }));
   const d = pts.reduce((acc, p, i) => (i === 0 ? `M0 70 L${p.x} ${p.y}` : `${acc} C ${(pts[i - 1].x + p.x) / 2} ${pts[i - 1].y}, ${(pts[i - 1].x + p.x) / 2} ${p.y}, ${p.x} ${p.y}`), "") + " L100 50";
   return (
     <div className="relative h-44 md:h-40">
-      <svg aria-hidden viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
+      <svg data-summary-svg aria-hidden viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
         <path data-summary-line d={d} fill="none" stroke="#ff3131" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
       <ol className="absolute inset-0">
