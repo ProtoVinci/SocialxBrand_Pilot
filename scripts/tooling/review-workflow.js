@@ -33,7 +33,7 @@ const SCHEMA = {
 
 phase('Review')
 const results = await parallel(REVIEWERS.map((r) => () => agent(
-  `You are the "${r}" reviewer for the SOCIALxBRAND PILOT website at C:\\Users\\Parth\\Desktop\\sujal_2 (Windows; use the PowerShell tool for commands).
+  `You are the "${r}" reviewer for the SOCIALxBRAND PILOT website. The repo root is the directory containing HANDOVER.md (locally C:\\Users\\Parth\\Desktop\\sujal_2\\SocialxBrand_Pilot on Windows: use the PowerShell tool and cd there first; in a cloud checkout use the repo root).
 FIRST read your full persona and instructions in .claude/agents/${r}.md and follow them exactly. Also skim HANDOVER.md §4–§5 for the decided direction and known gotchas (do not re-litigate decided direction; critique execution).
 HARD RULES: READ-ONLY. Do not edit, create or delete project files (screenshots go to the gitignored qa-shots/ folder via the scripts, which is fine). Do not run npm install, git, or kill processes.
 The dev server is ALREADY running at http://localhost:3100 — do not start another. Capture frames with: node scripts/qa/shoot.mjs --url=<route> --vp=<WxH> --at="<positions>" --wait=1400 --repeat --name=${r}-<label>   (positions: px, Nvh, N% of page, or #id+offset; add --reduce for reduced motion). Then look at the PNGs with the Read tool. Probe DOM with node scripts/qa/debug.mjs --url=<route> --scroll=<px> --probe="<js>".
