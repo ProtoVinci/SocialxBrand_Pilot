@@ -8,7 +8,7 @@ import { Audiences } from "@/components/home/Audiences";
 import { AiAmplifies } from "@/components/home/AiAmplifies";
 import { Finale } from "@/components/home/Finale";
 import { Marquee } from "@/components/home/Marquee";
-import { DivisionIndex } from "@/components/capabilities/DivisionIndex";
+import { DivisionBoard } from "@/components/capabilities/DivisionBoard";
 import { SplitReveal } from "@/components/motion/SplitReveal";
 import { findMedia, liveScreenings, mediaFor, partnerCredit, type MediaAsset, type VideoAsset } from "@/content/work";
 import { servicesIntro } from "@/content/site";
@@ -44,7 +44,7 @@ export default function Home() {
         <WorkShowcase tiles={tiles} credit={partnerCredit} />
         <Marquee chips={chips} />
 
-        <section aria-labelledby="capabilities-title" className="relative bg-shell py-28 md:py-36">
+        <section aria-labelledby="capabilities-title" className="relative bg-shell py-24 md:py-28">
           <div className="gutter">
             <p className="label text-blue">[ 04 ] Capabilities — 18 divisions</p>
             <SplitReveal as="h2" id="capabilities-title" className="mt-4 max-w-[18ch] font-display text-display font-medium">
@@ -52,11 +52,10 @@ export default function Home() {
             </SplitReveal>
             <p className="mt-8 max-w-2xl text-lede text-ink/75">{servicesIntro.body}</p>
           </div>
-          {/* no ticker here: the marquee just above already runs two belts, and the index below
-              lists the same 18 names (the ticker lives on /capabilities) */}
-          <div className="gutter mt-16">
-            <DivisionIndex previews={divisionPreviews()} />
-            <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-12 inline-block">Explore every capability →</Link>
+          {/* all 18 as a compact board (the full row-per-division index lives on /capabilities) */}
+          <div className="gutter mt-12">
+            <DivisionBoard previews={divisionPreviews()} />
+            <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-10 inline-block">Explore every capability →</Link>
           </div>
         </section>
 

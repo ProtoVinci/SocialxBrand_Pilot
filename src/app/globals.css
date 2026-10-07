@@ -265,6 +265,9 @@ body {
 }
 .glare-drift { animation: glare-drift 28s ease-in-out infinite alternate; will-change: transform; }
 
+/* Division board stage: the words rise gently into place on each change */
+@keyframes stage-in { from { opacity: 0; translate: 0 10px; } }
+
 /* Tools orbit (hero): rings counter-rotate, tiles counter-spin so logos stay upright; hover pauses */
 @keyframes orbit-cw { to { rotate: 360deg; } }
 @keyframes orbit-ccw { to { rotate: -360deg; } }

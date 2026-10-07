@@ -64,7 +64,19 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
     }
   }
 
+  // Rows scroll under a still cursor and fire pointerenter as they pass, which made previews
+  // flash by during a scroll. Only real pointer movement, held briefly on a row, counts.
+  const shown = useRef<string | null>(null);
+  const intent = useRef<number | undefined>(undefined);
+  function intend(slug: string) {
+    if (shown.current === slug) return;
+    window.clearTimeout(intent.current);
+    intent.current = window.setTimeout(() => { shown.current = slug; enter(slug); }, 120);
+  }
+
   function leave() {
+    window.clearTimeout(intent.current);
+    shown.current = null;
     showPreview(null);
     gsap.to(cursor.current, { scale: 0, autoAlpha: 0, duration: 0.35, ease: "snap" });
     Object.values(reels.current).forEach((r) => r?.pause());
@@ -83,7 +95,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
               </div>
               <ul>
                 {rows.map((d) => (
-                  <li key={d.slug} className="group relative isolate border-b border-current/15 transition-colors duration-300" onPointerEnter={() => enter(d.slug)}>
+                  <li key={d.slug} className="group relative isolate border-b border-current/15 transition-colors duration-300" onPointerMove={() => intend(d.slug)}>
                     {/* hover flood: the row fills with cornflower from the bottom edge */}
                     <span aria-hidden className="absolute -inset-x-3 inset-y-0 -z-10 hidden origin-bottom scale-y-0 rounded-[10px] bg-iris transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:scale-y-100 [@media(hover:hover)]:block md:-inset-x-5" />
                     <Link
