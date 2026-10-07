@@ -10,14 +10,18 @@ import { Finale } from "@/components/home/Finale";
 import { Marquee } from "@/components/home/Marquee";
 import { DivisionIndex } from "@/components/capabilities/DivisionIndex";
 import { SplitReveal } from "@/components/motion/SplitReveal";
-import { findMedia, liveScreenings, videosFor, type VideoAsset } from "@/content/work";
+import { findMedia, liveScreenings, videosFor, type MediaAsset, type VideoAsset } from "@/content/work";
 import { servicesIntro } from "@/content/site";
 import { divisionPreviews } from "@/lib/previews";
 
+const any = (ids: string[]) => ids.map((id) => findMedia(id)).filter((m): m is MediaAsset => Boolean(m));
 const pick = (ids: string[]) => ids.map((id) => findMedia(id)).filter((m): m is VideoAsset => m?.kind === "video");
 
 export default function Home() {
-  const fan = pick(["creator-content-01", "automotive-moments-01", "wedding-films-05", "restaurant-hospitality-02", "theatre-culture-02"]);
+  // hero capsules: real reels and stills only (no graphics, no figures)
+  const pillsTop = any(["brand-films-01", "portrait-fashion-03", "theatre-culture-01", "wedding-photography-05"]);
+  const pillsBottom = any(["restaurant-hospitality-01", "logo-identity-05", "automotive-moments-01", "wedding-content-04"]);
+  const [takeover] = pick(["wedding-films-05"]);
   // none of these reappear as rail covers (each screening's first portrait reel) two screens later
   const ladder = pick(["wedding-content-03", "restaurant-hospitality-04", "creator-content-02", "brand-films-02", "automotive-moments-04"]);
   const chips = pick(["wedding-content-04", "restaurant-hospitality-01", "creator-content-01", "portrait-fashion-01"]);
@@ -27,7 +31,7 @@ export default function Home() {
 
   return (
     <PageShell>
-        <Opening fan={fan} />
+        <Opening takeover={takeover} pillsTop={pillsTop} pillsBottom={pillsBottom} />
         <Ladder reels={ladder} />
         <Screenings items={rail} />
         <Marquee chips={chips} />
