@@ -54,7 +54,7 @@ test("route builder: selection persists to the nav badge and produces a WhatsApp
   await page.getByText("Be chosen").click();
   await page.getByRole("button", { name: /continue/i }).click();
   await page.getByRole("button", { name: /SEO & Local SEO/ }).click();
-  await expect(page.getByLabel(/divisions on your route/)).toBeVisible();
+  await expect(page.getByRole("link", { name: /divisions? on your route/ })).toBeVisible(); // the nav badge (sr-only text names it)
   await page.getByRole("button", { name: /continue/i }).click();
   // validation: name + one contact method required
   await page.getByRole("button", { name: /review route/i }).click();
@@ -62,7 +62,7 @@ test("route builder: selection persists to the nav badge and produces a WhatsApp
   await page.getByLabel(/your name/i).fill("Test Visitor");
   await page.getByLabel(/^email/i).fill("visitor@example.com");
   await page.getByRole("button", { name: /review route/i }).click();
-  await expect(page.getByRole("heading", { name: /your route is ready/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /review and send your route/i })).toBeVisible();
   const [popup] = await Promise.all([
     context.waitForEvent("page").catch(() => null),
     page.getByRole("button", { name: /send on whatsapp/i }).click(),
