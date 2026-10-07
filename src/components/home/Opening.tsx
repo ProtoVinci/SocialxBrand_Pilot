@@ -41,9 +41,10 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
       const { cinema } = ctx.conditions as { cinema: boolean; pocket: boolean };
       gsap.set(q("[data-reveal]"), { autoAlpha: 1 });
 
-      const title = q("[data-hero-title]")[0];
-      // aria "none": the line wrappers keep the text readable; aria-label is invalid on spans
-      const split = SplitText.create(title.querySelectorAll("[data-line]"), { type: "lines", mask: "lines", linesClass: "split-line", aria: "none" });
+      // NOT SplitText here: it rebuilds the lines from copies, and the media capsules inside them are
+      // React components, so React kept cycling and mounting videos in detached originals while the
+      // screen showed a frozen copy. Each line already has its own clipping mask in the markup.
+      const split = { lines: q("[data-line]") as HTMLElement[] };
 
       // ── load choreography ─────────────────────────────────────────
       const intro = gsap.timeline({ defaults: { ease: "pilot" }, onComplete: () => document.documentElement.classList.remove("intro") });
@@ -150,18 +151,24 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
         </div>
 
         <h1 id="hero-title" data-hero-title data-reveal className="font-display text-[clamp(2.4rem,8.4vw,8.6rem)] font-medium leading-[1.08] tracking-[-0.05em]">
+          <span className="block overflow-y-clip pb-[0.06em]">
           <span data-line className="block whitespace-nowrap">
             Every
             <span data-pill="top" className="inline-block"><HeroPill slides={pillsTop} interval={1400} tilt={-2} className="h-[0.9em] w-[1.3em]" /></span>
             business
           </span>
+          </span>
+          <span className="block overflow-y-clip pb-[0.06em]">
           <span data-line className="block whitespace-nowrap">
             <span className="ink-cobalt">has</span>
             <span data-pill className="inline-block"><HeroPill slides={pillsBottom} interval={1700} tilt={2} className="h-[0.9em] w-[1.2em]" /></span>
             <span className="ink-cobalt">something</span>
           </span>
+          </span>
+          <span className="block overflow-y-clip pb-[0.06em]">
           <span data-line className="block whitespace-nowrap">
             <span className="serif-accent">worth </span><span className="serif-accent text-signal">showing.</span>
+          </span>
           </span>
         </h1>
 
