@@ -98,7 +98,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
           </div>
 
           {/* the framed reel: real work at full brightness, changing with the word */}
-          <div data-frame aria-hidden className="relative mx-auto aspect-[9/16] h-[34svh] -rotate-2 overflow-hidden rounded-[20px] shadow-[0_40px_80px_-30px_rgba(80,40,150,0.38)] max-md:ml-2 md:h-[min(72svh,46rem)] md:rounded-[26px]">
+          <div data-frame aria-hidden className="relative mx-auto aspect-[9/16] h-[34svh] -rotate-2 overflow-hidden rounded-[20px] shadow-[0_40px_80px_-30px_rgba(31,44,133,0.38)] max-md:ml-2 md:h-[min(72svh,46rem)] md:rounded-[26px]">
             {steps.map((s, i) => {
               const reel = reels[i % Math.max(1, reels.length)];
               return (

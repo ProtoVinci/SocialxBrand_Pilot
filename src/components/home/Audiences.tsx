@@ -51,7 +51,7 @@ export function Audiences({ index = "06" }: { index?: string }) {
         <div className="md:col-span-5">
           <p className="label text-blue">[ {index} ] Who we work with</p>
           <h2 id="audiences-title" className="mt-4 font-display text-headline font-medium">
-            Marketing is for <span className="serif-accent font-normal text-blue">every</span> business.
+            Marketing is for <span className="serif-accent font-normal ink-cobalt">every</span> business.
           </h2>
           <p className="mt-6 max-w-md text-lede text-ink/75">
             We do not define our work by a single industry; we define it by the marketing need.

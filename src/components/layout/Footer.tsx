@@ -14,7 +14,7 @@ export function Footer() {
         <div className="md:col-span-6">
           <p className="label text-blue">Let&apos;s grow together</p>
           <h2 id="footer-title" className="mt-5 max-w-xl font-display text-headline font-medium">
-            {closing.lead} <span className="serif-accent text-blue">{closing.turn}</span>
+            {closing.lead} <span className="serif-accent ink-cobalt">{closing.turn}</span>
           </h2>
         </div>
         <dl className="grid gap-8 text-sm sm:grid-cols-3 md:col-span-6">

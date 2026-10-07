@@ -7,7 +7,8 @@ import type { MediaAsset } from "@/content/work";
  * A rounded media capsule set inline in the hero headline (after prototype 1's hanzo hero).
  * It cycles through real work: stills crossfade, and the active video slide plays its short
  * preview. Hover pauses the cycle. Reduced motion / no JS: the first slide, still.
- * Slides fill the capsule (cover); nothing is ever letterboxed.
+ * Slides fill the capsule (cover, anchored high at 50% 28%: the work is portrait and faces sit
+ * in its upper third, so a centred crop beheads people); nothing is ever letterboxed.
  */
 export function HeroPill({ slides, interval = 1600, tilt = 0, className = "" }: {
   slides: MediaAsset[]; interval?: number; tilt?: number; className?: string;
@@ -49,9 +50,9 @@ export function HeroPill({ slides, interval = 1600, tilt = 0, className = "" }: 
         return (
           <span key={s.id} className={`absolute inset-0 transition-[opacity,scale] duration-[350ms] ease-out ${on ? "scale-100 opacity-100" : "scale-105 opacity-0"}`}>
             {/* eslint-disable-next-line @next/next/no-img-element -- tiny pre-sized posters from the media pipeline */}
-            <img src={poster} alt="" loading={k === 0 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover" />
+            <img src={poster} alt="" loading={k === 0 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover object-[50%_28%]" />
             {s.kind === "video" && on && !still && inView && (
-              <video src={s.src.preview} muted loop playsInline autoPlay preload="none" className="absolute inset-0 h-full w-full object-cover" />
+              <video src={s.src.preview} muted loop playsInline autoPlay preload="none" className="absolute inset-0 h-full w-full object-cover object-[50%_28%]" />
             )}
           </span>
         );

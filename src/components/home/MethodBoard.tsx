@@ -88,7 +88,7 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
         <div>
           <p className="label text-blue">[ {index} ] How we work — the Pilot Route</p>
           <h2 id="method-title" className="mt-4 max-w-[24ch] font-display text-headline font-medium">
-            We start by <span className="serif-accent font-normal text-blue">understanding</span> the business.
+            We start by <span className="serif-accent font-normal ink-cobalt">understanding</span> the business.
           </h2>
         </div>
         <p className="max-w-sm text-ink/70">Seven stations, in order. Strategy comes before execution, and every stage feeds the next.</p>

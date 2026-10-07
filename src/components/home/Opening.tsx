@@ -6,7 +6,7 @@ import { MQ, dur } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { Mark } from "@/components/brand/Mark";
 import { Clock } from "@/components/layout/Clock";
-import { SpinBadge } from "@/components/fx/SpinBadge";
+import { ToolsOrbit } from "@/components/fx/ToolsOrbit";
 import { HeroGlare } from "@/components/fx/HeroGlare";
 import { HeroPill } from "@/components/home/HeroPill";
 import type { MediaAsset, VideoAsset } from "@/content/work";
@@ -69,7 +69,7 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
           gsap.timeline({ defaults: { ease: "glide" } })
             .to(q("[data-strike]"), { scaleX: 1, duration: dur.base })
             .to(q("[data-activity]"), { opacity: 0.55, duration: dur.quick }, "<0.2")
-            .to(q("[data-impact]"), { color: "#4a1fc4", duration: dur.base }, "+=0.15");
+            .to(q("[data-impact]"), { color: "#1f2c85", duration: dur.base }, "+=0.15");
         });
       }
 
@@ -107,7 +107,7 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
         .from(chars, { color: "rgba(28,25,23,0.16)", stagger: { amount: 0.36 }, duration: 0.05 }, 0.42)
         .to(q("[data-strike]"), { scaleX: 1, duration: 0.08 }, 0.6)
         .to(q("[data-activity]"), { opacity: 0.42, duration: 0.08 }, 0.6)
-        .to(q("[data-impact], [data-impact] *"), { color: "#4a1fc4", duration: 0.06 }, 0.82)
+        .to(q("[data-impact], [data-impact] *"), { color: "#1f2c85", duration: 0.06 }, 0.82)
         .to(q("[data-dim]"), { autoAlpha: 0.96, duration: 0.12 }, 0.84)
         .to({}, { duration: 0.08 });
     });
@@ -152,13 +152,13 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
         <h1 id="hero-title" data-hero-title data-reveal className="font-display text-[clamp(2.4rem,8.4vw,8.6rem)] font-medium leading-[1.08] tracking-[-0.05em]">
           <span data-line className="block whitespace-nowrap">
             Every
-            <span data-pill="top" className="inline-block"><HeroPill slides={pillsTop} interval={1400} tilt={-2} className="h-[0.86em] w-[1.45em]" /></span>
+            <span data-pill="top" className="inline-block"><HeroPill slides={pillsTop} interval={1400} tilt={-2} className="h-[0.9em] w-[1.3em]" /></span>
             business
           </span>
-          <span data-line className="block whitespace-nowrap text-blue">
-            has
-            <span data-pill className="inline-block"><HeroPill slides={pillsBottom} interval={1700} tilt={2} className="h-[0.86em] w-[1.3em]" /></span>
-            something
+          <span data-line className="block whitespace-nowrap">
+            <span className="ink-cobalt">has</span>
+            <span data-pill className="inline-block"><HeroPill slides={pillsBottom} interval={1700} tilt={2} className="h-[0.9em] w-[1.2em]" /></span>
+            <span className="ink-cobalt">something</span>
           </span>
           <span data-line className="block whitespace-nowrap">
             <span className="serif-accent">worth </span><span className="serif-accent text-signal">showing.</span>
@@ -179,9 +179,9 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
         </div>
       </div>
 
-      {/* top right, where prototype 1 keeps its orbit widget; cinema + large screens only */}
-      <div data-badge className="absolute right-[clamp(1rem,4vw,3.5rem)] top-[calc(var(--nav-h)+3rem)] z-10 hidden xl:cinema:block">
-        <SpinBadge />
+      {/* top right, as in prototype 1: the tools orbit; large screens only (it would crowd the headline below xl) */}
+      <div data-badge className="absolute right-[clamp(1rem,3vw,3rem)] top-[calc(var(--nav-h)+1.5rem)] z-10 hidden xl:block">
+        <ToolsOrbit />
       </div>
 
       {/* Act 2: manifesto (overlaid + scrubbed in cinema; stacked below the hero otherwise) */}

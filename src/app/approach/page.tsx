@@ -27,7 +27,7 @@ export default function ApproachPage() {
       <PageHeader
         index="A"
         label="Approach — who we are"
-        title={<>Business first. <span className="serif-accent font-normal text-blue">Then everything else.</span></>}
+        title={<>Business first. <span className="serif-accent font-normal ink-cobalt">Then everything else.</span></>}
         lede={<p>{whoWeAre[0]}</p>}
       />
 
@@ -89,7 +89,7 @@ export default function ApproachPage() {
       <section aria-labelledby="principles-title" className="gutter py-28">
         <p className="label text-blue">What we stand for</p>
         <h2 id="principles-title" className="mt-4 max-w-[16ch] font-display text-headline font-medium">
-          Six principles, <span className="serif-accent font-normal text-blue">one stance.</span>
+          Six principles, <span className="serif-accent font-normal ink-cobalt">one stance.</span>
         </h2>
         <div className="mt-14"><PrincipleStack /></div>
       </section>

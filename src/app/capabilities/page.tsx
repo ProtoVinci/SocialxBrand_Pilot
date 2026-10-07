@@ -23,7 +23,7 @@ export default function CapabilitiesPage() {
       <PageHeader
         index="C"
         label="Capabilities — 18 core marketing divisions"
-        title={<>The right mix, <span className="serif-accent font-normal text-blue">not the full menu.</span></>}
+        title={<>The right mix, <span className="serif-accent font-normal ink-cobalt">not the full menu.</span></>}
         lede={
           <>
             <p><strong className="font-semibold text-ink">{servicesIntro.lead}</strong> {servicesIntro.body}</p>

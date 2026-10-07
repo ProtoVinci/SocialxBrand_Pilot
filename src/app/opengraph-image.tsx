@@ -15,12 +15,12 @@ export default function OpengraphImage() {
             <path d={RIBBON} fill="#f43436" transform={`translate(0 ${RIBBON_OFFSET})`} />
             <path d={TRIANGLE} fill="#f43436" />
           </svg>
-          <div style={{ display: "flex", fontSize: 30, fontWeight: 700, letterSpacing: -0.5 }}><span style={{ color: "#6e3cf1" }}>SOCIAL</span><span>x</span><span style={{ color: "#f43436" }}>BRAND PILOT</span></div>
+          <div style={{ display: "flex", fontSize: 30, fontWeight: 700, letterSpacing: -0.5 }}><span style={{ color: "#2a3ba4" }}>SOCIAL</span><span>x</span><span style={{ color: "#f43436" }}>BRAND PILOT</span></div>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           {/* one phrase per line: the OG renderer has no condensed display face, so text sets wide */}
           <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3 }}>EVERY BUSINESS HAS</div>
-          <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3, color: "#6e3cf1" }}>SOMETHING</div>
+          <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3, color: "#2a3ba4" }}>SOMETHING</div>
           <div style={{ fontSize: 84, fontWeight: 800, lineHeight: 1, letterSpacing: -3, color: "#f43436" }}>WORTH SHOWING.</div>
         </div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "#6b665f" }}>

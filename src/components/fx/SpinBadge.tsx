@@ -16,7 +16,7 @@ export function SpinBadge({ className = "" }: Props) {
       transitionTypes={["nav-forward"]}
       aria-label="Start your Pilot Route"
       data-cursor="Go"
-      className={`magnetic group ${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} grid size-32 shrink-0 place-items-center rounded-full bg-periwinkle text-ink shadow-[0_18px_40px_-18px_rgba(80,40,150,0.55)] ${className}`}
+      className={`magnetic group ${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} grid size-32 shrink-0 place-items-center rounded-full bg-periwinkle text-ink shadow-[0_18px_40px_-18px_rgba(31,44,133,0.55)] ${className}`}
     >
       <svg viewBox="0 0 100 100" aria-hidden className="absolute inset-0 size-full animate-[spin_18s_linear_infinite]">
         <defs>

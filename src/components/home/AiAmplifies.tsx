@@ -32,7 +32,7 @@ export function AiAmplifies() {
         <div className="md:col-span-4">
           <p className="label text-blue">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>
           <h2 id="ai-title" className="mt-4 font-display text-headline font-medium">
-            Our <span className="serif-accent font-normal text-blue">AI</span> philosophy.
+            Our <span className="serif-accent font-normal ink-cobalt">AI</span> philosophy.
           </h2>
           <p className="mt-6 max-w-sm text-ink/70">
             AI is treated as a marketing and productivity layer supporting human strategy, creativity and execution.

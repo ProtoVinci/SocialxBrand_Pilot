@@ -119,7 +119,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       {/* approach */}
       <section aria-labelledby="approach-title" className="gutter border-b border-ink/10 py-24">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 id="approach-title" className="font-display text-headline font-medium">Our <span className="serif-accent font-normal text-blue">approach</span></h2>
+          <h2 id="approach-title" className="font-display text-headline font-medium">Our <span className="serif-accent font-normal ink-cobalt">approach</span></h2>
           <p className="label text-blue">{d.approach.length} stations</p>
         </div>
         <div className="mt-14"><ApproachRoute steps={d.approach} /></div>

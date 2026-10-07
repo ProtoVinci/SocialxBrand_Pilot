@@ -83,7 +83,7 @@ export function Screenings({ items }: { items: Item[] }) {
         <div>
           <p className="label text-blue">[ 03 ] Screenings — real work</p>
           <SplitReveal as="h2" id="screenings-title" className="mt-4 font-display text-headline font-medium">
-            Made to be <span className="serif-accent font-normal text-blue">watched</span>, not just posted.
+            Made to be <span className="serif-accent font-normal ink-cobalt">watched</span>, not just posted.
           </SplitReveal>
         </div>
         <p className="label max-w-xs text-blue">{partnerCredit}</p>
@@ -99,7 +99,7 @@ export function Screenings({ items }: { items: Item[] }) {
               {/* hover: the card lifts and tips like a sticker being picked up (alternating sides) */}
               {/* same shared name as the /work tile and the screening cover: the reel morphs into the page */}
               <ViewTransition name={`screening-${screening.slug}`} share="morph" default="none">
-                <Reel asset={reel} eager={i < 4} label={`${screening.title} — ${screening.format}`} className={`aspect-[9/16] w-full rounded-[18px] shadow-[0_24px_50px_-28px_rgba(80,40,150,0.55)] transition-[rotate,scale,border-radius] duration-500 ease-[var(--ease-pilot)] group-hover:scale-[1.03] group-hover:rounded-[10px] ${i % 2 ? "group-hover:-rotate-2" : "group-hover:rotate-2"}`} />
+                <Reel asset={reel} eager={i < 4} label={`${screening.title} — ${screening.format}`} className={`aspect-[9/16] w-full rounded-[18px] shadow-[0_24px_50px_-28px_rgba(31,44,133,0.55)] transition-[rotate,scale,border-radius] duration-500 ease-[var(--ease-pilot)] group-hover:scale-[1.03] group-hover:rounded-[10px] ${i % 2 ? "group-hover:-rotate-2" : "group-hover:rotate-2"}`} />
               </ViewTransition>
               <span className="mt-4 flex items-baseline gap-3">
                 <span className="label shrink-0 whitespace-nowrap text-signal-ink">[ {pad(i + 1)} ]</span>

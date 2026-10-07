@@ -5,9 +5,10 @@
 /* ─────────────────────────────────────────────────────────────
    SOCIALxBRAND PILOT — design tokens
    Theme adopted from prototype 1 (sujal_site): warm off-white canvas, white cards on warm
-   hairlines, pilot red as the primary accent, logo purple as the secondary. Token NAMES are
+   hairlines, pilot red as the primary accent, a deep cobalt ink as the secondary (replacing the electric
+   purple, which read as a default UI colour). Token NAMES are
    kept from the earlier palette (blue, iris, rouge…) so every component re-themes in place:
-   "blue" is now the purple accent role, "iris"/"rouge" the purple/red act fields.
+   "blue" is the cobalt accent role, "iris"/"rouge" the cobalt/red act fields.
    ───────────────────────────────────────────────────────────── */
 @theme inline {
   --font-display: var(--font-inter);
@@ -23,26 +24,26 @@
   --color-sand: #f5f1eb;         /* alternate warm band */
   --color-line: #e8e2d8;         /* card borders */
   --color-line-strong: #d5cdbd;  /* hover borders */
-  --color-periwinkle: #eee8fd;   /* soft act: purple tint */
+  --color-periwinkle: #e9ecfa;   /* soft act: cobalt tint */
   --color-rose: #fce9e6;         /* soft act: red tint */
-  --color-iris: #6e3cf1;         /* logo purple */
-  --color-iris-2: #8d63f4;
-  --color-iris-3: #b9a2f8;
-  --color-iris-deep: #4a1fc4;
+  --color-iris: #2a3ba4;         /* cobalt ink: the secondary colour */
+  --color-iris-2: #5a69c4;
+  --color-iris-3: #a9b4e8;
+  --color-iris-deep: #1f2c85;
   --color-rouge: #f43436;        /* pilot red */
   --color-rouge-2: #f65a5b;
   --color-rouge-3: #f99b9b;
   --color-rouge-deep: #b81d22;
-  --color-blue: #6e3cf1;         /* secondary accent (purple): labels, links, accents (5.5:1 on shell) */
-  --color-blue-ink: #5b2bd8;     /* purple for small text on tinted acts (6.4:1) */
+  --color-blue: #2a3ba4;         /* cobalt: labels, links, accents (8.8:1 on shell) */
+  --color-blue-ink: #1f2c85;     /* deep cobalt for small text on tinted acts (10:1) */
   --color-ink: #181614;          /* primary text */
   --color-muted: #6b665f;        /* secondary text (5.4:1 on shell) */
   --color-signal: #f43436;       /* pilot red: primary CTA, route line, display accents */
   --color-signal-ink: #c8202a;   /* red for small text (AA on every light surface) */
   --color-cta: #de2b2d;          /* primary button fill: prototype 1 red, deepened to clear AA with white text (4.7:1) */
   --color-cta-hover: #c8202a;
-  --color-violet: #6e3cf1;
-  --color-violet-ink: #5b2bd8;
+  --color-violet: #2a3ba4;
+  --color-violet-ink: #1f2c85;
 
   /* motion tokens mirrored from src/lib/motion/tokens.ts */
   --ease-pilot: cubic-bezier(0.22, 1, 0.36, 1);
@@ -79,12 +80,12 @@
   }
 }
 
-/* Prototype 1's "digital mesh": a faint warm 36px grid under a red glow (top) and a purple
+/* Prototype 1's "digital mesh": a faint warm 36px grid under a red glow (top) and a cobalt
    glow (top right), faded out toward the edges. Used on plain shell surfaces. */
 @utility grid-paper {
   background-image:
     radial-gradient(ellipse 70% 50% at 50% 0%, rgb(244 52 54 / 0.05) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 85% 20%, rgb(110 60 241 / 0.045) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 20%, rgb(42 59 164 / 0.045) 0%, transparent 60%),
     linear-gradient(to right, rgb(28 25 23 / 0.045) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(28 25 23 / 0.045) 1px, transparent 1px);
   background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
@@ -98,6 +99,16 @@
   box-shadow: 0 2px 10px -2px rgb(28 25 23 / 0.03), 0 1px 3px rgb(28 25 23 / 0.02);
   transition: border-color 0.25s var(--ease-pilot), box-shadow 0.25s var(--ease-pilot), transform 0.25s var(--ease-pilot);
   &:hover { border-color: var(--color-line-strong); box-shadow: 0 12px 30px -4px rgb(28 25 23 / 0.08), 0 4px 12px rgb(28 25 23 / 0.03); }
+}
+
+/* Display ink: large cobalt type is a soft top-to-bottom ink gradient rather than one flat
+   UI colour, so it reads as printed ink. Small text keeps the solid token (text-blue). */
+@utility ink-cobalt {
+  color: var(--color-blue);
+  background-image: linear-gradient(175deg, #3a4cc0 0%, #2a3ba4 45%, #18236e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 @utility gutter {
@@ -214,15 +225,15 @@ body {
   /* blue type can't hold contrast on the gradient fields either: it falls back to ink */
   --color-blue: var(--color-ink);
 }
-/* Bold acts in prototype 1 colours: mid-tone purple and red fields (ink stays AA on every
+/* Bold acts in prototype 1 colours: mid-tone cobalt and red fields (ink stays AA on every
    stop), with the deep tone only bleeding in from one corner. */
 .act-iris {
   background:
     radial-gradient(circle, rgb(255 255 255 / 0.4) 1px, transparent 1.5px) 0 0 / 16px 16px,
-    radial-gradient(60% 80% at 10% 25%, #a283f6 0%, transparent 65%),
-    radial-gradient(45% 60% at 72% 18%, #cbb9fa 0%, transparent 62%),
-    radial-gradient(50% 65% at 88% 78%, #d9ccfb 0%, transparent 62%),
-    radial-gradient(55% 60% at 0% 100%, rgb(110 60 241 / 0.55) 0%, transparent 60%),
+    radial-gradient(60% 80% at 10% 25%, #8f9bdd 0%, transparent 65%),
+    radial-gradient(45% 60% at 72% 18%, #bfc7ee 0%, transparent 62%),
+    radial-gradient(50% 65% at 88% 78%, #d6dcf4 0%, transparent 62%),
+    radial-gradient(55% 60% at 0% 100%, rgb(42 59 164 / 0.55) 0%, transparent 60%),
     var(--color-iris-3);
 }
 .act-rouge {
@@ -246,6 +257,15 @@ body {
 .roll-a, .roll-b { transition: transform 0.45s var(--ease-pilot); }
 .roll:hover .roll-a, .roll:focus-visible .roll-a,
 .roll:hover .roll-b, .roll:focus-visible .roll-b { transform: translateY(-100%); }
+
+/* Tools orbit (hero): rings counter-rotate, tiles counter-spin so logos stay upright; hover pauses */
+@keyframes orbit-cw { to { rotate: 360deg; } }
+@keyframes orbit-ccw { to { rotate: -360deg; } }
+.orbit-a { animation: orbit-cw 32s linear infinite; }
+.orbit-a-counter { animation: orbit-ccw 32s linear infinite; }
+.orbit-b { animation: orbit-ccw 22s linear infinite; }
+.orbit-b-counter { animation: orbit-cw 22s linear infinite; }
+.group:hover :is(.orbit-a, .orbit-a-counter, .orbit-b, .orbit-b-counter) { animation-play-state: paused; }
 
 @keyframes badge-pop { from { transform: scale(0.2); } 60% { transform: scale(1.2); } to { transform: scale(1); } }
 
