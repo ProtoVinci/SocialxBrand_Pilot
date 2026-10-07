@@ -33,7 +33,7 @@ export default function RoutePage() {
         </div>
         <aside aria-labelledby="talk-title" className="lg:col-span-4">
           <div className="sticky top-[calc(var(--nav-h)+1.5rem)] rounded-[24px] border border-ink/10 p-6 md:p-8">
-            <h2 id="talk-title" className="font-display text-title font-semibold [font-stretch:86%]">Or just talk to us.</h2>
+            <h2 id="talk-title" className="font-display text-title font-medium">Or just talk to us.</h2>
             <dl className="mt-6 flex flex-col gap-5">
               <div><dt className="label text-blue">Email</dt><dd className="mt-1"><a className="link-underline" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
               <div><dt className="label text-blue">Phone</dt><dd className="mt-1"><a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a></dd></div>

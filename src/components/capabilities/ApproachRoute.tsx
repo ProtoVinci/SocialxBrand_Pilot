@@ -59,7 +59,7 @@ export function ApproachRoute({ steps }: { steps: string[] }) {
             key={s}
             data-ticket
             style={{ zIndex: steps.length - i }}
-            className="relative flex min-h-[9rem] flex-col overflow-hidden rounded-[14px] bg-white shadow-[0_14px_30px_-18px_rgba(18,18,26,0.35)] ring-1 ring-ink/10"
+            className="relative flex min-h-[9rem] flex-col overflow-hidden rounded-[14px] bg-white shadow-[0_14px_30px_-18px_rgba(28,25,23,0.35)] ring-1 ring-ink/10"
           >
             <div className={`flex items-center justify-between px-3.5 py-2.5 ${i % 2 ? "bg-rouge text-ink" : "bg-iris text-ink"}`}>
               <span className="label">Stn {String(i + 1).padStart(2, "0")}</span>
@@ -74,7 +74,7 @@ export function ApproachRoute({ steps }: { steps: string[] }) {
             <span className="label mt-3 px-3.5 text-ink/55">
               {i === 0 ? "Departs" : <>From <span className="text-ink/80">{steps[i - 1]}</span></>}
             </span>
-            <span className="mt-auto px-3.5 pb-4 pt-3 font-display text-[1.1rem] font-semibold leading-tight [font-stretch:88%] md:text-[clamp(1.05rem,1.35vw,1.4rem)]">{s}</span>
+            <span className="mt-auto px-3.5 pb-4 pt-3 font-display text-[1.1rem] font-medium leading-tight md:text-[clamp(1.05rem,1.35vw,1.4rem)]">{s}</span>
           </li>
         ))}
       </ol>

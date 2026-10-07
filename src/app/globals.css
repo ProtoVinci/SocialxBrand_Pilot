@@ -2,62 +2,68 @@
 @import "tailwindcss" source("..");
 @import "lenis/dist/lenis.css";
 
-/* ─────────────────────────────────────────────────────────────
-   SOCIALxBRAND PILOT — design tokens
-   Colours sampled from the supplied logo artwork.
-   ───────────────────────────────────────────────────────────── */
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   SOCIALxBRAND PILOT â€” design tokens
+   Theme adopted from prototype 1 (sujal_site): warm off-white canvas, white cards on warm
+   hairlines, pilot red as the primary accent, logo purple as the secondary. Token NAMES are
+   kept from the earlier palette (blue, iris, rougeâ€¦) so every component re-themes in place:
+   "blue" is now the purple accent role, "iris"/"rouge" the purple/red act fields.
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @theme inline {
-  --font-display: var(--font-bricolage);
-  --font-serif: var(--font-instrument);
-  --font-sans: var(--font-geist);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-inter);
+  --font-serif: var(--font-inter);
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
 @theme {
-  /* Red + blue from the logo. Blue: the cornflower sampled from the Codex hero. Red: its exact
-     complement, same OKLCH lightness and chroma (0.643 / 0.187) with the hue turned to red (22°). */
-  --color-shell: #fdf9f7;        /* base canvas: warm white */
-  --color-petal: #f3ece9;        /* cards, the departures board */
-  --color-petal-2: #e8dedb;
-  --color-periwinkle: #c9d3ff;   /* soft act: cornflower tint */
-  --color-rose: #fbc8c3;         /* soft act: matched red tint */
-  --color-iris: #6281fd;         /* Codex cornflower: oklch(0.643 0.187 270) */
-  --color-iris-2: #8f9ffb;
-  --color-iris-3: #a4b4f8;
-  --color-iris-deep: #4658b1;
-  --color-rouge: #e95157;        /* complementary red: oklch(0.643 0.187 22) */
-  --color-rouge-2: #ee6461;
-  --color-rouge-3: #f19f99;
-  --color-rouge-deep: #a33737;
-  --color-blue: #3651e6;         /* text + UI blue: labels, accents, links, buttons (5.8:1 on shell) */
-  --color-blue-ink: #2f49d6;     /* blue for small text on the soft acts (4.7:1) */
-  --color-ink: #12121a;          /* body text */
-  --color-muted: #55556a;        /* secondary text on shell */
-  --color-signal: #ff3131;       /* logo red: the route line, stickers, accents on shell */
-  --color-signal-ink: #b01c22;   /* red for small text and accents on soft acts (AA) */
-  --color-violet: #8c52ff;       /* the logo's SOCIAL violet: selected / AI */
-  --color-violet-ink: #6b34e0;
+  --color-shell: #faf8f5;        /* base canvas: warm off-white */
+  --color-petal: #f3efe8;        /* subtle cards, the departures board */
+  --color-petal-2: #e8e2d8;      /* warm hairline */
+  --color-sand: #f5f1eb;         /* alternate warm band */
+  --color-line: #e8e2d8;         /* card borders */
+  --color-line-strong: #d5cdbd;  /* hover borders */
+  --color-periwinkle: #eee8fd;   /* soft act: purple tint */
+  --color-rose: #fce9e6;         /* soft act: red tint */
+  --color-iris: #6e3cf1;         /* logo purple */
+  --color-iris-2: #8d63f4;
+  --color-iris-3: #b9a2f8;
+  --color-iris-deep: #4a1fc4;
+  --color-rouge: #f43436;        /* pilot red */
+  --color-rouge-2: #f65a5b;
+  --color-rouge-3: #f99b9b;
+  --color-rouge-deep: #b81d22;
+  --color-blue: #6e3cf1;         /* secondary accent (purple): labels, links, accents (5.5:1 on shell) */
+  --color-blue-ink: #5b2bd8;     /* purple for small text on tinted acts (6.4:1) */
+  --color-ink: #181614;          /* primary text */
+  --color-muted: #6b665f;        /* secondary text (5.4:1 on shell) */
+  --color-signal: #f43436;       /* pilot red: primary CTA, route line, display accents */
+  --color-signal-ink: #c8202a;   /* red for small text (AA on every light surface) */
+  --color-cta: #de2b2d;          /* primary button fill: prototype 1 red, deepened to clear AA with white text (4.7:1) */
+  --color-cta-hover: #c8202a;
+  --color-violet: #6e3cf1;
+  --color-violet-ink: #5b2bd8;
 
   /* motion tokens mirrored from src/lib/motion/tokens.ts */
   --ease-pilot: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-glide: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* tracking stops short of glyph overlap: heavy condensed letters that touch show seams */
-  --text-mega: clamp(3.2rem, 10.5vw, 12rem);
-  --text-mega--line-height: 0.86;
-  --text-mega--letter-spacing: -0.022em;
-  --text-display: clamp(2.6rem, 7vw, 7.5rem);
-  --text-display--line-height: 0.9;
-  --text-display--letter-spacing: -0.028em;
-  --text-headline: clamp(2rem, 4.4vw, 4.5rem);
-  --text-headline--line-height: 0.95;
+  /* prototype 1 scale: Inter medium, tight negative tracking, leading ~1.05â€“1.12 */
+  --text-mega: clamp(2.9rem, 7vw, 8.5rem);
+  --text-mega--line-height: 0.98;
+  --text-mega--letter-spacing: -0.055em;
+  --text-display: clamp(2.4rem, 5.6vw, 5.6rem);
+  --text-display--line-height: 1.04;
+  --text-display--letter-spacing: -0.045em;
+  --text-headline: clamp(2rem, 4.2vw, 3.9rem);
+  --text-headline--line-height: 1.08;
   --text-headline--letter-spacing: -0.035em;
-  --text-title: clamp(1.4rem, 2.2vw, 2.25rem);
-  --text-title--line-height: 1.05;
-  --text-title--letter-spacing: -0.02em;
-  --text-lede: clamp(1.1rem, 1.5vw, 1.45rem);
-  --text-lede--line-height: 1.45;
+  --text-title: clamp(1.3rem, 2vw, 2rem);
+  --text-title--line-height: 1.15;
+  --text-title--letter-spacing: -0.025em;
+  --text-lede: clamp(1.05rem, 1.35vw, 1.25rem);
+  --text-lede--line-height: 1.6;
   --text-label: 0.75rem;
   --text-label--line-height: 1.2;
   --text-label--letter-spacing: 0.08em;
@@ -73,13 +79,25 @@
   }
 }
 
-/* A faint ink grid for plain shell surfaces (hero, departures board), faded out toward the edges. */
+/* Prototype 1's "digital mesh": a faint warm 36px grid under a red glow (top) and a purple
+   glow (top right), faded out toward the edges. Used on plain shell surfaces. */
 @utility grid-paper {
   background-image:
-    linear-gradient(to right, color-mix(in oklab, var(--color-ink) 7%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklab, var(--color-ink) 7%, transparent) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(ellipse 75% 70% at 50% 45%, #000 40%, transparent 100%);
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgb(244 52 54 / 0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 85% 20%, rgb(110 60 241 / 0.045) 0%, transparent 60%),
+    linear-gradient(to right, rgb(28 25 23 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(28 25 23 / 0.045) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 40%, #000 45%, transparent 100%);
+}
+
+/* Prototype 1's card: white on a warm hairline, a soft lift on hover */
+@utility brand-card {
+  background: #fff;
+  border: 1px solid var(--color-line);
+  box-shadow: 0 2px 10px -2px rgb(28 25 23 / 0.03), 0 1px 3px rgb(28 25 23 / 0.02);
+  transition: border-color 0.25s var(--ease-pilot), box-shadow 0.25s var(--ease-pilot), transform 0.25s var(--ease-pilot);
+  &:hover { border-color: var(--color-line-strong); box-shadow: 0 12px 30px -4px rgb(28 25 23 / 0.08), 0 4px 12px rgb(28 25 23 / 0.03); }
 }
 
 @utility gutter {
@@ -105,11 +123,13 @@
   &:hover, &:focus-visible { background-size: 100% 1px; }
 }
 
+/* The accent phrase per headline. Prototype 1 has no serif: the contrast is weight (regular
+   against the medium headline) plus colour, in the same Inter. Name kept so call sites stay. */
 @utility serif-accent {
-  font-family: var(--font-serif);
-  font-style: italic;
+  font-family: var(--font-sans);
+  font-style: normal;
   font-weight: 400;
-  letter-spacing: -0.02em;
+  letter-spacing: inherit;
 }
 
 /* "Lane" type: the multi-line inline stencil of BRAND PILOT, as parallel stripes clipped to
@@ -125,9 +145,9 @@
   background-clip: text;
 }
 
-/* ─────────────────────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Base
-   ───────────────────────────────────────────────────────────── */
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 :root {
   color-scheme: light;
   --nav-h: 4.5rem;
@@ -146,15 +166,18 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
+  /* prototype 1: Inter alternates (open digits, single-storey a off) and a slightly tight default */
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.015em;
 }
 
 ::selection {
-  background: var(--color-blue);
+  background: var(--color-signal);
   color: #fff;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-blue);
+  outline: 2px solid var(--color-signal);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -191,25 +214,26 @@ body {
   /* blue type can't hold contrast on the gradient fields either: it falls back to ink */
   --color-blue: var(--color-ink);
 }
+/* Bold acts in prototype 1 colours: mid-tone purple and red fields (ink stays AA on every
+   stop), with the deep tone only bleeding in from one corner. */
 .act-iris {
   background:
-    /* dot matrix, after the dotted glyphs drifting over the Codex hero */
-    radial-gradient(circle, rgb(255 255 255 / 0.38) 1px, transparent 1.5px) 0 0 / 16px 16px,
-    radial-gradient(60% 80% at 10% 25%, var(--color-iris) 0%, transparent 65%),
-    radial-gradient(45% 60% at 72% 18%, #7b7cfb 0%, transparent 62%),
-    radial-gradient(50% 65% at 88% 78%, var(--color-iris-3) 0%, transparent 62%),
-    radial-gradient(55% 60% at 0% 100%, var(--color-iris-deep) 0%, transparent 60%),
-    var(--color-iris-2);
+    radial-gradient(circle, rgb(255 255 255 / 0.4) 1px, transparent 1.5px) 0 0 / 16px 16px,
+    radial-gradient(60% 80% at 10% 25%, #a283f6 0%, transparent 65%),
+    radial-gradient(45% 60% at 72% 18%, #cbb9fa 0%, transparent 62%),
+    radial-gradient(50% 65% at 88% 78%, #d9ccfb 0%, transparent 62%),
+    radial-gradient(55% 60% at 0% 100%, rgb(110 60 241 / 0.55) 0%, transparent 60%),
+    var(--color-iris-3);
 }
 .act-rouge {
   background:
-    linear-gradient(to right, rgb(255 255 255 / 0.16) 1px, transparent 1px) 0 0 / 28px 28px,
-    linear-gradient(to bottom, rgb(255 255 255 / 0.16) 1px, transparent 1px) 0 0 / 28px 28px,
-    radial-gradient(60% 80% at 10% 25%, var(--color-rouge) 0%, transparent 65%),
-    radial-gradient(45% 60% at 72% 18%, #f0606f 0%, transparent 62%),
-    radial-gradient(50% 65% at 88% 78%, var(--color-rouge-3) 0%, transparent 62%),
-    radial-gradient(55% 60% at 0% 100%, var(--color-rouge-deep) 0%, transparent 60%),
-    var(--color-rouge-2);
+    linear-gradient(to right, rgb(255 255 255 / 0.18) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(to bottom, rgb(255 255 255 / 0.18) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(60% 80% at 10% 25%, #f77a7b 0%, transparent 65%),
+    radial-gradient(45% 60% at 72% 18%, #fbb4b1 0%, transparent 62%),
+    radial-gradient(50% 65% at 88% 78%, #fcc9c6 0%, transparent 62%),
+    radial-gradient(55% 60% at 0% 100%, rgb(244 52 54 / 0.5) 0%, transparent 60%),
+    var(--color-rouge-3);
 }
 
 /* Split-text lines get a mask so words can rise from below the baseline */
@@ -242,9 +266,9 @@ video::-webkit-media-controls { display: none !important; }
 }
 .skip-link:focus { top: 1rem; }
 
-/* ─────────────────────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Page transitions (React <ViewTransition>)
-   ───────────────────────────────────────────────────────────── */
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 ::view-transition { pointer-events: none; }
 
 ::view-transition-group(site-header) { animation: none; z-index: 100; }
@@ -267,9 +291,9 @@ video::-webkit-media-controls { display: none !important; }
 @keyframes vt-rise-in { from { transform: translateY(56px); } }
 @keyframes vt-via-blur { 40% { filter: blur(4px); } }
 
-/* ─────────────────────────────────────────────────────────────
+/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
    Reduced motion: content complete, no positional movement
-   ───────────────────────────────────────────────────────────── */
+   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),

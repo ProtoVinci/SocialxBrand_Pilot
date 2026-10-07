@@ -36,7 +36,7 @@ export function PrincipleStack() {
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <span className="label text-signal-ink">{pad(i + 1)} / {pad(principles.length)}</span>
-                <h3 className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">{p.title}</h3>
+                <h3 className="mt-4 font-display text-headline font-medium">{p.title}</h3>
               </div>
               <p className="max-w-sm text-lede text-ink/75 md:text-right">{p.body}</p>
             </div>

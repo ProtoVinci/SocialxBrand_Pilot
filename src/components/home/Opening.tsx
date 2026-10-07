@@ -75,7 +75,7 @@ export function Opening({ fan }: Props) {
           gsap.timeline({ defaults: { ease: "glide" } })
             .to(q("[data-strike]"), { scaleX: 1, duration: dur.base })
             .to(q("[data-activity]"), { opacity: 0.55, duration: dur.quick }, "<0.2")
-            .to(q("[data-impact]"), { color: "#ffffff", duration: dur.base }, "+=0.15");
+            .to(q("[data-impact]"), { color: "#4a1fc4", duration: dur.base }, "+=0.15");
         });
       }
 
@@ -108,10 +108,10 @@ export function Opening({ fan }: Props) {
         .to(centre, { rotate: 0, x: () => toCentre().x, y: () => toCentre().y, scale: coverScale, borderRadius: 0, duration: 0.3 }, 0.1)
         .to(q("[data-dim]"), { autoAlpha: 0.86, duration: 0.14 }, 0.34)
         .set(q("[data-manifesto]"), { autoAlpha: 1 }, 0.4)
-        .from(chars, { color: "rgba(18,18,26,0.16)", stagger: { amount: 0.36 }, duration: 0.05 }, 0.42)
+        .from(chars, { color: "rgba(28,25,23,0.16)", stagger: { amount: 0.36 }, duration: 0.05 }, 0.42)
         .to(q("[data-strike]"), { scaleX: 1, duration: 0.08 }, 0.6)
         .to(q("[data-activity]"), { opacity: 0.42, duration: 0.08 }, 0.6)
-        .to(q("[data-impact], [data-impact] *"), { color: "#ffffff", duration: 0.06 }, 0.82)
+        .to(q("[data-impact], [data-impact] *"), { color: "#4a1fc4", duration: 0.06 }, 0.82)
         .to(q("[data-dim]"), { autoAlpha: 0.96, duration: 0.12 }, 0.84)
         .to({}, { duration: 0.08 });
     });
@@ -143,10 +143,10 @@ export function Opening({ fan }: Props) {
           className="absolute left-1/2 top-[20%] h-[45svh] w-[25.3svh] -translate-x-1/2 max-lg:top-auto max-lg:bottom-[6%] max-lg:h-[34svh] max-lg:w-[19.1svh] lg:left-[83%] xl:left-[78%]"
         >
           {/* stickers: true statements only (all work is the client's own, shot vertical) */}
-          <span data-sticker className="absolute -left-[22%] top-[6%] z-10 -rotate-[9deg] rounded-full bg-signal px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-white shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-lg:-left-[30%] max-lg:px-3 max-lg:py-1.5">
+          <span data-sticker className="absolute -left-[22%] top-[6%] z-10 -rotate-[9deg] rounded-full bg-signal px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-medium uppercase tracking-wide text-white shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] max-lg:-left-[30%] max-lg:px-3 max-lg:py-1.5">
             Real work · no stock
           </span>
-          <span data-sticker className="absolute -right-[18%] bottom-[12%] z-10 rotate-[7deg] rounded-[14px] bg-periwinkle px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-semibold uppercase tracking-wide text-ink shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] [font-stretch:86%] max-lg:-right-[26%] max-lg:px-3 max-lg:py-1.5">
+          <span data-sticker className="absolute -right-[18%] bottom-[12%] z-10 rotate-[7deg] rounded-[14px] bg-periwinkle px-4 py-2 font-display text-[clamp(0.8rem,1.1vw,1.05rem)] font-medium uppercase tracking-wide text-ink shadow-[0_12px_30px_-12px_rgba(80,40,150,0.6)] max-lg:-right-[26%] max-lg:px-3 max-lg:py-1.5">
             Made in 9:16 ✦
           </span>
           {fan.slice(0, 5).map((asset, i) => (
@@ -171,7 +171,7 @@ export function Opening({ fan }: Props) {
         </div>
 
         <div className="relative">
-          <h1 id="hero-title" data-hero-title data-reveal className="font-display text-mega font-bold uppercase [font-stretch:76%]">
+          <h1 id="hero-title" data-hero-title data-reveal className="font-display text-mega font-medium">
             <span data-line className="block">Every business</span>
             <span data-line className="block text-blue">has something</span>
             <span data-line className="block normal-case">
@@ -182,7 +182,7 @@ export function Opening({ fan }: Props) {
           {/* the signal line: leaves the headline and runs into the fan of work */}
           <div data-signal-wrap aria-hidden className="pointer-events-none absolute -bottom-7 left-0 h-20 w-[min(62vw,60rem)] max-lg:hidden">
             <svg viewBox="0 0 1000 80" preserveAspectRatio="none" className="h-full w-full overflow-visible">
-              <path data-signal d="M0 40 C 160 40, 260 66, 470 58 S 820 14, 1000 6" fill="none" stroke="#ff3131" strokeWidth="1.6" strokeLinecap="round" />
+              <path data-signal d="M0 40 C 160 40, 260 66, 470 58 S 820 14, 1000 6" fill="none" stroke="#f43436" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </div>
         </div>
@@ -192,10 +192,10 @@ export function Opening({ fan }: Props) {
             We build the strategy, creative and growth systems that help the right people see it.
           </p>
           <div className="flex shrink-0 flex-wrap gap-3">
-            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-blue px-6 py-4 font-semibold text-white transition-colors duration-300 hover:bg-blue-ink">
+            <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-cta px-6 py-4 font-medium text-white transition-colors duration-300 hover:bg-cta-hover">
               Start your Pilot Route <span aria-hidden>→</span>
             </Link>
-            <Link href="/work" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full border border-ink/25 px-6 py-4 font-medium transition-colors hover:border-ink">
+            <Link href="/work" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full border border-line bg-white px-6 py-4 font-medium shadow-sm transition-colors hover:border-line-strong hover:bg-sand">
               See the work
             </Link>
           </div>
@@ -213,7 +213,7 @@ export function Opening({ fan }: Props) {
         data-manifesto
         className="act-iris gutter relative z-20 grid py-28 cinema:pointer-events-none cinema:!bg-transparent cinema:absolute cinema:inset-0 cinema:place-items-center cinema:py-0 cinema:opacity-0"
       >
-        <p className="max-w-[18ch] font-display text-display font-semibold [font-stretch:82%] md:max-w-[16ch]">
+        <p className="max-w-[18ch] font-display text-display font-medium md:max-w-[16ch]">
           <span className="sr-only">We don&apos;t simply aim to create digital activity. {impact.turn}</span>
           <span data-manifesto-line aria-hidden className="block">
             We don&apos;t simply aim to create digital{" "}
@@ -224,7 +224,7 @@ export function Opening({ fan }: Props) {
           </span>
           <span data-manifesto-line aria-hidden className="mt-[0.35em] block">
             {impact.turn.replace("impact.", "")}
-            <span data-impact className="serif-accent font-normal text-ink [html:not(.js-motion)_&]:text-white">impact.</span>
+            <span data-impact className="serif-accent font-normal text-ink [html:not(.js-motion)_&]:text-iris-deep">impact.</span>
           </span>
         </p>
       </div>

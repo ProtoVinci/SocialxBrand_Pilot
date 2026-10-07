@@ -36,7 +36,7 @@ export default function CapabilitiesPage() {
         <DivisionIndex previews={divisionPreviews()} headingLevel="h2" />
         <div className="mt-20 flex flex-col items-start gap-6 border-t border-ink/10 pt-12 md:flex-row md:items-center md:justify-between">
           <p className="max-w-lg text-lede text-ink/75">Not sure where to start? Tell us about the business and the goal; we&apos;ll suggest a starting route.</p>
-          <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-blue px-6 py-4 font-semibold text-white">
+          <Link href="/route" transitionTypes={["nav-forward"]} className="inline-flex items-center gap-3 rounded-full bg-cta px-6 py-4 font-medium text-white transition-colors hover:bg-cta-hover">
             Plan your route <span aria-hidden>→</span>
           </Link>
         </div>

@@ -13,7 +13,7 @@ export function Footer() {
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-6">
           <p className="label text-blue">Let&apos;s grow together</p>
-          <h2 id="footer-title" className="mt-5 max-w-xl font-display text-headline font-semibold [font-stretch:85%]">
+          <h2 id="footer-title" className="mt-5 max-w-xl font-display text-headline font-medium">
             {closing.lead} <span className="serif-accent text-blue">{closing.turn}</span>
           </h2>
         </div>

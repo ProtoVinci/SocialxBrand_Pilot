@@ -92,7 +92,7 @@ export function RouteBuilder() {
       </ol>
 
       <div ref={stepRef}>
-        <h2 ref={headingRef} tabIndex={-1} className="font-display text-headline font-semibold outline-none [font-stretch:84%]">
+        <h2 ref={headingRef} tabIndex={-1} className="font-display text-headline font-medium outline-none">
           {[
             "Who is the route for?",
             "What should marketing do for you right now?",
@@ -109,7 +109,7 @@ export function RouteBuilder() {
               {audiences.map((a) => (
                 <label key={a.id} className={`cursor-pointer rounded-[16px] border p-5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue has-[:focus-visible]:ring-offset-2 ${audience === a.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
                   <input type="radio" name="audience" value={a.id} checked={audience === a.id} onChange={() => setAudience(a.id)} className="sr-only" />
-                  <span className="font-display text-title font-semibold [font-stretch:86%]">{a.name}</span>
+                  <span className="font-display text-title font-medium">{a.name}</span>
                   <span className="mt-1 block text-sm text-ink/65">{a.need}</span>
                 </label>
               ))}
@@ -124,7 +124,7 @@ export function RouteBuilder() {
               {goals.map((g) => (
                 <label key={g.id} className={`flex cursor-pointer items-baseline justify-between gap-6 rounded-[16px] border p-5 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-blue has-[:focus-visible]:ring-offset-2 ${goal === g.id ? "border-signal bg-signal/10" : "border-ink/15 hover:border-ink/40"}`}>
                   <input type="radio" name="goal" value={g.id} checked={goal === g.id} onChange={() => setGoal(g.id)} className="sr-only" />
-                  <span className="font-display text-title font-semibold [font-stretch:86%]">{g.label}</span>
+                  <span className="font-display text-title font-medium">{g.label}</span>
                   <span className="text-right text-sm text-ink/65">{g.prompt}</span>
                 </label>
               ))}
@@ -248,7 +248,7 @@ export function RouteBuilder() {
             type="button"
             onClick={() => go(step + 1)}
             disabled={!canContinue}
-            className="inline-flex items-center gap-3 rounded-full bg-blue px-6 py-3.5 font-semibold text-white transition-opacity disabled:opacity-40"
+            className="inline-flex items-center gap-3 rounded-full bg-cta px-6 py-3.5 font-medium text-white transition-[opacity,background-color] disabled:opacity-40 hover:bg-cta-hover"
           >
             {step === 3 ? "Review route" : "Continue"} <span aria-hidden>→</span>
           </button>
@@ -268,7 +268,7 @@ function RouteSummary({ slugs }: { slugs: string[] }) {
   return (
     <div className="relative h-44 md:h-40">
       <svg data-summary-svg aria-hidden viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
-        <path data-summary-line d={d} fill="none" stroke="#ff3131" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <path data-summary-line d={d} fill="none" stroke="#f43436" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
       <ol className="absolute inset-0">
         {items.map((it, i) => (

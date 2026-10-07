@@ -5,7 +5,7 @@ import { MQ } from "@/lib/motion/tokens";
 
 /**
  * The giant edge-to-edge sign-off. It rises out of the footer floor as the page ends,
- * landing the last frame of the film. Coloured like the logo: SOCIAL blue, BRAND PILOT red.
+ * landing the last frame of the film. Coloured like the logo: SOCIAL purple, BRAND PILOT red (sized for Inter's wider set).
  */
 export function FooterWordmark() {
   const ref = useRef<HTMLDivElement>(null);
@@ -23,7 +23,7 @@ export function FooterWordmark() {
 
   return (
     <div ref={ref} aria-hidden className="relative mt-4 overflow-hidden select-none">
-      <div data-word className="gutter whitespace-nowrap text-center font-display font-bold leading-[0.78] tracking-[-0.06em] text-ink [font-size:clamp(3rem,15.2vw,17rem)] [font-stretch:75%]">
+      <div data-word className="gutter whitespace-nowrap text-center font-display font-medium leading-[0.86] tracking-[-0.06em] text-ink [font-size:clamp(2rem,8.6vw,10rem)]">
         <span className="text-blue">SOCIAL</span>x<span className="text-signal">BRAND PILOT</span>
       </div>
     </div>

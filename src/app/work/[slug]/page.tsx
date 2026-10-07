@@ -45,7 +45,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
         <div className="md:col-span-7">
           <Link href="/work" transitionTypes={["nav-back"]} className="label text-blue hover:text-ink">← All work</Link>
           <p className="label mt-8 text-signal-ink">[ {pad(idx + 1)} / {pad(all.length)} ] {s.kicker}</p>
-          <SplitReveal as="h1" trigger="mount" className="mt-4 font-display text-display font-bold [font-stretch:78%]">{s.title}</SplitReveal>
+          <SplitReveal as="h1" trigger="mount" className="mt-4 font-display text-display font-medium">{s.title}</SplitReveal>
           <p className="mt-8 max-w-xl text-lede text-ink/80">{s.line}</p>
           <dl className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-ink/10 pt-6 text-sm">
             <div><dt className="label text-blue">Format</dt><dd className="mt-2">{s.format}</dd></div>
@@ -82,7 +82,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
         <div className="gutter flex items-center justify-between gap-8 py-20">
           <div>
             <p className="label text-blue">Next screening</p>
-            <p className="mt-4 font-display text-display font-bold [font-stretch:78%] transition-colors group-hover:text-signal">{next.title} <span className="inline-block transition-transform duration-500 group-hover:translate-x-4">→</span></p>
+            <p className="mt-4 font-display text-display font-medium transition-colors group-hover:text-signal">{next.title} <span className="inline-block transition-transform duration-500 group-hover:translate-x-4">→</span></p>
           </div>
           {nextCover && (
             <div className="hidden aspect-[9/16] w-40 shrink-0 overflow-hidden rounded-[14px] md:block">

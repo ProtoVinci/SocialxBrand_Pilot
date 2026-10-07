@@ -87,7 +87,7 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="label text-blue">[ {index} ] How we work — the Pilot Route</p>
-          <h2 id="method-title" className="mt-4 max-w-[24ch] font-display text-headline font-semibold [font-stretch:82%]">
+          <h2 id="method-title" className="mt-4 max-w-[24ch] font-display text-headline font-medium">
             We start by <span className="serif-accent font-normal text-blue">understanding</span> the business.
           </h2>
         </div>
@@ -124,7 +124,7 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
                       key={k}
                       aria-hidden
                       data-ch={ch}
-                      className="relative inline-grid h-[1.6em] w-[1.18em] place-items-center rounded-[4px] bg-white shadow-[0_1px_2px_rgba(18,18,26,0.12)] ring-1 ring-ink/10 after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-ink/10"
+                      className="relative inline-grid h-[1.6em] w-[1.18em] place-items-center rounded-[4px] bg-white shadow-[0_1px_2px_rgba(28,25,23,0.12)] ring-1 ring-ink/10 after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-ink/10"
                     >
                       {ch}
                     </span>

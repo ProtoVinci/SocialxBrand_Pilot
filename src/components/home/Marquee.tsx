@@ -92,13 +92,13 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
     <section ref={root} aria-label="We will show, you will grow" className="act-iris relative overflow-hidden py-14 md:py-20">
       <div data-lean className="flex flex-col gap-4 will-change-transform md:gap-6">
         <div className="overflow-hidden" aria-hidden>
-          <div data-track className="flex w-max items-center gap-[0.35em] whitespace-nowrap font-display text-[clamp(3.4rem,11vw,10.5rem)] font-bold uppercase leading-none [font-stretch:76%]">
+          <div data-track className="flex w-max items-center gap-[0.35em] whitespace-nowrap font-display text-[clamp(3.4rem,11vw,10.5rem)] font-medium uppercase leading-none">
             <div className="flex items-center gap-[0.35em] pr-[0.35em]">{promise}</div>
             <div className="flex items-center gap-[0.35em] pr-[0.35em]">{promise}</div>
           </div>
         </div>
         <div className="overflow-hidden" aria-hidden>
-          <div data-track className="flex w-max items-center whitespace-nowrap font-display text-[clamp(1.4rem,3.2vw,2.8rem)] font-semibold [font-stretch:84%]">
+          <div data-track className="flex w-max items-center whitespace-nowrap font-display text-[clamp(1.4rem,3.2vw,2.8rem)] font-medium">
             {[0, 1].map((k) => (
               <div key={k} className="flex items-center">
                 {[0, 1, 2].flatMap((n) =>

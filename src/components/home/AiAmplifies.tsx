@@ -31,7 +31,7 @@ export function AiAmplifies() {
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-4">
           <p className="label text-blue">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>
-          <h2 id="ai-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
+          <h2 id="ai-title" className="mt-4 font-display text-headline font-medium">
             Our <span className="serif-accent font-normal text-blue">AI</span> philosophy.
           </h2>
           <p className="mt-6 max-w-sm text-ink/70">
@@ -44,12 +44,12 @@ export function AiAmplifies() {
         <ul className="flex flex-col gap-14 md:col-span-8">
           {aiPhilosophy.map((p) => (
             <li key={p.should} data-pair>
-              <p data-not className="relative inline-block font-display text-title font-semibold text-ink/80 [font-stretch:88%]">
+              <p data-not className="relative inline-block font-display text-title font-medium text-ink/80">
                 {p.not}
                 <span data-strike aria-hidden className="absolute left-0 right-0 top-[52%] h-[0.07em] origin-left bg-signal" />
               </p>
               <span className="mt-2 block overflow-hidden">
-                <span data-should className="block font-display text-headline font-semibold [font-stretch:80%]">
+                <span data-should className="block font-display text-headline font-medium">
                   {p.should.replace(/\.$/, "")}<span className="text-signal">.</span>
                 </span>
               </span>

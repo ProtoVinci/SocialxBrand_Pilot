@@ -32,7 +32,7 @@ export function Finale() {
         <SpinBadge />
       </div>
       <div className="gutter">
-        <h2 id="finale-title" className="font-display text-mega font-bold uppercase [font-stretch:76%]">
+        <h2 id="finale-title" className="font-display text-mega font-medium uppercase">
           <span className="relative block w-max max-w-full">
             <span className="lane block text-ink/45" aria-hidden>We will show.</span>
             <span data-fill className="absolute inset-0 block text-ink">We will show.</span>

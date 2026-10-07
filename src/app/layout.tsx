@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { bricolage, instrument, geist, geistMono } from "./fonts";
+import { inter } from "./fonts";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export const viewport: Viewport = { themeColor: "#fdf9f7", colorScheme: "light" };
+export const viewport: Viewport = { themeColor: "#faf8f5", colorScheme: "light" };
 
 // Marks the document for JS-driven reveals before first paint (skipped for reduced motion),
 // so headings never flash in their final state and then jump.
@@ -36,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-IN"
-      className={`${bricolage.variable} ${instrument.variable} ${geist.variable} ${geistMono.variable}`}
+      className={inter.variable}
       suppressHydrationWarning
     >
       <head>

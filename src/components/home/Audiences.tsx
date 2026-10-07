@@ -50,7 +50,7 @@ export function Audiences({ index = "06" }: { index?: string }) {
       <div className="gutter grid gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
           <p className="label text-blue">[ {index} ] Who we work with</p>
-          <h2 id="audiences-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
+          <h2 id="audiences-title" className="mt-4 font-display text-headline font-medium">
             Marketing is for <span className="serif-accent font-normal text-blue">every</span> business.
           </h2>
           <p className="mt-6 max-w-md text-lede text-ink/75">
@@ -80,7 +80,7 @@ export function Audiences({ index = "06" }: { index?: string }) {
           </div>
 
           <div id="audience-panel" role="tabpanel" aria-labelledby={`audience-tab-${active}`} tabIndex={0} className="mt-10">
-            <p data-audience-need className="font-display text-title font-semibold [font-stretch:88%]">{current.need}</p>
+            <p data-audience-need className="font-display text-title font-medium">{current.need}</p>
             <span data-audience-rule aria-hidden className="mt-8 block h-px origin-left bg-signal-ink" />
             <p className="label mt-6 text-blue">A route might start with</p>
             {route.length > 0 ? (

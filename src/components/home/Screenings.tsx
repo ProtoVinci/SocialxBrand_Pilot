@@ -82,7 +82,7 @@ export function Screenings({ items }: { items: Item[] }) {
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="label text-blue">[ 03 ] Screenings — real work</p>
-          <SplitReveal as="h2" id="screenings-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
+          <SplitReveal as="h2" id="screenings-title" className="mt-4 font-display text-headline font-medium">
             Made to be <span className="serif-accent font-normal text-blue">watched</span>, not just posted.
           </SplitReveal>
         </div>
@@ -103,7 +103,7 @@ export function Screenings({ items }: { items: Item[] }) {
               </ViewTransition>
               <span className="mt-4 flex items-baseline gap-3">
                 <span className="label shrink-0 whitespace-nowrap text-signal-ink">[ {pad(i + 1)} ]</span>
-                <span className="font-display text-title font-semibold [font-stretch:85%] group-hover:text-signal">{screening.title}</span>
+                <span className="font-display text-title font-medium group-hover:text-signal">{screening.title}</span>
               </span>
               <span className="label mt-1 block text-blue">{screening.kicker} · {screening.format}</span>
             </Link>
@@ -111,7 +111,7 @@ export function Screenings({ items }: { items: Item[] }) {
         ))}
         <li className="flex w-[62vw] shrink-0 snap-center items-center sm:w-[42vw] md:w-[min(26vw,46svh)]">
           <Link href="/work" transitionTypes={["nav-forward"]} className="group block">
-            <span className="font-display text-display font-semibold leading-none [font-stretch:78%] group-hover:text-signal">
+            <span className="font-display text-display font-medium leading-none group-hover:text-signal">
               Enter the work <span className="inline-block transition-transform duration-500 group-hover:translate-x-3">→</span>
             </span>
             <span className="mt-4 block max-w-xs text-sm text-muted">{total} screenings, from creator reels to wedding films, logos and menus.</span>

@@ -39,7 +39,7 @@ export default function ApproachPage() {
           <Reveal as="p" className="mt-6 max-w-3xl text-lede text-ink/80">{whoWeAre[2]}</Reveal>
           <ul className="mt-14 grid grid-cols-2 gap-3 md:grid-cols-4" aria-label="What we combine">
             {pillars.map((p, i) => (
-              <li key={p} className="flex items-baseline gap-3 border-t border-ink/15 pt-4 font-display text-title font-semibold [font-stretch:85%]">
+              <li key={p} className="flex items-baseline gap-3 border-t border-ink/15 pt-4 font-display text-title font-medium">
                 <span className="label text-signal-ink">{i === 0 ? "" : "+"}</span>{p}
               </li>
             ))}
@@ -49,7 +49,7 @@ export default function ApproachPage() {
 
       {/* the quote */}
       <section aria-label="Our stance" className="gutter py-28 md:py-40">
-        <SplitReveal as="p" variant="blur" className="max-w-[20ch] font-display text-display font-semibold [font-stretch:80%]">
+        <SplitReveal as="p" variant="blur" className="max-w-[20ch] font-display text-display font-medium">
           {quote.lead} <span className="serif-accent font-normal text-signal">{quote.turn}</span>
         </SplitReveal>
       </section>
@@ -59,13 +59,13 @@ export default function ApproachPage() {
         <div className="gutter grid gap-12 md:grid-cols-12">
           <div className="md:col-span-4">
             <h2 id="philosophy-title" className="label text-blue">Our marketing philosophy</h2>
-            <p className="mt-6 font-display text-title font-semibold [font-stretch:86%]">{philosophy.intro}</p>
+            <p className="mt-6 font-display text-title font-medium">{philosophy.intro}</p>
           </div>
           <Reveal group as="ul" className="grid gap-6 sm:grid-cols-2 md:col-span-8">
             {philosophy.outcomes.map((o, i) => (
               <li key={o.title} className="border-t border-ink/15 pt-5">
                 <span className="label text-signal-ink">{pad(i + 1)}</span>
-                <h3 className="mt-3 font-display text-title font-semibold [font-stretch:86%]">{o.title}</h3>
+                <h3 className="mt-3 font-display text-title font-medium">{o.title}</h3>
                 <p className="mt-2 text-ink/75">{o.body}</p>
               </li>
             ))}
@@ -78,7 +78,7 @@ export default function ApproachPage() {
         {[{ k: "Our vision", v: vision }, { k: "Our mission", v: mission }].map((x, i) => (
           <Reveal key={x.k} className={`overflow-hidden rounded-[22px] p-8 md:p-12 ${i === 0 ? "act-iris" : "act-rouge"}`}>
             <h2 className="label text-signal-ink">{x.k}</h2>
-            <p className="mt-6 font-display text-title font-semibold leading-snug [font-stretch:88%]">“{x.v}”</p>
+            <p className="mt-6 font-display text-title font-medium leading-snug">“{x.v}”</p>
           </Reveal>
         ))}
       </section>
@@ -88,7 +88,7 @@ export default function ApproachPage() {
       {/* principles */}
       <section aria-labelledby="principles-title" className="gutter py-28">
         <p className="label text-blue">What we stand for</p>
-        <h2 id="principles-title" className="mt-4 max-w-[16ch] font-display text-headline font-semibold [font-stretch:82%]">
+        <h2 id="principles-title" className="mt-4 max-w-[16ch] font-display text-headline font-medium">
           Six principles, <span className="serif-accent font-normal text-blue">one stance.</span>
         </h2>
         <div className="mt-14"><PrincipleStack /></div>
@@ -102,7 +102,7 @@ export default function ApproachPage() {
             <ul className="mt-8 flex flex-col gap-6">
               {personality.map((p) => (
                 <li key={p.title}>
-                  <span className="font-display text-title font-semibold uppercase [font-stretch:80%]">{p.title}</span>
+                  <span className="font-display text-title font-medium uppercase">{p.title}</span>
                   <p className="mt-1 text-sm text-ink/65">{p.body}</p>
                 </li>
               ))}
@@ -112,7 +112,7 @@ export default function ApproachPage() {
             {differentiators.map((d, i) => (
               <li key={d.title} className="border-t border-ink/10 py-6">
                 <span className="label text-signal-ink">{pad(i + 1)}</span>
-                <h3 className="mt-2 font-display text-[1.35rem] font-semibold [font-stretch:86%]">{d.title}</h3>
+                <h3 className="mt-2 font-display text-[1.35rem] font-medium">{d.title}</h3>
                 <p className="mt-2 text-sm text-ink/70">{d.body}</p>
               </li>
             ))}

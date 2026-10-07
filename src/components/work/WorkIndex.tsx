@@ -80,7 +80,7 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
                   </div>
                 </ViewTransition>
                 <div className="mt-4 flex items-baseline justify-between gap-4">
-                  <span className="font-display text-title font-semibold [font-stretch:85%] transition-colors group-hover:text-signal">{screening.title}</span>
+                  <span className="font-display text-title font-medium transition-colors group-hover:text-signal">{screening.title}</span>
                   <span className="label shrink-0 text-blue">{pad(item.count)}</span>
                 </div>
                 <span className="label mt-1 block text-blue">{screening.kicker} · {screening.format}</span>

@@ -50,14 +50,14 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
 
       {/* identity */}
       <header className="gutter relative overflow-hidden pb-16 pt-[calc(var(--nav-h)+3rem)] md:pb-24">
-        <span aria-hidden className="lane pointer-events-none absolute -right-[2vw] top-[calc(var(--nav-h)+1rem)] select-none font-display text-[clamp(10rem,30vw,28rem)] font-bold leading-[0.8] text-blue/70 [font-stretch:75%]">
+        <span aria-hidden className="lane pointer-events-none absolute -right-[2vw] top-[calc(var(--nav-h)+1rem)] select-none font-display text-[clamp(10rem,30vw,28rem)] font-medium leading-[0.8] text-blue/70">
           {pad(d.number)}
         </span>
         <div className="relative">
           <Link href="/capabilities" transitionTypes={["nav-back"]} className="label text-blue hover:text-ink">← All capabilities</Link>
           <p className="label mt-8 text-signal-ink">[ {pad(d.number)} / 18 ] {cluster.name}</p>
           <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
-            <h1 className="mt-4 max-w-[16ch] font-display text-display font-bold [font-stretch:78%]">{d.name}</h1>
+            <h1 className="mt-4 max-w-[16ch] font-display text-display font-medium">{d.name}</h1>
           </ViewTransition>
           <div className="mt-10 flex flex-wrap items-center gap-4">
             <RouteToggle slug={d.slug} name={d.shortName} className="h-11 px-5 text-ink" />
@@ -70,7 +70,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       <section aria-labelledby="what-title" className="gutter grid gap-10 border-t border-ink/10 py-20 md:grid-cols-12">
         <h2 id="what-title" className="label text-blue md:col-span-3">What it is</h2>
         <div className="md:col-span-9">
-          <SplitReveal as="p" variant="blur" className="max-w-[34ch] font-display text-[clamp(1.6rem,2.9vw,3rem)] font-semibold leading-[1.08] tracking-[-0.02em] [font-stretch:88%]">{lead}</SplitReveal>
+          <SplitReveal as="p" variant="blur" className="max-w-[34ch] font-display text-[clamp(1.6rem,2.9vw,3rem)] font-medium leading-[1.08] tracking-[-0.02em]">{lead}</SplitReveal>
           {restIntro.map((p) => (
             <Reveal key={p} as="p" className="mt-8 max-w-3xl text-lede text-ink/75">{p}</Reveal>
           ))}
@@ -84,7 +84,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
           <Reveal group className="grid gap-x-10 gap-y-14 md:col-span-9 md:grid-cols-2">
             {d.groups.map((g, gi) => (
               <div key={g.title}>
-                <h3 className="flex items-baseline gap-3 font-display text-title font-semibold [font-stretch:86%]">
+                <h3 className="flex items-baseline gap-3 font-display text-title font-medium">
                   <span className="label text-signal-ink">{pad(gi + 1)}</span>{g.title}
                 </h3>
                 <ul className="mt-5 flex flex-wrap gap-2">
@@ -103,7 +103,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
         <div className="gutter grid gap-10 md:grid-cols-12">
           <div className="md:col-span-3">
             <h2 id="deliverables-title" className="label text-blue">Key deliverables</h2>
-            <p className="mt-4 font-display text-[clamp(4rem,8vw,7rem)] font-bold leading-none [font-stretch:76%]">{pad(d.deliverables.length)}</p>
+            <p className="mt-4 font-display text-[clamp(4rem,8vw,7rem)] font-medium leading-none">{pad(d.deliverables.length)}</p>
           </div>
           <Reveal group as="ol" className="grid sm:grid-cols-2 md:col-span-9 md:grid-cols-3">
             {d.deliverables.map((x, i) => (
@@ -119,7 +119,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       {/* approach */}
       <section aria-labelledby="approach-title" className="gutter border-b border-ink/10 py-24">
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 id="approach-title" className="font-display text-headline font-semibold [font-stretch:82%]">Our <span className="serif-accent font-normal text-blue">approach</span></h2>
+          <h2 id="approach-title" className="font-display text-headline font-medium">Our <span className="serif-accent font-normal text-blue">approach</span></h2>
           <p className="label text-blue">{d.approach.length} stations</p>
         </div>
         <div className="mt-14"><ApproachRoute steps={d.approach} /></div>
@@ -136,7 +136,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
                   <div className="aspect-[9/16] overflow-hidden rounded-[14px]">
                     {cover.kind === "video" ? <Reel asset={cover} mode="hover" label={screening.title} className="h-full w-full" /> : <Photo asset={cover} alt={screening.title} sizes="25vw" className="h-full w-full" />}
                   </div>
-                  <span className="mt-3 block font-display text-[1.1rem] font-semibold [font-stretch:88%] group-hover:text-signal">{screening.title}</span>
+                  <span className="mt-3 block font-display text-[1.1rem] font-medium group-hover:text-signal">{screening.title}</span>
                 </Link>
               </li>
             ))}
@@ -152,7 +152,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
             <li key={r!.slug} className="relative rounded-[18px] border border-ink/10 p-6 transition-colors hover:border-ink/30">
               <Link href={`/capabilities/${r!.slug}`} transitionTypes={["nav-forward"]} className="block after:absolute after:inset-0">
                 <span className="label text-signal-ink">[ {pad(r!.number)} ]</span>
-                <span className="mt-3 block font-display text-title font-semibold [font-stretch:86%]">{r!.shortName}</span>
+                <span className="mt-3 block font-display text-title font-medium">{r!.shortName}</span>
                 <span className="mt-3 line-clamp-3 block text-sm text-ink/65">{r!.whatItIs[0]}</span>
               </Link>
               <RouteToggle slug={r!.slug} name={r!.shortName} className="relative z-10 mt-6" />
@@ -164,11 +164,11 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       <nav aria-label="Divisions" className="gutter grid grid-cols-2 border-t border-ink/10">
         <Link href={`/capabilities/${prev.slug}`} transitionTypes={["nav-back"]} className="group py-10 pr-6">
           <span className="label text-blue">← {pad(prev.number)}</span>
-          <span className="mt-2 block font-display text-title font-semibold [font-stretch:86%] group-hover:text-signal">{prev.shortName}</span>
+          <span className="mt-2 block font-display text-title font-medium group-hover:text-signal">{prev.shortName}</span>
         </Link>
         <Link href={`/capabilities/${next.slug}`} transitionTypes={["nav-forward"]} className="group border-l border-ink/10 py-10 pl-6 text-right">
           <span className="label text-blue">{pad(next.number)} →</span>
-          <span className="mt-2 block font-display text-title font-semibold [font-stretch:86%] group-hover:text-signal">{next.shortName}</span>
+          <span className="mt-2 block font-display text-title font-medium group-hover:text-signal">{next.shortName}</span>
         </Link>
       </nav>
     </PageShell>

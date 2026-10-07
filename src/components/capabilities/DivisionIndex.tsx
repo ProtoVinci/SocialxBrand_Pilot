@@ -94,7 +94,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
                       <span className="label text-signal-ink transition-colors duration-300 [@media(hover:hover)]:group-hover:text-ink">[ {pad(d.number)} ]</span>
                       <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
                         <span
-                          className="font-display text-title font-semibold transition-[transform,color] duration-500 ease-[var(--ease-pilot)] [font-stretch:85%] md:text-[clamp(1.6rem,2.6vw,2.6rem)] [@media(hover:hover)]:group-hover:translate-x-3"
+                          className="font-display text-title font-medium transition-[transform,color] duration-500 ease-[var(--ease-pilot)] md:text-[clamp(1.6rem,2.6vw,2.6rem)] [@media(hover:hover)]:group-hover:translate-x-3"
                         >
                           {d.shortName}
                         </span>

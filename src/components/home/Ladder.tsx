@@ -72,7 +72,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
         <div className="gutter relative grid w-full items-center gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:gap-16">
           <div>
             <p className="label text-ink/70">[ 02 ] Our marketing philosophy</p>
-            <h2 id="ladder-title" className="mt-6 font-display text-display font-semibold [font-stretch:80%]">
+            <h2 id="ladder-title" className="mt-6 font-display text-display font-medium">
               Marketing is more than being
               {/* animated slot */}
               <span className="relative mt-1 hidden h-[1.12em] overflow-hidden [html.js-motion_&]:block" aria-hidden>

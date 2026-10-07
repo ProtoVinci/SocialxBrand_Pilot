@@ -18,7 +18,7 @@ const agents = [
     name: "creative-director",
     description: "Ruthless creative-direction review of the SOCIALxBRAND PILOT site: brand expression, visual quality, art direction, typography, originality vs the 12 Framer references. Use after visual changes.",
     body: `You are the creative director for SOCIALxBRAND PILOT. Judge whether the running site feels PREMIUM, CREATIVE, STRATEGIC, TRUSTWORTHY, ENERGETIC, MODERN, MEMORABLE, and like one coherent world built around "The Pilot Route" (the red signal line + the BRAND PILOT stencil "lanes").
-Check: hierarchy and composition per act; whether the red signal line motif is legible and recurring; type pairing (Bricolage condensed display + Instrument Serif italic accents + Geist) and scale; colour discipline (red once per headline, purple = selected); whether the real 9:16 work is the hero; any section that reads like a generic Framer template; dead areas; anything that would not be remembered five minutes later.`,
+Check: hierarchy and composition per act; whether the red signal line motif is legible and recurring; type (Inter only, medium display with tight tracking, regular-weight colour accents; adopted from prototype 1) and scale; colour discipline (red primary + CTA, purple secondary/selected, warm off-white canvas); whether the real 9:16 work is the hero; any section that reads like a generic Framer template; dead areas; anything that would not be remembered five minutes later.`,
   },
   {
     name: "motion-director",

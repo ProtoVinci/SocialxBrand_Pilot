@@ -106,7 +106,7 @@ export function Nav() {
         <nav aria-label="Primary" className="gutter flex h-[var(--nav-h)] items-center justify-between gap-6">
           <Link href="/" className="group flex items-center gap-3" aria-label="SOCIALxBRAND PILOT — home" transitionTypes={["nav-back"]}>
             <Mark className="h-8 w-auto text-signal transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:-translate-y-0.5" />
-            <span className="hidden whitespace-nowrap font-display text-[0.95rem] font-semibold tracking-[-0.01em] sm:block md:max-lg:hidden">
+            <span className="hidden whitespace-nowrap font-display text-[0.95rem] font-medium tracking-[-0.01em] sm:block md:max-lg:hidden">
               <span className="text-blue">SOCIAL</span>x<span className="text-signal-ink">BRAND PILOT</span>
             </span>
           </Link>
@@ -134,7 +134,7 @@ export function Nav() {
             <Link
               href="/route"
               transitionTypes={["nav-forward"]}
-              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-blue-ink"
+              className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-cta px-4 py-2.5 text-sm font-medium text-white transition-colors duration-300 hover:bg-cta-hover"
             >
               <span className="whitespace-nowrap">
                 Start<span className="max-sm:hidden md:max-lg:hidden"> your route</span>
@@ -158,7 +158,7 @@ export function Nav() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="site-menu"
-              className="label flex h-10 items-center gap-2 rounded-full border border-ink/20 px-4 text-ink transition-colors hover:border-ink/50"
+              className="label flex h-10 items-center gap-2 rounded-full border border-line bg-white px-4 text-ink shadow-sm transition-colors hover:border-line-strong"
             >
               <span>{open ? "Close" : "Menu"}</span>
               <span className="relative block h-2 w-4" aria-hidden>
@@ -192,7 +192,7 @@ export function Nav() {
                   className="flex items-center justify-between gap-6 py-4 md:py-5"
                 >
                   <span className="overflow-hidden">
-                    <span data-menu-item className="flex items-baseline gap-4 font-display text-[clamp(2.4rem,7vw,6rem)] font-semibold leading-[0.95] tracking-[-0.04em] [font-stretch:80%] transition-colors group-hover:text-signal">
+                    <span data-menu-item className="flex items-baseline gap-4 font-display text-[clamp(2.4rem,7vw,6rem)] font-medium leading-[0.95] tracking-[-0.04em] transition-colors group-hover:text-signal">
                       <span className="label text-blue">0{i + 1}</span>
                       {l.label}
                     </span>
