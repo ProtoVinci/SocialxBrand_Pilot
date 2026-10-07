@@ -45,7 +45,7 @@ export default function Home() {
         <Marquee chips={chips} />
 
         {/* one screen on desktop: header row (headline | intro + link), then the board */}
-        <section aria-labelledby="capabilities-title" className="relative bg-shell py-16 md:py-20 lg:flex lg:min-h-svh lg:flex-col lg:justify-center lg:py-[clamp(1.5rem,4svh,3rem)] lg:pt-[calc(var(--nav-h)+1rem)] short:pt-[calc(var(--nav-h)+0.25rem)] short:pb-4">
+        <section aria-labelledby="capabilities-title" className="relative bg-shell bg-[linear-gradient(to_right,rgb(232_226_216/0.75)_1px,transparent_1px)] bg-[size:clamp(8rem,12.5vw,12rem)_100%] py-16 md:py-20 lg:flex lg:min-h-svh lg:flex-col lg:justify-center lg:py-[clamp(1.5rem,4svh,3rem)] lg:pt-[calc(var(--nav-h)+1rem)] short:pt-[calc(var(--nav-h)+0.25rem)] short:pb-4">
           <div className="gutter grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
             <div>
               <p className="label text-blue">[ 04 ] Capabilities — 18 divisions</p>
