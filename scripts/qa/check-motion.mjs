@@ -1,5 +1,5 @@
-// Spot-checks the home page's idle motion: the work panel loops keep moving with no input,
-// the disc holds the viewport centre, the board starts scrambled and resolves when reached.
+// Spot-checks the home page idle motion: the work panel loops keep moving with no input, the
+// disc sits at the centre of the panel, the board starts scrambled and resolves when reached.
 import { chromium } from "playwright";
 const base = process.env.QA_BASE ?? "http://localhost:3100";
 const browser = await chromium.launch(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {});
@@ -12,11 +12,11 @@ await page.evaluate(() => { const p = document.querySelector("#work [data-track]
 await page.waitForTimeout(1500);
 const t = () => page.$$eval("#work [data-track]", (ts) => ts.map((x) => new DOMMatrix(getComputedStyle(x).transform).m42.toFixed(1)));
 const a = await t(); await page.waitForTimeout(2000); const b = await t();
-const disc = await page.$eval('a[aria-label="See all recent work"]', (d) => { const r = d.getBoundingClientRect(); return Math.round(r.top + r.height / 2); });
+const disc = await page.$eval('a[aria-label="See all recent work"]', (d) => { const r = d.getBoundingClientRect(); const p = document.querySelector("#work [data-track]").parentElement.parentElement.getBoundingClientRect(); return { disc: [Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2)], panel: [Math.round(p.left + p.width / 2), Math.round(p.top + p.height / 2)] }; });
 // now scroll the board through and read it back
 await page.evaluate(() => document.getElementById("method-title").scrollIntoView());
 for (let k = 0; k < 12; k++) { await page.mouse.wheel(0, 300); await page.waitForTimeout(120); }
 await page.waitForTimeout(1500);
 const resolved = await page.$$eval("[data-row] h3", (hs) => hs.map((h) => [...h.querySelectorAll("[data-ch]")].map((t) => t.textContent).join("")));
-console.log(JSON.stringify({ scrambled, loopY_before: a, loopY_after: b, discCentreY: disc, viewportCentreY: 450, resolved }, null, 1));
+console.log(JSON.stringify({ scrambled, loopY_before: a, loopY_after: b, discVsPanelCentre: disc, resolved }, null, 1));
 await browser.close();

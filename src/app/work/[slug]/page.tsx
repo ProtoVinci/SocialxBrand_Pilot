@@ -9,6 +9,8 @@ import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo";
+import { Crumbs } from "@/components/layout/Crumbs";
+import { WhereNext } from "@/components/layout/WhereNext";
 import { liveScreenings, mediaFor, partnerCredit, photosFor, screeningBySlug, videosFor } from "@/content/work";
 import { divisionBySlug, pad } from "@/content/divisions";
 
@@ -43,7 +45,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }, { name: s.title, path: `/work/${slug}` }])} />
       <header className="gutter grid gap-12 pb-20 pt-[calc(var(--nav-h)+3rem)] md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">
-          <Link href="/work" transitionTypes={["nav-back"]} className="label text-blue hover:text-ink">← All work</Link>
+          <Crumbs trail={[{ name: "Work", href: "/work" }, { name: s.title }]} />
           <p className="label mt-8 text-signal-ink">[ {pad(idx + 1)} / {pad(all.length)} ] {s.kicker}</p>
           <SplitReveal as="h1" trigger="mount" className="mt-4 font-display text-display font-medium">{s.title}</SplitReveal>
           <p className="mt-8 max-w-xl text-lede text-ink/80">{s.line}</p>
@@ -91,6 +93,11 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
           )}
         </div>
       </Link>
+      <WhereNext links={[
+        { href: "/route", label: "Plan your route", hint: "Want work like this? Start with a one-minute brief.", primary: true },
+        { href: "/work", label: "All work", hint: "Every screening, filtered by format." },
+        { href: "/capabilities", label: "Capabilities", hint: "The divisions behind this screening." },
+      ]} />
     </PageShell>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { WhereNext } from "@/components/layout/WhereNext";
 import { WorkIndex, type IndexItem } from "@/components/work/WorkIndex";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo";
@@ -28,6 +29,7 @@ export default function WorkPage() {
       <PageHeader
         index="W"
         label="Work — screenings"
+        crumbs={[{ name: "Work" }]}
         title={<>The work, <span className="serif-accent font-normal text-signal">as it was made.</span></>}
         lede={
           <>
@@ -39,6 +41,11 @@ export default function WorkPage() {
       <div className="pb-32">
         <WorkIndex items={items} />
       </div>
+      <WhereNext links={[
+        { href: "/route", label: "Plan your route", hint: "Seen something you want for your business? Start here.", primary: true },
+        { href: "/capabilities", label: "Capabilities", hint: "The 18 divisions behind this work." },
+        { href: "/approach", label: "How we work", hint: "From understanding the business to growing it." },
+      ]} />
     </PageShell>
   );
 }

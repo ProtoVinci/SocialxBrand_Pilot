@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { WhereNext } from "@/components/layout/WhereNext";
 import { RouteBuilder } from "@/components/route/RouteBuilder";
 import { Clock } from "@/components/layout/Clock";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -22,6 +23,7 @@ export default function RoutePage() {
       <PageHeader
         index="R"
         label="The Pilot Route — plan, then talk"
+        crumbs={[{ name: "Start your route" }]}
         title={<>Start your <span className="serif-accent font-normal text-signal">route.</span></>}
         lede={<p>A minute of context helps us start in the right place. Choose who you are and what you need, pick a starting mix, and send it however you like.</p>}
       />
@@ -44,6 +46,11 @@ export default function RoutePage() {
           </div>
         </aside>
       </div>
+      <WhereNext title="Not ready yet?" links={[
+        { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
+        { href: "/capabilities", label: "Capabilities", hint: "The 18 divisions, and what each one does." },
+        { href: "/approach", label: "How we work", hint: "Who we are and what we stand for." },
+      ]} />
     </PageShell>
   );
 }

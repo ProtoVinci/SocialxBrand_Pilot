@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { WhereNext } from "@/components/layout/WhereNext";
 import { SplitReveal } from "@/components/motion/SplitReveal";
 import { Reveal } from "@/components/motion/Reveal";
 import { MethodBoard } from "@/components/home/MethodBoard";
@@ -27,6 +28,7 @@ export default function ApproachPage() {
       <PageHeader
         index="A"
         label="Approach — who we are"
+        crumbs={[{ name: "Approach" }]}
         title={<>Business first. <span className="serif-accent font-normal ink-cobalt">Then everything else.</span></>}
         lede={<p>{whoWeAre[0]}</p>}
       />
@@ -123,6 +125,11 @@ export default function ApproachPage() {
       <Audiences index="A" />
       <AiAmplifies />
       <Finale />
+      <WhereNext links={[
+        { href: "/route", label: "Plan your route", hint: "A minute of context, then a conversation.", primary: true },
+        { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
+        { href: "/capabilities", label: "Capabilities", hint: "The 18 divisions behind the approach." },
+      ]} />
     </PageShell>
   );
 }

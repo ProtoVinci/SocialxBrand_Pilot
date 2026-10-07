@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { WhereNext } from "@/components/layout/WhereNext";
 import { DivisionIndex } from "@/components/capabilities/DivisionIndex";
 import { DivisionTicker } from "@/components/capabilities/DivisionTicker";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -23,6 +24,7 @@ export default function CapabilitiesPage() {
       <PageHeader
         index="C"
         label="Capabilities — 18 core marketing divisions"
+        crumbs={[{ name: "Capabilities" }]}
         title={<>The right mix, <span className="serif-accent font-normal ink-cobalt">not the full menu.</span></>}
         lede={
           <>
@@ -41,6 +43,11 @@ export default function CapabilitiesPage() {
           </Link>
         </div>
       </div>
+      <WhereNext links={[
+        { href: "/route", label: "Plan your route", hint: "Pick the divisions that fit, then talk to us.", primary: true },
+        { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
+        { href: "/approach", label: "How we work", hint: "Understand, strategize, create, execute, measure, optimize, grow." },
+      ]} />
     </PageShell>
   );
 }

@@ -18,7 +18,7 @@ export type ShowcaseTile = {
  * like a screen, holding two columns of large landscape tiles that never stop moving: the
  * left column drifts up and the right drifts down, endlessly (each track holds its tiles
  * twice and loops at -50%), and scrolling the page briefly speeds them up. The "See Recent
- * Work" disc holds the centre of the screen while the panel passes (CSS sticky).
+ * Work" disc sits fixed at the centre of the panel.
  * Vertical reels are never cropped into landscape boxes: each tile stages them upright, the
  * way Hanzo stages phone screens, over a blurred wash of the same footage.
  * Mobile / reduced motion: one still column, the disc sits under it.
@@ -65,8 +65,6 @@ export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit:
       <div className="gutter">
         {/* the bezel: a pale frame around a dark screen */}
         <div className="rounded-[44px] bg-white/70 p-2.5 shadow-[0_30px_80px_-40px_rgb(28_25_23/0.35)] ring-1 ring-line md:p-3">
-          {/* overflow-clip, not hidden: hidden would make the panel a scroll container and stop
-              the disc from sticking to the viewport */}
           <div
             ref={panel}
             className="relative overflow-clip rounded-[36px] bg-[#1d1b1a] p-4 sm:p-6 md:px-[clamp(1.5rem,3.4vw,3.75rem)] md:py-0 cinema:h-[min(118svh,1180px)]"
@@ -86,14 +84,14 @@ export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit:
               ))}
             </div>
 
-            {/* the disc: holds the centre of the screen while the panel scrolls past (desktop);
+            {/* the disc: fixed at the centre of the panel, over the moving tiles (desktop);
                 a plain button under the tiles on phones */}
-            <div className="mt-8 flex justify-center md:pointer-events-none md:absolute md:inset-0 md:z-20 md:mt-0 md:block md:pt-[calc(50svh-5rem)]">
+            <div className="mt-8 flex justify-center md:pointer-events-none md:absolute md:inset-0 md:z-20 md:mt-0 md:items-center">
               <Link
                 href="/work"
                 transitionTypes={["nav-forward"]}
                 aria-label="See all recent work"
-                className="pointer-events-auto relative grid size-28 place-items-center rounded-full bg-white/85 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md transition-transform duration-500 ease-[var(--ease-pilot)] hover:scale-105 md:sticky md:top-[calc(50svh-5rem)] md:mx-auto md:size-40"
+                className="pointer-events-auto relative grid size-28 place-items-center rounded-full bg-white/85 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md transition-transform duration-500 ease-[var(--ease-pilot)] hover:scale-105 md:size-40"
               >
                 <svg viewBox="0 0 24 24" aria-hidden className="size-9 fill-ink md:size-11"><path d="M2.5 6.5a2 2 0 0 1 2-2h4.6l2 2.2h8.4a2 2 0 0 1 2 2v9.8a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2z" /></svg>
                 <span className="absolute -right-16 -top-5 -rotate-[14deg] whitespace-nowrap rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-semibold tracking-tight text-white shadow-[0_10px_24px_-10px_rgb(0_0_0/0.7)] md:-right-24 md:-top-7 md:px-6 md:py-3 md:text-[1.15rem]">

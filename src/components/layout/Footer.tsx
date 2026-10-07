@@ -37,13 +37,16 @@ export function Footer() {
       </div>
 
       <div className="gutter mt-16 flex flex-wrap items-center justify-between gap-6 border-t border-ink/10 py-6">
-        <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-          <Link href="/work" className="hover:text-ink">Work</Link>
-          <Link href="/capabilities" className="hover:text-ink">Capabilities</Link>
-          <Link href="/approach" className="hover:text-ink">Approach</Link>
-          <Link href="/route" className="hover:text-ink">Start your route</Link>
+        {/* every page ends here, so this row is the way out: home first, generous tap targets */}
+        <nav aria-label="Footer" className="-mx-2 flex flex-wrap gap-x-2 text-sm text-muted">
+          {[["/", "Home"], ["/work", "Work"], ["/capabilities", "Capabilities"], ["/approach", "Approach"], ["/route", "Start your route"]].map(([href, label]) => (
+            <Link key={href} href={href} className="rounded-full px-2 py-2.5 hover:text-ink">{label}</Link>
+          ))}
         </nav>
-        <Clock className="text-muted" />
+        <div className="flex items-center gap-6">
+          <a href="#main" className="label rounded-full border border-line bg-white px-4 py-2.5 text-ink shadow-sm transition-colors hover:border-line-strong">Back to top <span aria-hidden>↑</span></a>
+          <Clock className="text-muted" />
+        </div>
       </div>
 
       <FooterWordmark />

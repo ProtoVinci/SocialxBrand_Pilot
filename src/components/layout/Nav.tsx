@@ -10,6 +10,7 @@ import { Reel } from "@/components/media/Reel";
 import { allVideos } from "@/content/work";
 
 const links = [
+  { href: "/", label: "Home", hint: "Back to the start" },
   { href: "/work", label: "Work", hint: "Real reels, films, photography and design" },
   { href: "/capabilities", label: "Capabilities", hint: "18 divisions, combined around the business" },
   { href: "/approach", label: "Approach", hint: "Understand → Grow, and what we stand for" },
@@ -27,7 +28,8 @@ export function Nav() {
   const [solid, setSolid] = useState(false);
   const previews = allVideos();
 
-  // scroll states: solid as soon as content passes under it (12px), hide on scroll-down, route-progress hairline
+  // scroll states: solid as soon as content passes under it (12px), hide on scroll-down (but back
+  // for the last stretch of every page), route-progress hairline
   useGSAP(() => {
     const setProgress = gsap.quickSetter(progress.current, "scaleX");
     let hidden = false;
@@ -39,7 +41,8 @@ export function Nav() {
         const y = self.scroll();
         setSolid(y > 12);
         if (open) return;
-        const hide = self.direction === 1 && y > window.innerHeight * 0.6;
+        // never hidden near the end of a page: a visitor who has finished reading must see the way on
+        const hide = self.direction === 1 && y > window.innerHeight * 0.6 && self.progress < 0.92;
         if (hide === hidden) return; // tween only on a change, not on every scroll event
         hidden = hide;
         gsap.to(bar.current, { yPercent: hide ? -110 : 0, duration: dur.quick, ease: "snap", overwrite: true });
@@ -92,7 +95,7 @@ export function Nav() {
     };
   }, [open]);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string) => href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <>
@@ -112,7 +115,7 @@ export function Nav() {
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">
-            {links.slice(0, 3).map((l) => (
+            {links.slice(0, 4).map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}

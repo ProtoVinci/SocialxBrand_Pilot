@@ -12,6 +12,8 @@ import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, serviceLd } from "@/lib/seo";
+import { Crumbs } from "@/components/layout/Crumbs";
+import { WhereNext } from "@/components/layout/WhereNext";
 import { clusters, divisionBySlug, divisions, pad } from "@/content/divisions";
 import { mediaFor, screeningBySlug } from "@/content/work";
 
@@ -54,7 +56,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
           {pad(d.number)}
         </span>
         <div className="relative">
-          <Link href="/capabilities" transitionTypes={["nav-back"]} className="label text-blue hover:text-ink">← All capabilities</Link>
+          <Crumbs trail={[{ name: "Capabilities", href: "/capabilities" }, { name: d.shortName }]} />
           <p className="label mt-8 text-signal-ink">[ {pad(d.number)} / 18 ] {cluster.name}</p>
           <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
             <h1 className="mt-4 max-w-[16ch] font-display text-display font-medium">{d.name}</h1>
@@ -171,6 +173,11 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
           <span className="mt-2 block font-display text-title font-medium group-hover:text-signal">{next.shortName}</span>
         </Link>
       </nav>
+      <WhereNext links={[
+        { href: "/route", label: "Plan your route", hint: "Combine this with what else your business needs.", primary: true },
+        { href: "/capabilities", label: "All capabilities", hint: "The full set of 18 divisions." },
+        { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
+      ]} />
     </PageShell>
   );
 }
