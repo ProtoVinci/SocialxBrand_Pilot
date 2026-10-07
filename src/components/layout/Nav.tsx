@@ -180,10 +180,13 @@ export function Nav() {
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        className="fixed inset-0 z-40 hidden flex-col justify-end bg-shell pb-10 pt-[calc(var(--nav-h)+2rem)]"
+        // scrolls instead of overflowing upward under the bar on short screens; the list sits at the
+        // bottom via mt-auto (justify-end would push the top items behind the header)
+        className="fixed inset-0 z-40 hidden flex-col overflow-y-auto overscroll-contain bg-shell pb-10 pt-[calc(var(--nav-h)+1rem)]"
         style={{ visibility: "hidden" }}
+        data-lenis-prevent
       >
-        <ol className="gutter flex flex-col">
+        <ol className="gutter mt-auto flex flex-col">
           {links.map((l, i) => {
             const preview = previews[(i * 7) % Math.max(1, previews.length)];
             return (
@@ -195,7 +198,7 @@ export function Nav() {
                   className="flex items-center justify-between gap-6 py-4 md:py-5"
                 >
                   <span className="overflow-hidden">
-                    <span data-menu-item className="flex items-baseline gap-4 font-display text-[clamp(2.4rem,7vw,6rem)] font-medium leading-[0.95] tracking-[-0.04em] transition-colors group-hover:text-signal">
+                    <span data-menu-item className="flex items-baseline gap-4 font-display text-[clamp(2rem,min(7vw,9svh),6rem)] font-medium leading-[0.95] tracking-[-0.04em] transition-colors group-hover:text-signal">
                       <span className="label text-blue">0{i + 1}</span>
                       {l.label}
                     </span>

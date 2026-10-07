@@ -4,6 +4,8 @@ import path from "node:path";
 const nextConfig: NextConfig = {
   // the workspace root (a stray lockfile in the user folder otherwise confuses root detection)
   turbopack: { root: path.resolve(__dirname) },
+  // hides the dev-only "N" route indicator (bottom-left); compile and runtime errors still show
+  devIndicators: false,
   async redirects() {
     return [{ source: "/contact", destination: "/route", permanent: true }];
   },
