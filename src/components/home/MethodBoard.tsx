@@ -72,7 +72,10 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
       gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {
-          trigger: root.current, start: "top top", end: "+=300%", pin: true, scrub: 0.6,
+          // CSS sticky does the holding (see the markup), not a GSAP pin: a pin only engages on the
+          // next scroll tick, so landing mid-board (back button, Back to top, restored scroll)
+          // drew the board a screen out of place for a frame. Sticky is applied by the browser.
+          trigger: root.current, start: "top top", end: "bottom bottom", scrub: 0.6,
           onUpdate: (self) => {
             // the last ~6% of the pin is the arrival: every station cleared before the board leaves
             const i = self.progress > 0.94 ? method.length : Math.min(method.length - 1, Math.floor((self.progress / 0.94) * method.length * 0.999));
@@ -95,11 +98,10 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
   }, { scope: root });
 
   return (
-    <section
-      ref={root}
-      aria-labelledby="method-title"
-      className="relative isolate overflow-hidden bg-shell py-24 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0 cinema:pt-[var(--nav-h)]"
-    >
+    // the section is 400svh tall in cinema (one screen + 300% of scroll for the stations);
+    // the board screen inside it sticks to the top while that distance is scrolled
+    <section ref={root} aria-labelledby="method-title" className="relative cinema:h-[400svh]">
+    <div className="relative isolate overflow-hidden bg-shell py-24 cinema:sticky cinema:top-0 cinema:flex cinema:h-svh cinema:flex-col cinema:justify-center cinema:py-0 cinema:pt-[var(--nav-h)]">
       <div aria-hidden className="grid-paper pointer-events-none absolute inset-0 -z-10" />
       <div className="gutter flex flex-wrap items-end justify-between gap-6">
         <div>
@@ -166,6 +168,7 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
           </ol>
         </div>
       </div>
+    </div>
     </section>
   );
 }

@@ -72,6 +72,13 @@
 
 /* "cinema": desktop + JS motion available (the inline head script sets html.js-motion only
    when reduced motion is NOT requested). Choreographed layouts use it; everything else stacks. */
+/* wide but short screens (laptops at 768/720 tall): one-screen sections tighten up */
+@custom-variant short {
+  @media (min-width: 64rem) and (max-height: 820px) {
+    @slot;
+  }
+}
+
 @custom-variant cinema {
   @media (min-width: 48rem) {
     html.js-motion & {

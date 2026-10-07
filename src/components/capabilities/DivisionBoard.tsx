@@ -76,9 +76,9 @@ export function DivisionBoard({ previews }: Props) {
   };
 
   return (
-    <div ref={root} className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,25rem)] lg:gap-16">
+    <div ref={root} className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,22rem)] lg:items-start lg:gap-12">
       {/* all 18, as chips */}
-      <div className="flex flex-col gap-7" onPointerLeave={() => window.clearTimeout(intent.current)}>
+      <div className="flex flex-col gap-5 lg:gap-[clamp(0.75rem,2.2svh,1.5rem)]" onPointerLeave={() => window.clearTimeout(intent.current)}>
         {clusters.map((c) => {
           const rows = divisions.map((x, i) => ({ x, i })).filter(({ x }) => x.cluster === c.id);
           return (
@@ -87,7 +87,7 @@ export function DivisionBoard({ previews }: Props) {
                 <h3 id={`board-${c.id}`} className="label text-ink/80">{c.name}</h3>
                 <span className="label text-muted">{rows.length} {rows.length === 1 ? "division" : "divisions"}</span>
               </div>
-              <ul className="mt-3 flex flex-wrap gap-2">
+              <ul className="mt-2.5 flex flex-wrap gap-2">
                 {rows.map(({ x, i }) => (
                   <li key={x.slug}>
                     <Link
@@ -98,7 +98,7 @@ export function DivisionBoard({ previews }: Props) {
                       onFocus={() => pick(i, true)}
                       aria-describedby={i === active ? "board-stage" : undefined}
                       data-on={i === active ? "" : undefined}
-                      className="group inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-sm sm:px-3.5 sm:py-2 sm:text-[0.95rem] text-ink shadow-[0_1px_2px_rgb(28_25_23/0.04)] transition-[background-color,border-color,color,box-shadow] duration-500 ease-[var(--ease-pilot)] hover:border-line-strong data-[on]:border-blue data-[on]:bg-blue data-[on]:text-white data-[on]:shadow-[0_10px_24px_-12px_rgb(42_59_164/0.6)]"
+                      className="group inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1.5 text-sm sm:px-3.5 sm:py-1.5 sm:text-[0.92rem] short:py-1 short:text-[0.85rem] text-ink shadow-[0_1px_2px_rgb(28_25_23/0.04)] transition-[background-color,border-color,color,box-shadow] duration-500 ease-[var(--ease-pilot)] hover:border-line-strong data-[on]:border-blue data-[on]:bg-blue data-[on]:text-white data-[on]:shadow-[0_10px_24px_-12px_rgb(42_59_164/0.6)]"
                     >
                       <span className="label text-signal-ink transition-colors duration-500 group-data-[on]:text-white/75">{pad(x.number)}</span>
                       {x.shortName}
@@ -112,10 +112,10 @@ export function DivisionBoard({ previews }: Props) {
       </div>
 
       {/* the stage */}
-      <div id="board-stage" className="brand-card relative max-lg:order-first overflow-hidden rounded-[26px] p-3 lg:sticky lg:top-[calc(var(--nav-h)+1.5rem)] lg:self-start">
+      <div id="board-stage" className="brand-card relative max-lg:order-first overflow-hidden rounded-[26px] p-3">
         <div className="flex gap-4 lg:flex-col">
           {/* the reel: stacked layers, only the active one visible; a slow dissolve with a slight settle */}
-          <div aria-hidden className="relative aspect-[9/16] w-28 shrink-0 overflow-hidden rounded-[18px] bg-ink sm:w-36 lg:w-full lg:aspect-auto lg:h-[min(44svh,24rem)]">
+          <div aria-hidden className="relative aspect-[9/16] w-28 shrink-0 overflow-hidden rounded-[18px] bg-ink sm:w-36 lg:w-full lg:aspect-auto lg:h-[clamp(11rem,32svh,20rem)] short:h-[26svh]">
             {divisions.map((x, k) => {
               const asset = reelFor(k);
               const on = k === active;
@@ -136,9 +136,11 @@ export function DivisionBoard({ previews }: Props) {
           {/* the words: keyed so each change re-runs a gentle rise */}
           <div key={d.slug} className="min-w-0 flex-1 animate-[stage-in_0.6s_var(--ease-pilot)_both] px-1 py-1 lg:px-2 lg:pb-2 motion-reduce:animate-none">
             <p className="label text-blue">{clusters.find((c) => c.id === d.cluster)?.name}</p>
-            <p className="mt-1 font-display text-title font-medium">{d.shortName}</p>
-            <p className="mt-2 line-clamp-3 text-sm text-muted">{d.whatItIs[0]}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
+            {/* fixed text boxes: the tour must never change the stage height, or everything below
+                (and every pinned scroll scene) would jump on each step */}
+            <p className="mt-1 line-clamp-2 min-h-[2.3em] font-display text-title font-medium">{d.shortName}</p>
+            <p className="mt-2 line-clamp-3 min-h-[4.5em] text-sm leading-normal text-muted short:line-clamp-2 short:min-h-[3em]">{d.whatItIs[0]}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
               <Link href={`/capabilities/${d.slug}`} transitionTypes={["nav-forward"]} className="inline-flex items-center gap-2 rounded-full bg-cta px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cta-hover">
                 Explore <span aria-hidden>→</span>
               </Link>

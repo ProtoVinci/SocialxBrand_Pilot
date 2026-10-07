@@ -44,18 +44,22 @@ export default function Home() {
         <WorkShowcase tiles={tiles} credit={partnerCredit} />
         <Marquee chips={chips} />
 
-        <section aria-labelledby="capabilities-title" className="relative bg-shell py-24 md:py-28">
-          <div className="gutter">
-            <p className="label text-blue">[ 04 ] Capabilities — 18 divisions</p>
-            <SplitReveal as="h2" id="capabilities-title" className="mt-4 max-w-[18ch] font-display text-display font-medium">
-              Not every business needs <span className="serif-accent font-normal text-signal">every</span> service.
-            </SplitReveal>
-            <p className="mt-8 max-w-2xl text-lede text-ink/75">{servicesIntro.body}</p>
+        {/* one screen on desktop: header row (headline | intro + link), then the board */}
+        <section aria-labelledby="capabilities-title" className="relative bg-shell py-16 md:py-20 lg:flex lg:min-h-svh lg:flex-col lg:justify-center lg:py-[clamp(1.5rem,4svh,3rem)] lg:pt-[calc(var(--nav-h)+1rem)] short:pt-[calc(var(--nav-h)+0.25rem)] short:pb-4">
+          <div className="gutter grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
+            <div>
+              <p className="label text-blue">[ 04 ] Capabilities — 18 divisions</p>
+              <SplitReveal as="h2" id="capabilities-title" className="mt-3 max-w-[20ch] font-display text-headline font-medium short:text-[clamp(1.8rem,3.2vw,2.6rem)]">
+                Not every business needs <span className="serif-accent font-normal text-signal">every</span> service.
+              </SplitReveal>
+            </div>
+            <div>
+              <p className="max-w-xl text-ink/75 lg:text-[1.05rem] short:line-clamp-3 short:text-[0.95rem]">{servicesIntro.body}</p>
+              <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-3 inline-block text-sm">Explore every capability →</Link>
+            </div>
           </div>
-          {/* all 18 as a compact board (the full row-per-division index lives on /capabilities) */}
-          <div className="gutter mt-12">
+          <div className="gutter mt-8 lg:mt-[clamp(1.25rem,4svh,2.75rem)] short:mt-4">
             <DivisionBoard previews={divisionPreviews()} />
-            <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-10 inline-block">Explore every capability →</Link>
           </div>
         </section>
 
