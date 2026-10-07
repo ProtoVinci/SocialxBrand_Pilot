@@ -191,8 +191,18 @@ All of them use event delegation, so they survive page transitions.
 
 ## 7. Next steps (in order)
 
-1. **Run the 5 reviewer agents** (creative-director, motion-director, conversion-critic, frontend-reviewer, visual-qa; personas in `.claude/agents/`; runner: Workflow tool with `scriptPath: scripts/tooling/review-workflow.js`, model pinned). The **motion-director review is owed** under `AGENTS.md` after all the motion changes. Fix substantive findings, then run a second round.
-2. **Full visual QA sweep** of every route at 1440×900, 1280×720, 1024×768, 768×1024, 390×844 and 360×800, plus `--reduce`. Inner pages at tablet sizes have had the least attention.
+0. **`sujal_site` merge: waiting on the user.** The inventory is in `docs/merge-sujal-site.md`. Don't merge anything until the user picks.
+1. **Reviewer round 1 is done** (`docs/reviews/round-1.json`), and batches 1 and 2 are fixed (`ea11be2`). Still open:
+   - Footer: contact-grid and wordmark collisions; WhatsApp prominence; tap targets (RouteToggle h-9, footer links).
+   - AI struck-line contrast: raise to about 0.55.
+   - Dead-end CTA bands at the end of `/work`, `/work/[slug]` and the division pages.
+   - Code: ScreeningMedia/AiAmplifies one-shots → `observeOnce`; DivisionTicker listener cleanup; DivisionIndex lazy previews; WorkIndex `aria-live` → count element.
+   - Media: logo tile in 9:16 → contain; re-extract the blurred Celebrations poster.
+   - Copy: hero CTA microcopy.
+   - Creative: manifesto→ladder seam; inner-page hero objects; a `/route` redesign.
+
+   After that, run reviewer round 2. The Workflow runner script has CRLF line endings, so pass it **inline**, not by `scriptPath`, and pin `model: "claude-opus-5-5"`.
+2. **Re-sweep** after the fixes: `node scripts/qa/sweep.mjs`, and again with `--reduce`. The last full sweep was clean at all 6 viewports.
 3. **Home load cost.** It's still the heaviest page (blocking time ~2.4s at 4× CPU), mostly React hydration plus the setup of the three pinned acts. Ideas: defer setup of below-the-fold acts to idle time (mind pin order: `refreshPriority` / `ScrollTrigger.sort()`); trim the hero's first-frame work.
 4. **Route builder tests** for the mailto and copy adapters (WhatsApp is covered).
 5. **Production smoke test:** the sitemap output, the OG image render, all 14 + 18 slugs.
