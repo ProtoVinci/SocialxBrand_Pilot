@@ -9,7 +9,6 @@ import { AiAmplifies } from "@/components/home/AiAmplifies";
 import { Finale } from "@/components/home/Finale";
 import { Marquee } from "@/components/home/Marquee";
 import { DivisionIndex } from "@/components/capabilities/DivisionIndex";
-import { DivisionTicker } from "@/components/capabilities/DivisionTicker";
 import { SplitReveal } from "@/components/motion/SplitReveal";
 import { findMedia, liveScreenings, videosFor, type VideoAsset } from "@/content/work";
 import { servicesIntro } from "@/content/site";
@@ -19,7 +18,8 @@ const pick = (ids: string[]) => ids.map((id) => findMedia(id)).filter((m): m is 
 
 export default function Home() {
   const fan = pick(["creator-content-01", "automotive-moments-01", "wedding-films-05", "restaurant-hospitality-02", "theatre-culture-02"]);
-  const ladder = pick(["portrait-fashion-01", "wedding-films-02", "restaurant-hospitality-01", "brand-films-01", "wedding-content-04"]);
+  // none of these reappear as rail covers (each screening's first portrait reel) two screens later
+  const ladder = pick(["wedding-content-03", "restaurant-hospitality-04", "creator-content-02", "brand-films-02", "automotive-moments-04"]);
   const chips = pick(["wedding-content-04", "restaurant-hospitality-01", "creator-content-01", "portrait-fashion-01"]);
   const rail = liveScreenings()
     .map((s) => ({ screening: s, reel: videosFor(s.slug).find((v) => v.orientation === "portrait") }))
@@ -40,8 +40,9 @@ export default function Home() {
             </SplitReveal>
             <p className="mt-8 max-w-2xl text-lede text-ink/75">{servicesIntro.body}</p>
           </div>
-          <div className="mt-14"><DivisionTicker /></div>
-          <div className="gutter mt-20">
+          {/* no ticker here: the marquee just above already runs two belts, and the index below
+              lists the same 18 names (the ticker lives on /capabilities) */}
+          <div className="gutter mt-16">
             <DivisionIndex previews={divisionPreviews()} />
             <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-12 inline-block">Explore every capability →</Link>
           </div>

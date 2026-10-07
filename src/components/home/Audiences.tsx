@@ -11,8 +11,9 @@ import { suggestRoute } from "@/lib/route/suggest";
  * ACT 7 — Marketing is for every business. A light act. Choosing an audience re-routes the
  * line: the suggested starting divisions reflow (Flip) and the connecting rule redraws.
  */
-export function Audiences() {
+export function Audiences({ index = "06" }: { index?: string }) {
   const root = useRef<HTMLElement>(null);
+  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const [active, setActive] = useState<AudienceId>("startups");
   const current = audiences.find((a) => a.id === active)!;
   const route = suggestRoute(active).map(divisionBySlug).filter(Boolean);
@@ -32,11 +33,23 @@ export function Audiences() {
     });
   });
 
+  // WAI-ARIA tabs: arrows move (and select), Home/End jump; only the selected tab is in the Tab order
+  const onKey = (e: React.KeyboardEvent, i: number) => {
+    const last = audiences.length - 1;
+    const to = e.key === "ArrowRight" || e.key === "ArrowDown" ? (i === last ? 0 : i + 1)
+      : e.key === "ArrowLeft" || e.key === "ArrowUp" ? (i === 0 ? last : i - 1)
+      : e.key === "Home" ? 0 : e.key === "End" ? last : -1;
+    if (to < 0) return;
+    e.preventDefault();
+    tabs.current[to]?.focus();
+    choose(audiences[to].id);
+  };
+
   return (
     <section ref={root} aria-labelledby="audiences-title" className="act-rose py-28 md:py-36">
       <div className="gutter grid gap-12 md:grid-cols-12">
         <div className="md:col-span-5">
-          <p className="label text-blue">[ 06 ] Who we work with</p>
+          <p className="label text-blue">[ {index} ] Who we work with</p>
           <h2 id="audiences-title" className="mt-4 font-display text-headline font-semibold [font-stretch:82%]">
             Marketing is for <span className="serif-accent font-normal text-blue">every</span> business.
           </h2>
@@ -47,14 +60,18 @@ export function Audiences() {
 
         <div className="md:col-span-7">
           <div role="tablist" aria-label="Business stage" className="flex flex-wrap gap-2">
-            {audiences.map((a) => (
+            {audiences.map((a, i) => (
               <button
                 key={a.id}
+                ref={(el) => { tabs.current[i] = el; }}
+                id={`audience-tab-${a.id}`}
                 role="tab"
                 type="button"
                 aria-selected={a.id === active}
                 aria-controls="audience-panel"
+                tabIndex={a.id === active ? 0 : -1}
                 onClick={() => choose(a.id)}
+                onKeyDown={(e) => onKey(e, i)}
                 className={`rounded-full border px-5 py-3 text-sm font-medium transition-colors duration-300 ${a.id === active ? "border-ink bg-shell text-ink" : "border-ink/20 hover:border-ink"}`}
               >
                 {a.name}
@@ -62,7 +79,7 @@ export function Audiences() {
             ))}
           </div>
 
-          <div id="audience-panel" role="tabpanel" aria-live="polite" className="mt-10">
+          <div id="audience-panel" role="tabpanel" aria-labelledby={`audience-tab-${active}`} tabIndex={0} className="mt-10">
             <p data-audience-need className="font-display text-title font-semibold [font-stretch:88%]">{current.need}</p>
             <span data-audience-rule aria-hidden className="mt-8 block h-px origin-left bg-signal-ink" />
             <p className="label mt-6 text-blue">A route might start with</p>

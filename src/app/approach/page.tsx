@@ -83,7 +83,7 @@ export default function ApproachPage() {
         ))}
       </section>
 
-      <MethodBoard />
+      <MethodBoard index="A" />
 
       {/* principles */}
       <section aria-labelledby="principles-title" className="gutter py-28">
@@ -120,7 +120,7 @@ export default function ApproachPage() {
         </div>
       </section>
 
-      <Audiences />
+      <Audiences index="A" />
       <AiAmplifies />
       <Finale />
     </PageShell>
