@@ -3,7 +3,7 @@
  * them and a daylight hotspot, all falling from the top-left and masked off toward the right.
  * On an off-white canvas the beams only read because of the shadow bands around them, so the
  * shadows run somewhat stronger than prototype 1's. Static and decorative; the blur filters
- * are paid once, since nothing here animates.
+ * are paid once: the drift moves the layer as one composited texture (transform only).
  */
 const BEAMS = [
   { left: "calc(-1.5% - 291px)", w: 582, mask: "transparent 11.4%, #000 25.56%, rgb(0 0 0/.6) 41.7%, rgb(0 0 0/.25) 67.12%, #000 78.23%, transparent 97.3%" },
@@ -19,6 +19,8 @@ export function HeroGlare() {
       aria-hidden
       className="pointer-events-none absolute inset-0 overflow-hidden select-none [mask-image:radial-gradient(130%_110%_at_0%_0%,#000_0%,rgb(0_0_0/.9)_45%,rgb(0_0_0/.35)_78%,transparent_100%)]"
     >
+      {/* everything below drifts slowly under the fixed mask, like sun moving through a window */}
+      <div className="glare-drift absolute -inset-[6%]">
       {/* daylight hotspot */}
       <div className="absolute -left-[12%] -top-[18%] h-[900px] w-[1050px] rounded-full bg-[radial-gradient(circle_at_20%_20%,#fff_0%,rgb(255_255_255/.8)_30%,rgb(255_255_255/.25)_60%,transparent_80%)] blur-[80px]" />
       {/* louver shadow slats: these are what make the light visible */}
@@ -35,6 +37,7 @@ export function HeroGlare() {
       ))}
       {/* sheen bridging the beams */}
       <div className="absolute -left-[100px] -top-[200px] h-[1400px] w-[900px] skew-x-[45deg] opacity-50 mix-blend-overlay blur-[32px] [background:linear-gradient(90deg,rgb(255_255_255/.9)_0%,transparent_20%,rgb(255_255_255/.7)_35%,transparent_60%,rgb(255_255_255/.8)_80%,transparent_100%)]" />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
 
 export type ShowcaseFrame = { poster: string; video?: string };
@@ -15,42 +15,46 @@ export type ShowcaseTile = {
 
 /**
  * ACT 4 — Recent work, after the Hanzo "#work" panel: a dark rounded panel set into the page
- * like a screen, holding two staggered columns of large landscape tiles that drift at
- * different speeds as the page scrolls. A "See Recent Work" disc follows the pointer across
- * the panel. Vertical reels are never cropped into landscape boxes: each tile stages them
- * upright, the way Hanzo stages phone screens, over a blurred wash of the same footage.
- * Mobile / reduced motion: one column, no drift, the disc sits still under the panel.
+ * like a screen, holding two columns of large landscape tiles that never stop moving: the
+ * left column drifts up and the right drifts down, endlessly (each track holds its tiles
+ * twice and loops at -50%), and scrolling the page briefly speeds them up. The "See Recent
+ * Work" disc holds the centre of the screen while the panel passes (CSS sticky).
+ * Vertical reels are never cropped into landscape boxes: each tile stages them upright, the
+ * way Hanzo stages phone screens, over a blurred wash of the same footage.
+ * Mobile / reduced motion: one still column, the disc sits under it.
  */
 export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit: string }) {
   const root = useRef<HTMLElement>(null);
   const panel = useRef<HTMLDivElement>(null);
-  const follower = useRef<HTMLAnchorElement>(null);
   const left = tiles.filter((_, i) => i % 2 === 0);
   const right = tiles.filter((_, i) => i % 2 === 1);
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
     mm.add(MQ.cinema, () => {
-      const p = panel.current!;
-      const [colL, colR] = gsap.utils.toArray<HTMLElement>("[data-col]", p);
-      // each column travels exactly far enough to show its last tile, at its own speed
-      const travel = (c: HTMLElement) => -Math.max(0, c.offsetHeight - p.clientHeight + 80);
-      const st = { trigger: p, start: "top 85%", end: "bottom 15%", scrub: 0.6, invalidateOnRefresh: true };
-      gsap.fromTo(colL, { y: 40 }, { y: () => travel(colL), ease: "none", scrollTrigger: st });
-      gsap.fromTo(colR, { y: () => p.clientHeight * 0.18 }, { y: () => travel(colR) - 40, ease: "none", scrollTrigger: st });
-      // the disc rests at the centre of the panel (it follows the pointer only where there is one)
-      gsap.set(follower.current, { xPercent: -50, yPercent: -50, x: () => p.clientWidth / 2, y: () => p.clientHeight / 2 });
-    });
-    mm.add(`${MQ.cinema} and ${MQ.finePointer}`, () => {
-      const p = panel.current!, f = follower.current!;
-      const home = () => ({ x: p.clientWidth / 2, y: p.clientHeight / 2 });
-      const toX = gsap.quickTo(f, "x", { duration: 0.6, ease: "power3" });
-      const toY = gsap.quickTo(f, "y", { duration: 0.6, ease: "power3" });
-      const move = (e: PointerEvent) => { const r = p.getBoundingClientRect(); toX(e.clientX - r.left); toY(e.clientY - r.top); };
-      const leave = () => { const h = home(); toX(h.x); toY(h.y); };
-      p.addEventListener("pointermove", move);
-      p.addEventListener("pointerleave", leave);
-      return () => { p.removeEventListener("pointermove", move); p.removeEventListener("pointerleave", leave); };
+      const [trackL, trackR] = gsap.utils.toArray<HTMLElement>("[data-track]", panel.current);
+      // one loop each, in opposite directions; ~9s per tile keeps it calm
+      const loops = [
+        gsap.fromTo(trackL, { yPercent: 0 }, { yPercent: -50, duration: left.length * 9, ease: "none", repeat: -1 }),
+        gsap.fromTo(trackR, { yPercent: -50 }, { yPercent: 0, duration: right.length * 9, ease: "none", repeat: -1 }),
+      ];
+      const boost = { v: 1 };
+      const apply = () => loops.forEach((l) => l.timeScale(boost.v));
+      const st = ScrollTrigger.create({
+        trigger: panel.current,
+        start: "top bottom",
+        end: "bottom top",
+        // offscreen: paused, so two loops never run behind the rest of the page
+        onToggle: (self) => loops.forEach((l) => (self.isActive ? l.resume() : l.pause())),
+        // scrolling flicks the loops faster, then they ease back to their resting pace
+        onUpdate: (self) => {
+          boost.v = 1 + Math.min(5, Math.abs(self.getVelocity()) / 350);
+          apply();
+          gsap.to(boost, { v: 1, duration: 1.2, ease: "power2.out", overwrite: true, onUpdate: apply });
+        },
+      });
+      if (!st.isActive) loops.forEach((l) => l.pause());
+      return () => st.kill();
     });
     return () => mm.revert();
   }, { scope: root });
@@ -61,31 +65,42 @@ export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit:
       <div className="gutter">
         {/* the bezel: a pale frame around a dark screen */}
         <div className="rounded-[44px] bg-white/70 p-2.5 shadow-[0_30px_80px_-40px_rgb(28_25_23/0.35)] ring-1 ring-line md:p-3">
+          {/* overflow-clip, not hidden: hidden would make the panel a scroll container and stop
+              the disc from sticking to the viewport */}
           <div
             ref={panel}
-            className="relative overflow-hidden rounded-[36px] bg-[#1d1b1a] p-4 sm:p-6 md:p-[clamp(1.5rem,3.4vw,3.75rem)] cinema:h-[min(150svh,1500px)]"
+            className="relative overflow-clip rounded-[36px] bg-[#1d1b1a] p-4 sm:p-6 md:px-[clamp(1.5rem,3.4vw,3.75rem)] md:py-0 cinema:h-[min(118svh,1180px)]"
           >
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-[clamp(1.25rem,3.2vw,3.75rem)]">
               {[left, right].map((col, c) => (
-                <div key={c} data-col className="flex flex-col gap-4 will-change-transform sm:gap-6 md:gap-[clamp(1.25rem,3.2vw,3.75rem)]">
-                  {col.map((t) => <Tile key={t.slug} tile={t} />)}
+                // two identical blocks, each carrying its own bottom gap, so -50% lands exactly on the seam
+                <div key={c} data-track className="will-change-transform">
+                  <div className={block}>
+                    {col.map((t) => <Tile key={t.slug} tile={t} />)}
+                  </div>
+                  {/* the loop's second copy: desktop motion only, hidden from assistive tech and focus */}
+                  <div aria-hidden inert className={`${block} hidden cinema:flex`}>
+                    {col.map((t) => <Tile key={t.slug} tile={t} />)}
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* the pointer disc (desktop); a still link under the tiles on touch / reduced motion */}
-            <Link
-              ref={follower}
-              href="/work"
-              transitionTypes={["nav-forward"]}
-              aria-label="See all recent work"
-              className="pointer-events-auto relative mx-auto mt-8 grid size-28 place-items-center rounded-full bg-white/85 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md md:size-40 cinema:absolute cinema:left-0 cinema:top-0 cinema:z-20 cinema:mt-0 cinema:[@media(hover:hover)_and_(pointer:fine)]:pointer-events-none"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden className="size-9 fill-ink md:size-11"><path d="M2.5 6.5a2 2 0 0 1 2-2h4.6l2 2.2h8.4a2 2 0 0 1 2 2v9.8a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2z" /></svg>
-              <span className="absolute -right-16 -top-5 -rotate-[14deg] whitespace-nowrap rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-semibold tracking-tight text-white shadow-[0_10px_24px_-10px_rgb(0_0_0/0.7)] md:-right-24 md:-top-7 md:px-6 md:py-3 md:text-[1.15rem]">
-                See Recent Work
-              </span>
-            </Link>
+            {/* the disc: holds the centre of the screen while the panel scrolls past (desktop);
+                a plain button under the tiles on phones */}
+            <div className="mt-8 flex justify-center md:pointer-events-none md:absolute md:inset-0 md:z-20 md:mt-0 md:block md:pt-[calc(50svh-5rem)]">
+              <Link
+                href="/work"
+                transitionTypes={["nav-forward"]}
+                aria-label="See all recent work"
+                className="pointer-events-auto relative grid size-28 place-items-center rounded-full bg-white/85 shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)] backdrop-blur-md transition-transform duration-500 ease-[var(--ease-pilot)] hover:scale-105 md:sticky md:top-[calc(50svh-5rem)] md:mx-auto md:size-40"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden className="size-9 fill-ink md:size-11"><path d="M2.5 6.5a2 2 0 0 1 2-2h4.6l2 2.2h8.4a2 2 0 0 1 2 2v9.8a2 2 0 0 1-2 2h-15a2 2 0 0 1-2-2z" /></svg>
+                <span className="absolute -right-16 -top-5 -rotate-[14deg] whitespace-nowrap rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-semibold tracking-tight text-white shadow-[0_10px_24px_-10px_rgb(0_0_0/0.7)] md:-right-24 md:-top-7 md:px-6 md:py-3 md:text-[1.15rem]">
+                  See Recent Work
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
         <p className="label mt-5 text-right text-muted">{credit}</p>
@@ -93,6 +108,8 @@ export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit:
     </section>
   );
 }
+
+const block = "flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6 md:gap-[clamp(1.25rem,3.2vw,3.75rem)] md:pb-[clamp(1.25rem,3.2vw,3.75rem)]";
 
 function Tile({ tile }: { tile: ShowcaseTile }) {
   const [hot, setHot] = useState(false);
@@ -107,7 +124,7 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
       onPointerLeave={() => setHot(false)}
       onFocus={() => setHot(true)}
       onBlur={() => setHot(false)}
-      className="group relative block aspect-[4/3] overflow-hidden rounded-[22px] bg-[#2a2725] outline-offset-4"
+      className="group relative block aspect-[4/3] shrink-0 overflow-hidden rounded-[22px] bg-[#2a2725] outline-offset-4"
     >
       {tile.wide ? (
         <Frame frame={tile.wide} hot={hot} className="absolute inset-0 h-full w-full object-cover" />

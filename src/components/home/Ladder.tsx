@@ -8,7 +8,7 @@ import { philosophy } from "@/content/site";
 
 /**
  * ACT 3 — "Marketing is more than being seen." One word changes in place while the framed
- * reel beside it changes with it, on a single periwinkle act:
+ * reel beside it scrolls to the next clip like a reel feed, on a single periwinkle act:
  * seen → remembered → trusted → chosen → moving forward.
  * CSS sticky (not a GSAP pin) keeps it cheap; the step is derived from scroll progress.
  * Reduced motion / no JS: the full ladder is shown as a static list.
@@ -41,7 +41,13 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
           else if (k === current) gsap.to(w, { yPercent: -130 * dir, y: 0, autoAlpha: 0, duration: dur.slow, ease: "pilot", overwrite: true });
           else gsap.set(w, { yPercent: 130, y: 0, autoAlpha: 0 });
         });
-        layers.forEach((l, k) => gsap.to(l, { autoAlpha: k === i ? 1 : 0, scale: k === i ? 1 : 1.06, duration: dur.cinematic, ease: "glide", overwrite: true }));
+        // the frame scrolls like a reel feed: the old clip is pushed up and out while the next rides
+        // up from below (reversed when scrolling back), both in motion through the handover
+        layers.forEach((l, k) => {
+          if (k === i) gsap.fromTo(l, { yPercent: 100 * dir, scale: 1, autoAlpha: 1, zIndex: 2 }, { yPercent: 0, duration: dur.slow, ease: "pilot", overwrite: true });
+          else if (k === current) gsap.to(l, { yPercent: -100 * dir, scale: 0.94, zIndex: 1, duration: dur.slow, ease: "pilot", overwrite: true, onComplete: () => { gsap.set(l, { autoAlpha: 0 }); } });
+          else gsap.set(l, { autoAlpha: 0, yPercent: 100, zIndex: 0 });
+        });
         ticks.forEach((t, k) => t.toggleAttribute("data-on", k <= i));
         current = i;
         sync();
@@ -49,8 +55,8 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
       // first rung set directly (no tweens at load: each tween would read computed styles)
       gsap.set(words, { yPercent: 130, y: 0, autoAlpha: 0 });
       gsap.set(words[0], { yPercent: 0, autoAlpha: 1 });
-      gsap.set(layers, { autoAlpha: 0, scale: 1.06 });
-      gsap.set(layers[0], { autoAlpha: 1, scale: 1 });
+      gsap.set(layers, { autoAlpha: 0, yPercent: 100 });
+      gsap.set(layers[0], { autoAlpha: 1, yPercent: 0 });
       ticks[0]?.toggleAttribute("data-on", true);
       current = 0;
       const st = ScrollTrigger.create({
@@ -98,7 +104,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
           </div>
 
           {/* the framed reel: real work at full brightness, changing with the word */}
-          <div data-frame aria-hidden className="relative mx-auto aspect-[9/16] h-[34svh] -rotate-2 overflow-hidden rounded-[20px] shadow-[0_40px_80px_-30px_rgba(31,44,133,0.38)] max-md:ml-2 md:h-[min(72svh,46rem)] md:rounded-[26px]">
+          <div data-frame aria-hidden className="relative mx-auto bg-ink aspect-[9/16] h-[34svh] -rotate-2 overflow-hidden rounded-[20px] shadow-[0_40px_80px_-30px_rgba(31,44,133,0.38)] max-md:ml-2 md:h-[min(72svh,46rem)] md:rounded-[26px]">
             {steps.map((s, i) => {
               const reel = reels[i % Math.max(1, reels.length)];
               return (

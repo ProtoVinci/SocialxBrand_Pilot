@@ -258,6 +258,13 @@ body {
 .roll:hover .roll-a, .roll:focus-visible .roll-a,
 .roll:hover .roll-b, .roll:focus-visible .roll-b { transform: translateY(-100%); }
 
+/* Hero window light: a slow, barely-there drift (about a minute per pass), back and forth */
+@keyframes glare-drift {
+  from { transform: translate3d(-2.5%, -1.5%, 0) rotate(-0.4deg); }
+  to { transform: translate3d(3%, 2%, 0) rotate(0.4deg); }
+}
+.glare-drift { animation: glare-drift 28s ease-in-out infinite alternate; will-change: transform; }
+
 /* Tools orbit (hero): rings counter-rotate, tiles counter-spin so logos stay upright; hover pauses */
 @keyframes orbit-cw { to { rotate: 360deg; } }
 @keyframes orbit-ccw { to { rotate: -360deg; } }

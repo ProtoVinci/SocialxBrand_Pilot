@@ -13,7 +13,8 @@ const STATUS = { next: "Next", now: "Boarding", done: "Cleared" } as const;
 /**
  * ACT 6 — The Pilot Route, as a departures board. The seven method stations are rows on a
  * split-flap board; scrolling through the pinned act boards them in order. The active row
- * floods cornflower, its name flaps through the alphabet before landing, its detail line
+ * floods cobalt; every station name starts scrambled and flaps through the alphabet
+ * to land on its word as its row is reached; its detail line
  * opens and its status turns Next → Boarding → Cleared. The red signal line runs down the
  * board as progress. Mobile: no pin, each row flaps once as it enters. Reduced motion /
  * no JS: a still board with every line visible.
@@ -40,6 +41,17 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
       });
     };
 
+    // every station name starts scrambled (JS motion only: SSR / no-JS / reduced motion keep the
+    // real words) and resolves the first time its row is reached
+    const scramble = (rows: Element[]) => rows.forEach((r) => {
+      delete (r as HTMLElement).dataset.revealed;
+      r.querySelectorAll<HTMLElement>("[data-ch]").forEach((t) => {
+        if (t.dataset.ch !== " ") t.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+      });
+    });
+    const restore = (rows: Element[]) => rows.forEach((r) => r.querySelectorAll<HTMLElement>("[data-ch]").forEach((t) => { gsap.killTweensOf(t); t.textContent = t.dataset.ch ?? ""; gsap.set(t, { rotateX: 0 }); }));
+    const reveal = (r: HTMLElement, delay = 0) => { if (r.dataset.revealed) return; r.dataset.revealed = "1"; flap(r, delay); };
+
     const setState = (rows: HTMLElement[], i: number) =>
       rows.forEach((r, k) => {
         const state = k < i ? "done" : k === i ? "now" : "next";
@@ -47,11 +59,13 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
         r.dataset.state = state;
         const status = r.querySelector("[data-status]");
         if (status) status.textContent = STATUS[state];
-        if (state === "now") flap(r);
+        // a row skipped by a fast scroll still resolves on its way to "Cleared"
+        if (state !== "next") reveal(r, state === "done" ? (k % 4) * 0.05 : 0);
       });
 
     mm.add(MQ.cinema, () => {
       const rows = q("[data-row]") as HTMLElement[];
+      scramble(rows);
       let current = -1;
       setState(rows, 0);
       current = 0;
@@ -66,13 +80,16 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
           },
         },
       }).fromTo(q("[data-progress]"), { scaleY: 0 }, { scaleY: 1 });
-      return () => rows.forEach((r) => { delete r.dataset.state; });
+      return () => { rows.forEach((r) => { delete r.dataset.state; }); restore(rows); };
     });
 
-    mm.add(MQ.pocket, () =>
+    mm.add(MQ.pocket, () => {
+      const rows = q("[data-row]");
+      scramble(rows);
       // one observer for all rows (no per-row ScrollTriggers: they slow every refresh)
-      observeOnce(q("[data-row]"), REVEAL_MARGIN, (batch) => batch.forEach((row, k) => flap(row, k * 0.12))),
-    );
+      const stop = observeOnce(rows, REVEAL_MARGIN, (batch) => batch.forEach((row, k) => reveal(row as HTMLElement, k * 0.12)));
+      return () => { stop?.(); restore(rows); };
+    });
 
     return () => mm.revert();
   }, { scope: root });
