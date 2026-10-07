@@ -74,11 +74,18 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
       }
 
       // ── scroll choreography (desktop only) ────────────────────────
-      // The takeover reel is centred (xPercent/yPercent -50) and sized by its layout box, which
-      // ignores transforms, so a refresh mid-scroll always measures the untransformed card.
+      // The takeover reel starts as an exact copy of the first headline capsule, then the window
+      // itself morphs (position, size, corner radius) until it fills the screen. Geometry comes
+      // from layout offsets, which ignore transforms, so a refresh mid-scroll measures the
+      // capsule where it sits at rest, not where the scrub has moved it.
       const card = q("[data-takeover]")[0];
-      gsap.set(card, { xPercent: -50, yPercent: -50, scale: 0.18, autoAlpha: 0, rotate: -4 });
-      const coverScale = () => Math.max(window.innerWidth / card.offsetWidth, window.innerHeight / card.offsetHeight) * 1.02;
+      const pill = q("[data-pill=top] > span")[0];
+      const box = () => {
+        let x = 0, y = 0, el: HTMLElement | null = pill;
+        while (el && el !== root.current) { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent as HTMLElement | null; }
+        return { left: x, top: y, width: pill.offsetWidth, height: pill.offsetHeight, borderRadius: getComputedStyle(pill).borderTopLeftRadius };
+      };
+      gsap.set(card, { autoAlpha: 0 });
 
       // aria "none": the visible lines are aria-hidden and an sr-only sentence carries the text
       const chars = SplitText.create(q("[data-manifesto-line]"), { type: "words,chars", aria: "none" }).chars;
@@ -86,13 +93,15 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
         defaults: { ease: "none" },
         scrollTrigger: { trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: 0.8, invalidateOnRefresh: true },
       });
-      // the headline clears out (0–0.16) before the reel grows through it (from 0.08),
-      // so the two never sit half-transparent on top of each other
-      tl.to(split.lines[0], { xPercent: -14, autoAlpha: 0, duration: 0.16 }, 0)
+      // the capsule hands over to the full-size window at once, the words clear (0–0.16),
+      // then the window opens out to the full screen (0.12–0.4)
+      const at = { left: () => box().left, top: () => box().top, width: () => box().width, height: () => box().height, borderRadius: () => box().borderRadius };
+      tl.fromTo(card, { ...at, rotate: -2, autoAlpha: 1 }, { ...at, rotate: -2, autoAlpha: 1, duration: 0.001, immediateRender: false }, 0)
+        .to(pill, { autoAlpha: 0, duration: 0.001 }, 0)
+        .to(split.lines[0], { xPercent: -14, autoAlpha: 0, duration: 0.16 }, 0)
         .to(split.lines.slice(1), { xPercent: 12, autoAlpha: 0, duration: 0.16 }, 0)
         .to(q("[data-hero-cta], [data-hero-meta], [data-badge], [data-hero-lede]"), { autoAlpha: 0, y: -30, duration: 0.16 }, 0)
-        .to(card, { autoAlpha: 1, scale: 0.5, rotate: 0, duration: 0.1 }, 0.08)
-        .to(card, { scale: coverScale, borderRadius: 0, duration: 0.22 }, 0.18)
+        .to(card, { left: 0, top: 0, width: () => root.current!.clientWidth, height: () => root.current!.clientHeight, borderRadius: 0, rotate: 0, duration: 0.28, ease: "power2.inOut" }, 0.12)
         .to(q("[data-dim]"), { autoAlpha: 0.86, duration: 0.14 }, 0.34)
         .set(q("[data-manifesto]"), { autoAlpha: 1 }, 0.4)
         .from(chars, { color: "rgba(28,25,23,0.16)", stagger: { amount: 0.36 }, duration: 0.05 }, 0.42)
@@ -124,7 +133,7 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
 
       {/* Stage (desktop motion only): the reel that takes over the screen, and the field over it */}
       <div className="pointer-events-none absolute inset-0 z-0 hidden cinema:block" aria-hidden>
-        <div data-takeover className="invisible absolute left-1/2 top-1/2 h-[45svh] w-[25.3svh] overflow-hidden rounded-[22px] shadow-[0_30px_70px_-24px_rgb(28_25_23/0.4)] will-change-transform">
+        <div data-takeover className="invisible absolute left-0 top-0 h-24 w-40 overflow-hidden shadow-[0_30px_70px_-24px_rgb(28_25_23/0.4)]">
           <Reel asset={takeover} priority={5} className="h-full w-full" />
         </div>
         <div data-dim className="act-iris absolute inset-0 opacity-0" />
@@ -140,15 +149,18 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
           <Clock className="rounded-full border border-line bg-white px-4 py-1.5 text-ink/75 shadow-[0_2px_12px_rgb(28_25_23/0.03)]" />
         </div>
 
-        <h1 id="hero-title" data-hero-title data-reveal className="font-display text-[clamp(2.4rem,5.4vw,5.6rem)] font-medium leading-[1.16] tracking-[-0.045em]">
-          <span data-line className="block sm:whitespace-nowrap">
+        <h1 id="hero-title" data-hero-title data-reveal className="font-display text-[clamp(2.4rem,8.4vw,8.6rem)] font-medium leading-[1.08] tracking-[-0.05em]">
+          <span data-line className="block whitespace-nowrap">
             Every
-            <span data-pill className="inline-block"><HeroPill slides={pillsTop} interval={1400} tilt={-2} className="h-[0.92em] w-[1.5em]" /></span>
+            <span data-pill="top" className="inline-block"><HeroPill slides={pillsTop} interval={1400} tilt={-2} className="h-[0.86em] w-[1.45em]" /></span>
             business
           </span>
-          <span data-line className="mt-[0.06em] block sm:whitespace-nowrap">
-            <span className="text-blue">has something</span>
-            <span data-pill className="inline-block"><HeroPill slides={pillsBottom} interval={1700} tilt={2} className="h-[0.92em] w-[1.4em]" /></span>
+          <span data-line className="block whitespace-nowrap text-blue">
+            has
+            <span data-pill className="inline-block"><HeroPill slides={pillsBottom} interval={1700} tilt={2} className="h-[0.86em] w-[1.3em]" /></span>
+            something
+          </span>
+          <span data-line className="block whitespace-nowrap">
             <span className="serif-accent">worth </span><span className="serif-accent text-signal">showing.</span>
           </span>
         </h1>

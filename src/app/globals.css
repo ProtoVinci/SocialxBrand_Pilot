@@ -2,13 +2,13 @@
 @import "tailwindcss" source("..");
 @import "lenis/dist/lenis.css";
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-   SOCIALxBRAND PILOT â€” design tokens
+/* ─────────────────────────────────────────────────────────────
+   SOCIALxBRAND PILOT — design tokens
    Theme adopted from prototype 1 (sujal_site): warm off-white canvas, white cards on warm
    hairlines, pilot red as the primary accent, logo purple as the secondary. Token NAMES are
-   kept from the earlier palette (blue, iris, rougeâ€¦) so every component re-themes in place:
+   kept from the earlier palette (blue, iris, rouge…) so every component re-themes in place:
    "blue" is now the purple accent role, "iris"/"rouge" the purple/red act fields.
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────────────────────── */
 @theme inline {
   --font-display: var(--font-inter);
   --font-serif: var(--font-inter);
@@ -49,7 +49,7 @@
   --ease-glide: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-snap: cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* prototype 1 scale: Inter medium, tight negative tracking, leading ~1.05â€“1.12 */
+  /* prototype 1 scale: Inter medium, tight negative tracking, leading ~1.05–1.12 */
   --text-mega: clamp(2.9rem, 7vw, 8.5rem);
   --text-mega--line-height: 0.98;
   --text-mega--letter-spacing: -0.055em;
@@ -145,9 +145,9 @@
   background-clip: text;
 }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────────────────────
    Base
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────────────────────── */
 :root {
   color-scheme: light;
   --nav-h: 4.5rem;
@@ -266,9 +266,9 @@ video::-webkit-media-controls { display: none !important; }
 }
 .skip-link:focus { top: 1rem; }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────────────────────
    Page transitions (React <ViewTransition>)
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────────────────────── */
 ::view-transition { pointer-events: none; }
 
 ::view-transition-group(site-header) { animation: none; z-index: 100; }
@@ -291,9 +291,9 @@ video::-webkit-media-controls { display: none !important; }
 @keyframes vt-rise-in { from { transform: translateY(56px); } }
 @keyframes vt-via-blur { 40% { filter: blur(4px); } }
 
-/* â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+/* ─────────────────────────────────────────────────────────────
    Reduced motion: content complete, no positional movement
-   â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+   ───────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),
