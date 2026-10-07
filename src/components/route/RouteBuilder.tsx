@@ -268,7 +268,7 @@ function RouteSummary({ slugs }: { slugs: string[] }) {
   return (
     <div className="relative h-44 md:h-40">
       <svg data-summary-svg aria-hidden viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible">
-        <path data-summary-line d={d} fill="none" stroke="#f43436" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+        <path data-summary-line d={d} fill="none" stroke="#d9412e" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
       </svg>
       <ol className="absolute inset-0">
         {items.map((it, i) => (

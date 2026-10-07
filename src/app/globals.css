@@ -5,7 +5,7 @@
 /* ─────────────────────────────────────────────────────────────
    SOCIALxBRAND PILOT — design tokens
    Theme adopted from prototype 1 (sujal_site): warm off-white canvas, white cards on warm
-   hairlines, pilot red as the primary accent, a deep cobalt ink as the secondary (replacing the electric
+   hairlines, a vermilion red as the primary accent and a deep cobalt ink as the secondary (replacing the electric
    purple, which read as a default UI colour). Token NAMES are
    kept from the earlier palette (blue, iris, rouge…) so every component re-themes in place:
    "blue" is the cobalt accent role, "iris"/"rouge" the cobalt/red act fields.
@@ -25,23 +25,23 @@
   --color-line: #e8e2d8;         /* card borders */
   --color-line-strong: #d5cdbd;  /* hover borders */
   --color-periwinkle: #e9ecfa;   /* soft act: cobalt tint */
-  --color-rose: #fce9e6;         /* soft act: red tint */
+  --color-rose: #fbe9e3;         /* soft act: red tint */
   --color-iris: #2a3ba4;         /* cobalt ink: the secondary colour */
   --color-iris-2: #5a69c4;
   --color-iris-3: #a9b4e8;
   --color-iris-deep: #1f2c85;
-  --color-rouge: #f43436;        /* pilot red */
-  --color-rouge-2: #f65a5b;
-  --color-rouge-3: #f99b9b;
-  --color-rouge-deep: #b81d22;
+  --color-rouge: #d9412e;        /* vermilion: pairs with the cobalt as print navy + red does */
+  --color-rouge-2: #e46a52;
+  --color-rouge-3: #f3a491;
+  --color-rouge-deep: #9c2a1a;
   --color-blue: #2a3ba4;         /* cobalt: labels, links, accents (8.8:1 on shell) */
   --color-blue-ink: #1f2c85;     /* deep cobalt for small text on tinted acts (10:1) */
   --color-ink: #181614;          /* primary text */
   --color-muted: #6b665f;        /* secondary text (5.4:1 on shell) */
-  --color-signal: #f43436;       /* pilot red: primary CTA, route line, display accents */
-  --color-signal-ink: #c8202a;   /* red for small text (AA on every light surface) */
-  --color-cta: #de2b2d;          /* primary button fill: prototype 1 red, deepened to clear AA with white text (4.7:1) */
-  --color-cta-hover: #c8202a;
+  --color-signal: #d9412e;       /* vermilion: route line, display accents (large text, 4.2:1) */
+  --color-signal-ink: #b02d1c;   /* red for small text (AA on every light surface) */
+  --color-cta: #c4351f;          /* primary button fill, deepened so white text clears AA (5.4:1) */
+  --color-cta-hover: #a8301f;
   --color-violet: #2a3ba4;
   --color-violet-ink: #1f2c85;
 
@@ -84,7 +84,7 @@
    glow (top right), faded out toward the edges. Used on plain shell surfaces. */
 @utility grid-paper {
   background-image:
-    radial-gradient(ellipse 70% 50% at 50% 0%, rgb(244 52 54 / 0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgb(217 65 46 / 0.05) 0%, transparent 70%),
     radial-gradient(ellipse 60% 40% at 85% 20%, rgb(42 59 164 / 0.045) 0%, transparent 60%),
     linear-gradient(to right, rgb(28 25 23 / 0.045) 1px, transparent 1px),
     linear-gradient(to bottom, rgb(28 25 23 / 0.045) 1px, transparent 1px);
@@ -240,10 +240,10 @@ body {
   background:
     linear-gradient(to right, rgb(255 255 255 / 0.18) 1px, transparent 1px) 0 0 / 28px 28px,
     linear-gradient(to bottom, rgb(255 255 255 / 0.18) 1px, transparent 1px) 0 0 / 28px 28px,
-    radial-gradient(60% 80% at 10% 25%, #f77a7b 0%, transparent 65%),
-    radial-gradient(45% 60% at 72% 18%, #fbb4b1 0%, transparent 62%),
-    radial-gradient(50% 65% at 88% 78%, #fcc9c6 0%, transparent 62%),
-    radial-gradient(55% 60% at 0% 100%, rgb(244 52 54 / 0.5) 0%, transparent 60%),
+    radial-gradient(60% 80% at 10% 25%, #ee8a76 0%, transparent 65%),
+    radial-gradient(45% 60% at 72% 18%, #f6bcae 0%, transparent 62%),
+    radial-gradient(50% 65% at 88% 78%, #f9d3c9 0%, transparent 62%),
+    radial-gradient(55% 60% at 0% 100%, rgb(217 65 46 / 0.5) 0%, transparent 60%),
     var(--color-rouge-3);
 }
 
