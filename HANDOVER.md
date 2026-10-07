@@ -89,75 +89,55 @@ The Drive root is `1aW_4Cg8rG6wv5QpH_2RvEjvzOkT59yWR`. Every video there is name
 
 ---
 
-## 4. Design system (current; details in `docs/design-brief.md`)
+## 4. Design system (current, after the prototype-1 merge)
 
-### Colour: red + blue, textured
-
-| Token | Hex | Role |
-|---|---|---|
-| shell / petal | `#FDF9F7` / `#F3ECE9` | canvas / cards and the board |
-| periwinkle / rose | `#C9D3FF` / `#FBC8C3` | soft acts (blue tint / red tint) |
-| iris family | `#6281FD` (+ `#8F9FFB`, `#A4B4F8`, `#4658B1`) | Codex cornflower: `.act-iris` gradient fields, row floods, blue ticket headers |
-| rouge family | `#E95157` (+ `#EE6461`, `#F19F99`, `#A33737`) | the exact OKLCH complement (same L/C, hue 270° → 22°): `.act-rouge` fields (finale) |
-| blue / blue-ink | `#3651E6` / `#2F49D6` | **type and UI blue**: section labels, accent words, links, buttons, selection, focus |
-| signal / signal-ink | `#FF3131` / `#B01C22` | logo red (route line, stickers, display accents) / small red text |
-| ink / muted | `#12121A` / `#55556A` | text |
-| violet | `#8C52FF` | "selected" (route toggles) |
-
-- **Acts re-scope colour variables.** Inside `.act-iris`/`.act-rouge`, red accents become white or ink and blue becomes ink. Inside `.act-rose`/`.act-periwinkle`, red deepens to signal-ink and blue to blue-ink. Don't hard-code colours in components; use the tokens so these overrides keep contrast.
-- **Textures:**
-  - iris: white dot matrix
-  - rouge: white grid
-  - periwinkle: blue grid
-  - rose: red dots
-  - `grid-paper` utility: a faint ink grid faded at the edges (hero, departures board, footer)
-- **Accent words alternate red and blue** from section to section. The hero's second line is blue. Wordmarks follow the logo: SOCIAL blue, BRAND PILOT red.
-- Primary buttons are blue pills. On red fields they are ink.
+Two prototypes: **prototype 1** = `C:UsersParthDesktopsujal_site` (visual reference only, never edited);
+**prototype 2** = this repo (the primary). Styling came from prototype 1; content and motion are prototype 2.
 
 ### Type
+Inter only (self-hosted, `src/app/fonts.ts`), system monospace for labels. Display is medium weight with tight
+negative tracking. The `serif-accent` utility name is kept, but it is now Inter regular (no serif).
 
-- **Bricolage Grotesque** (variable `wdth`/`opsz`, display at `font-stretch` 76–88%, mega tracking −0.022em).
-- **Instrument Serif** italic for the one accent word per headline.
-- **Geist** for body, and **Geist Mono** for the `[ 01 ]` labels.
-
-### Motion grammar (`src/lib/motion/tokens.ts`; details in `docs/motion-system.md`)
-
-- **Eases:** `pilot` (entrances), `glide` (swaps and lines), `none` (scrub).
-- **Durations:** 0.2 / 0.35 / 0.6 / 0.9 / 1.3. **Staggers** are capped at 0.5s total.
-- **`cinema`** (CSS variant and `MQ.cinema`) means desktop ≥768 **and** motion allowed. A head script sets `html.js-motion`, and `intro` on the first visit.
-- **Reveals use IntersectionObserver** (`src/lib/motion/observe.ts`), not ScrollTrigger. Keep the ScrollTrigger count low (§6).
-
-### Home acts (in order)
-
-| # | Act | What it does |
+### Colour (token names kept from the old palette, so components re-themed in place)
+| Token | Hex | Role |
 |---|---|---|
-| 0 | Curtain | Logomark, first visit only |
-| 1 | Hero (shell + `grid-paper` + blue/red glows) | "EVERY BUSINESS / **HAS SOMETHING** (blue) / *worth showing.*"; a fan of 5 reels with stickers ("Real work · no stock", "Made in 9:16 ✦"); a spinning route badge |
-| 1→2 | One pin (+230%) | The centre reel takes over; a dotted cornflower field rises; the manifesto fills char by char; "activity" is struck, "impact" lands white |
-| 3 | Ladder (periwinkle, CSS sticky) | The red word swaps seen → moving forward; a framed reel crossfades |
-| 4 | Screenings (pin) | A horizontal rail of 9:16 reels; cards tilt on hover; "Watch" cursor |
-| 4b | Marquee (iris field) | "WE WILL SHOW / *you will grow*" with inline reel stickers; velocity-driven |
-| 5 | Capabilities | Tickers + a 4-cluster index; rows flood cornflower; cursor reel preview |
-| 6 | **Departures board** (pin +300%) | `MethodBoard`: a split-flap board; the active station floods, flaps, Next → Boarding → Cleared |
-| 7 | Audiences (rose) | Tabs; route chips from `suggestRoute()` |
-| 8 | AI | Strike-and-replace typography |
-| 9 | Finale (rouge field, gridded) | "WE WILL SHOW." fills, and "YOU WILL GROW." grows in white |
-| — | Footer (`grid-paper`) | Contacts, a live IST clock, a giant logo-coloured wordmark |
+| shell / petal / sand | `#FAF8F5` / `#F3EFE8` / `#F5F1EB` | warm canvas / subtle cards / alternate band |
+| line / line-strong | `#E8E2D8` / `#D5CDBD` | card borders / hover |
+| blue (cobalt ink) / blue-ink | `#2A3BA4` / `#1F2C85` | secondary accent: labels, links. Large accents use `ink-cobalt` (gradient text) |
+| signal (vermilion) / signal-ink | `#D9412E` / `#B02D1C` | display red / small red text |
+| cta / cta-hover | `#C4351F` / `#A8301F` | primary button fill (white text 5.4:1) |
+| ink / muted | `#181614` / `#6B665F` | text |
+Acts: `act-iris` (cobalt mid-tones), `act-rouge` (vermilion mid-tones), `act-periwinkle`, `act-rose` (tints), all with ink text.
 
-Division pages show their approach as **boarding-pass tickets** (`ApproachRoute`) that deal out from a stack. `/approach` reuses the departures board and has blue/red vision/mission fields.
+### Home, top to bottom
+1. **Hero** (`Opening.tsx`): Hanzo layout. Centred three-line headline with always-playing media capsules
+   (`HeroPill`), window-light glare drifting (`fx/HeroGlare`), tools orbit (`fx/ToolsOrbit`, simple-icons). On
+   scroll, the top capsule morphs into a full-screen reel, then the manifesto plays.
+2. **Ladder**: "Marketing is more than being…". The reel swipes like a feed.
+3. **Recent work** (`WorkShowcase`): Hanzo panel. Two endlessly looping columns (left up, right down), folder disc
+   fixed at the panel centre. Vertical reels are staged upright in landscape tiles, never cropped.
+4. **Marquee**.
+5. **Capabilities** (`capabilities/DivisionBoard`): Elevix-style bento. Four cluster tiles plus a stage. Fits one
+   screen at every desktop size (`short:` variant for short laptops). The stage changes only on pointermove or
+   focus, after an intent delay; it runs an idle tour.
+6. **Method board** (CSS sticky, scrambled names that resolve), then Audiences, AI, Finale.
 
-### Pointer gimmicks (`src/components/fx/`; fine pointers + motion only)
-
-- A cursor follower (blue dot → labelled bubble over `[data-cursor]`).
-- Magnetic `.magnetic` CTAs.
-- `SpinBadge`.
-
-All of them use event delegation, so they survive page transitions.
+### Wayfinding
+`Crumbs` on every inner page, `WhereNext` at every inner page end, nav Home link, and the nav reappears near the
+page end. Footer has Home and Back to top.
 
 ---
 
 ## 5. Changes history (newest first, condensed)
 
+0. **Prototype-1 merge (2026-10-07, local session).** In order:
+   - Retheme: Inter, warm canvas, vermilion and cobalt.
+   - Hanzo hero: capsules, glare, orbit, morph takeover. The capsules use no SplitText; see §6.
+   - Hanzo work panel; Elevix bento capabilities.
+   - Reel-feed ladder and scrambled method board.
+   - Wayfinding (crumbs, where-next).
+   - Method board moved from a GSAP pin to CSS sticky (CLS 1.0 → 0).
+   - New QA scripts (below).
 1. **Colour in type + textures + performance.** Blue type tokens, alternating accents, logo wordmarks, textured acts, and the performance pass (§6).
 2. **Matched red + saturation + tickets.** The red became the exact complement of the Codex blue; saturation was raised; division approach routes became tickets.
 3. **Codex palette + departures board.** From the client's openai.com/codex screenshot; the wavy method timeline (`MethodRoute`) was replaced by `MethodBoard`.
@@ -168,6 +148,20 @@ All of them use event delegation, so they survive page transitions.
 ---
 
 ## 6. Gotchas (read before editing)
+
+- **Never SplitText an element that contains React components** (the hero capsules). It rebuilds the DOM from copies,
+  React keeps updating the detached originals, and the screen freezes. The hero lines use plain clip masks.
+- **Prefer CSS sticky over GSAP `pin`** for long scenes. A pin engages a tick late, so landing mid-scene (back
+  button, anchors) draws it a screen out of place.
+- **Auto-cycling UI needs fixed box sizes.** Any height change shifts every pinned scene below it.
+- **Hover previews: use pointermove plus an intent delay, never pointerenter.** Scrolling fires pointerenter.
+- **Windows:** never write files with PowerShell 5.1 Get-Content/Set-Content (BOMs and cp1252 mojibake). Repo files
+  are CRLF, so node string matches on "
+" can silently miss. In Git Bash, `--routes=/` becomes a Windows path; run
+  the QA scripts from PowerShell.
+- **QA scripts** (dev server on :3100): `sweep.mjs` (stills), `record.mjs` (video plus console),
+  `check-shift.mjs` (CLS and height stability), `check-flow.mjs` (a way home from every page end),
+  `check-motion.mjs` (loops, disc, board).
 
 1. **`clearProps: undefined` crashes GSAP.** Add optional keys conditionally (see `SplitReveal`).
 2. **A base `relative` beats a caller's `absolute`** in Tailwind's order. `Reel`, `Photo`, `RouteToggle` and `SpinBadge` add `relative` only when the caller didn't pass `absolute`/`fixed`.
@@ -191,7 +185,8 @@ All of them use event delegation, so they survive page transitions.
 
 ## 7. Next steps (in order)
 
-0. **`sujal_site` merge: waiting on the user.** The inventory is in `docs/merge-sujal-site.md`. Don't merge anything until the user picks.
+0. **Prototype-1 merge: styling, hero and work panel are done.** Still open from `docs/merge-sujal-site.md`: the Pilot Check quiz, the FAQ, the problem-vs-solution section. Ask the user before adding them.
+   Optional: make the hero takeover reel continue the clip the top capsule is showing.
 1. **Reviewer round 1 is done** (`docs/reviews/round-1.json`), and batches 1 and 2 are fixed (`ea11be2`). Still open:
    - Footer: contact-grid and wordmark collisions; WhatsApp prominence; tap targets (RouteToggle h-9, footer links).
    - AI struck-line contrast: raise to about 0.55.
