@@ -345,6 +345,33 @@ video::-webkit-media-controls { display: none !important; }
 @keyframes vt-via-blur { 40% { filter: blur(4px); } }
 
 /* ─────────────────────────────────────────────────────────────
+   Navigation feedback + shared interaction smoothing
+   ───────────────────────────────────────────────────────────── */
+/* Route-change bar (NavProgress): starts on the click, fills slowly while the page loads, then
+   completes and fades the moment the new page is in. */
+[data-nav-progress] { transform: scaleX(0); opacity: 0; }
+[data-nav-progress][data-state="loading"] { opacity: 1; animation: nav-progress 14s cubic-bezier(0.08, 0.6, 0.2, 1) both; }
+[data-nav-progress][data-state="done"] { animation: nav-progress-done 420ms var(--ease-pilot) both; }
+@keyframes nav-progress { to { transform: scaleX(0.92); } }
+@keyframes nav-progress-done { from { transform: scaleX(0.92); opacity: 1; } 55% { transform: scaleX(1); opacity: 1; } to { transform: scaleX(1); opacity: 0; } }
+html[data-navigating], html[data-navigating] a, html[data-navigating] button { cursor: progress; }
+
+/* Every link and button eases its colour, border, shadow and opacity instead of snapping, and
+   presses in a touch when clicked. In the base layer, so any transition a component sets itself
+   (Tailwind utilities) still wins. transform is left out on purpose: GSAP drives it on magnetic
+   and revealed elements, and a CSS transition on top of it would lag every tween. The press uses
+   the separate "scale" property for the same reason. */
+@layer base {
+  a, button, [role="button"], summary, label[for], input, textarea, select {
+    transition-property: color, background-color, border-color, text-decoration-color, box-shadow, opacity, scale;
+    transition-duration: 220ms;
+    transition-timing-function: var(--ease-pilot);
+  }
+  button:not(:disabled):active, [role="button"]:active, .magnetic:active { scale: 0.97; transition-duration: 90ms; }
+  :focus-visible { transition: outline-offset 160ms var(--ease-pilot); }
+}
+
+/* ─────────────────────────────────────────────────────────────
    Reduced motion: content complete, no positional movement
    ───────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

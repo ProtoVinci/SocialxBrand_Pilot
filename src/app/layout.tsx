@@ -5,6 +5,8 @@ import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { PointerFx } from "@/components/fx/PointerFx";
+import { NavProgress } from "@/components/layout/NavProgress";
+import { DevWarmup } from "@/components/layout/DevWarmup";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/content/site";
 import { organizationLd } from "@/lib/seo";
@@ -60,6 +62,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Footer />
         </SmoothScroll>
         <PointerFx />
+        <NavProgress />
+        <DevWarmup />
       </body>
     </html>
   );
