@@ -118,10 +118,16 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
       href={`/work/${tile.slug}`}
       transitionTypes={["nav-forward"]}
       aria-label={`${tile.title}: ${tile.format}`}
-      onPointerEnter={() => setHot(true)}
+      // pointermove, not pointerenter: the tracks never stop moving, so tiles keep sliding under a
+      // resting cursor (and under one that is scrolling the page). Waking a tile then mounted its
+      // video and re-ran its hover transitions inside the moving track, which repainted the whole
+      // track on every pass. Only a real pointer movement over a tile wakes it now, and the hover
+      // look keys off the same state (data-hot) instead of :hover, which also fires on a slide-by.
+      onPointerMove={() => { if (!hot) setHot(true); }}
       onPointerLeave={() => setHot(false)}
       onFocus={() => setHot(true)}
       onBlur={() => setHot(false)}
+      data-hot={hot ? "" : undefined}
       className="group relative block aspect-[4/3] shrink-0 overflow-hidden rounded-[22px] bg-[#2a2725] outline-offset-4"
     >
       {tile.wide ? (
@@ -141,7 +147,7 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
                 <span
                   key={f.poster}
                   style={{ rotate: `${tilt}deg` }}
-                  className={`relative aspect-[9/16] overflow-hidden rounded-[12px] shadow-[0_24px_40px_-18px_rgb(0_0_0/0.7)] ring-1 ring-white/15 transition-[translate,rotate] duration-500 ease-[var(--ease-pilot)] ${mid ? "z-10 h-[86%]" : "h-[74%]"} ${k === 0 && cards.length > 1 ? "group-hover:-translate-x-2" : ""} ${k === 2 ? "group-hover:translate-x-2" : ""}`}
+                  className={`relative aspect-[9/16] overflow-hidden rounded-[12px] shadow-[0_24px_40px_-18px_rgb(0_0_0/0.7)] ring-1 ring-white/15 transition-[translate,rotate] duration-500 ease-[var(--ease-pilot)] ${mid ? "z-10 h-[86%]" : "h-[74%]"} ${k === 0 && cards.length > 1 ? "group-data-[hot]:-translate-x-2" : ""} ${k === 2 ? "group-data-[hot]:translate-x-2" : ""}`}
                 >
                   <Frame frame={f} hot={hot && mid} className="h-full w-full object-cover" />
                 </span>
@@ -151,8 +157,8 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
         </>
       )}
       {/* resting dim, lifted on hover, and the title that rises with it */}
-      <span aria-hidden className="absolute inset-0 bg-[#1d1b1a]/25 transition-opacity duration-500 group-hover:opacity-0" />
-      <span aria-hidden className="absolute bottom-3 left-3 translate-y-2 rounded-full bg-white/90 px-3.5 py-1.5 text-sm font-medium text-ink opacity-0 backdrop-blur transition-[opacity,translate] duration-500 ease-[var(--ease-pilot)] group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
+      <span aria-hidden className="absolute inset-0 bg-[#1d1b1a]/25 transition-opacity duration-500 group-data-[hot]:opacity-0" />
+      <span aria-hidden className="absolute bottom-3 left-3 translate-y-2 rounded-full bg-white/90 px-3.5 py-1.5 text-sm font-medium text-ink opacity-0 backdrop-blur transition-[opacity,translate] duration-500 ease-[var(--ease-pilot)] group-data-[hot]:translate-y-0 group-data-[hot]:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100">
         {tile.title} <span className="text-muted">· {tile.kicker}</span>
       </span>
     </Link>

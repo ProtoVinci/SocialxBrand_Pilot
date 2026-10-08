@@ -312,20 +312,36 @@ video::-webkit-media-controls { display: none !important; }
 ::view-transition-old(site-header) { display: none; }
 ::view-transition-new(site-header) { animation: none; }
 
-/* kept short so navigation feels instant: the new page is readable within ~300ms */
+/* The menu, when one of its links changes the page: captured open with the old page, it wipes
+   up and away (the same clip as its own close) while the new page rises in underneath. */
+::view-transition-group(site-menu) { animation: none; z-index: 90; }
+::view-transition-old(site-menu) { animation: 560ms var(--ease-glide) both vt-wipe-up; }
+
+/* The old page steps back and fades while the new one rises in, slightly overlapped, so the cut
+   reads as one movement. The new page is readable within ~350ms; nothing runs past 600ms
+   (ROUTE_SETTLE_MS in SmoothScroll waits for this before re-measuring scroll scenes). */
 ::view-transition-old(.route-out) {
-  animation: 180ms var(--ease-glide) both vt-fade-out, 320ms var(--ease-glide) both vt-lift-out;
+  animation: 220ms var(--ease-glide) both vt-fade-out, 360ms var(--ease-glide) both vt-lift-out;
 }
 ::view-transition-new(.route-in) {
-  animation: 240ms var(--ease-pilot) 90ms both vt-fade-in, 420ms var(--ease-pilot) both vt-rise-in;
+  animation: 300ms var(--ease-pilot) 110ms both vt-fade-in, 560ms var(--ease-pilot) both vt-rise-in;
 }
 ::view-transition-group(.morph) { animation-duration: 420ms; animation-timing-function: var(--ease-pilot); }
 ::view-transition-image-pair(.morph) { animation-name: vt-via-blur; }
 
 @keyframes vt-fade-out { to { opacity: 0; } }
 @keyframes vt-fade-in { from { opacity: 0; } }
-@keyframes vt-lift-out { to { transform: translateY(-48px) scale(0.985); } }
-@keyframes vt-rise-in { from { transform: translateY(56px); } }
+@keyframes vt-lift-out { to { transform: translateY(-48px) scale(0.98); } }
+@keyframes vt-rise-in { from { transform: translateY(72px); } }
+@keyframes vt-wipe-up { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); } }
+
+/* Menu link waiting on its page: a line that keeps sweeping across until the transition starts */
+@keyframes link-pending {
+  0% { transform: scaleX(0); transform-origin: left; }
+  50% { transform: scaleX(1); transform-origin: left; }
+  50.01% { transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
 @keyframes vt-via-blur { 40% { filter: blur(4px); } }
 
 /* ─────────────────────────────────────────────────────────────

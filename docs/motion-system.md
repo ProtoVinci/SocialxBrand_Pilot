@@ -37,7 +37,7 @@ The same values are mirrored as CSS variables (`--ease-pilot`, `--ease-glide`) f
 | `lift` | y 40 + fade, base duration; groups batch with capped stagger | `Reveal` / `Reveal group` |
 
 Scroll reveals (`rise`, `blur`, `lift`) are driven by IntersectionObserver, and `SplitReveal` only splits a heading when it is about a screen away. They add no ScrollTriggers, which keeps `ScrollTrigger.refresh()` cheap on pages with pins.
-| scrub | ease `none`, `scrub: 0.6–0.8` (smoothing), `invalidateOnRefresh` on geometry | set-pieces |
+| scrub | ease `none`, `scrub: scrubSmoothing(0.6–0.8)` (exact under Lenis, which already smooths; 0.6–0.8 catch-up on native touch scroll), `invalidateOnRefresh` on geometry | set-pieces |
 
 ## Primary motion (memorable)
 
@@ -48,12 +48,11 @@ Scroll reveals (`rise`, `blur`, `lift`) are driven by IntersectionObserver, and 
 | Hero → manifesto (one pin, +230%) | Lines part in counter-motion, side reels and the stickers fall away, the centre reel takes over the screen, a dotted cornflower field rises over it, and the manifesto fills char by char; "activity" is struck and "impact" lands in white | Activity is not the goal; impact is |
 | The Pilot Route: departures board (pin, +300%) | Seven stations on a split-flap board; the active row floods cornflower, its letters flap through the alphabet and land, its detail line opens, its status turns Next → Boarding → Cleared; a red progress line fills down the board | The method is travelled, in order |
 | Finale (red gridded field) | Lane type fills; "YOU WILL GROW." grows and is underlined | The promise lands |
-| Page transitions | The old page lifts out; the new one rises in; shared names morph (index → detail) | Same thing, going deeper |
+| Page transitions | Every navigation (links of any kind, browser back/forward, /work/a → /work/b) lifts the old page out and rises the new one in; shared names morph (index → detail); from the menu, the open menu is captured with the old page and wipes up and away | Same thing, going deeper |
 
 ## Secondary motion (flow)
 
 - **Philosophy ladder**: CSS sticky, so no GSAP pin. One periwinkle act; the step comes from scroll progress; the red word swaps in a mask (±130% plus a fade) while the framed reel crossfades and the ticks turn red.
-- **Screenings rail**: a pinned horizontal track; frames scale 0.86 → 1 toward centre, computed in the track tween's `onUpdate` from cached `offsetLeft`s (one ScrollTrigger, not one per frame).
 - **Division tickers**: two rows in opposite directions (46s / 58s); hovering slows a row to 0.12×; paused off-screen.
 - **Work filters**: Flip reflow with a 0.03 stagger. **Audience tabs**: Flip chips and a redrawn rule.
 - **Principle deck**: sticky cards; the covered card scales to 0.94 and dims.
@@ -83,10 +82,14 @@ Rolling nav labels (0.45s pilot); CTA lift −2px; route toggle (+ rotates to �
 
 ## Scroll rules
 
-- **Pins on home**: the opening (hero + manifesto merged), screenings and the departures board. All three are desktop-only (`cinema`). The ladder uses CSS sticky.
-- **Smooth scroll**: Lenis, lerp 0.15 (snappy), driven by `gsap.ticker`, off for touch and reduced motion. `ScrollTrigger.refresh()` runs after `document.fonts.ready` on client-side route changes only; on first load ScrollTrigger's own load refresh is enough.
+- **Pins on home**: the opening (hero + manifesto merged) and the departures board (CSS sticky). Both are desktop-only (`cinema`). The ladder uses CSS sticky.
+- **Smooth scroll**: Lenis, lerp 0.15 (snappy), driven by `gsap.ticker`, off for touch and reduced motion. `ScrollTrigger.refresh()` runs on client-side route changes only, after the page transition (~700ms) and `document.fonts.ready`, when the browser is idle; on first load ScrollTrigger's own load refresh is enough.
 - **Keep the trigger count low**: every refresh re-measures every trigger. Prefer IntersectionObserver for one-shot reveals and one computed `onUpdate` over many inner triggers.
 - **Geometry** for the takeover is measured from layout boxes (`offset*`), never from transformed rects.
+- **Never tween what a view transition is about to capture.** Route changes commit inside a view transition and layout effects run before the new page is captured: anything that must look settled in the new page (scroll at the top, the menu gone) is set there synchronously, and its motion belongs to the transition CSS (`site-menu`, `route-in/out`).
+- **Video elements are created once and only played/paused.** Mounting a `<video>` on a beat (the hero capsules did) puts a fetch and a decoder start-up exactly on the animation; the incoming clip then rose in as a still frame. Warm the next one ahead, park the outgoing one when it is invisible.
+- **Hover states on moving content key off real pointer movement** (`pointermove` + a `data-*` attribute), never `pointerenter`/`:hover`, which fire when content slides or scrolls under a resting cursor.
+- **AV1 only on hardware decoders** (`media/codec.ts`): software AV1 decoding of several reels starves scrolling; other devices get the H.264 MP4.
 
 ## Responsive motion
 

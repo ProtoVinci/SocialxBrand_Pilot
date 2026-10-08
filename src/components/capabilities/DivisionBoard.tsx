@@ -176,7 +176,7 @@ export function DivisionBoard({ previews }: Props) {
             })}
             <span key={d.slug} className="absolute bottom-3 left-3 right-3 hidden flex-col items-start gap-1.5 lg:flex">
               {d.groups.slice(0, 2).map((g, k) => (
-                <span key={g.title} style={{ animationDelay: `${0.15 + k * 0.12}s` }} className="max-w-full truncate rounded-[10px] bg-white/92 px-3 py-1.5 text-[0.8rem] font-medium text-ink shadow-[0_8px_20px_-10px_rgb(0_0_0/0.5)] backdrop-blur animate-[stage-in_0.6s_var(--ease-pilot)_both] motion-reduce:animate-none">{g.title}</span>
+                <span key={g.title} style={{ animationDelay: `${0.15 + k * 0.12}s` }} className="max-w-full truncate rounded-[10px] bg-white/92 px-3 py-1.5 text-[0.8rem] font-medium text-ink shadow-[0_8px_20px_-10px_rgb(0_0_0/0.5)] animate-[stage-in_0.6s_var(--ease-pilot)_both] motion-reduce:animate-none">{g.title}</span>
               ))}
             </span>
             <span className="label absolute left-3 top-3 rounded-full bg-black/45 px-2.5 py-1 text-white backdrop-blur">

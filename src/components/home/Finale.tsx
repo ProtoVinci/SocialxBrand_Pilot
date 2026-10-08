@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { MQ } from "@/lib/motion/tokens";
+import { MQ, scrubSmoothing } from "@/lib/motion/tokens";
 import { site } from "@/content/site";
 import { SpinBadge } from "@/components/fx/SpinBadge";
 
@@ -18,7 +18,7 @@ export function Finale() {
     const q = gsap.utils.selector(root);
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {
-      const tl = gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: root.current, start: "top 75%", end: "center 45%", scrub: 0.6 } });
+      const tl = gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: { trigger: root.current, start: "top 75%", end: "center 45%", scrub: scrubSmoothing(0.6) } });
       tl.fromTo(q("[data-fill]"), { clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0% 0 0)", duration: 0.5 })
         .fromTo(q("[data-grow]"), { scale: 0.82, autoAlpha: 0.25, transformOrigin: "0% 100%" }, { scale: 1, autoAlpha: 1, duration: 0.5 }, 0.2)
         .fromTo(q("[data-underline]"), { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.4 }, 0.45);

@@ -8,6 +8,12 @@ import { PointerFx } from "@/components/fx/PointerFx";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/content/site";
 import { organizationLd } from "@/lib/seo";
+import { allVideos } from "@/content/work";
+
+// The menu's hover previews, picked here on the server: importing the media list into the
+// (client) Nav shipped the whole ~100KB media manifest to every page.
+const videos = allVideos();
+const menuPreviews = [0, 1, 2, 3, 4].map((i) => videos[(i * 7) % Math.max(1, videos.length)]).filter(Boolean);
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -40,13 +46,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
+        {/* suppressHydrationWarning: extensions (popup blockers, password managers) inject their
+            own <script> into <head> before React hydrates, which React then reports as a mismatch
+            against this one; the error is theirs, not ours, and the flag has already run */}
+        <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: motionFlag }} />
       </head>
       <body>
         <a href="#main" className="skip-link">Skip to content</a>
         <JsonLd data={organizationLd()} />
         <SmoothScroll>
-          <Nav />
+          <Nav previews={menuPreviews} />
           <main id="main">{children}</main>
           <Footer />
         </SmoothScroll>

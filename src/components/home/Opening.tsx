@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP, SplitText } from "@/lib/gsap";
-import { MQ, dur } from "@/lib/motion/tokens";
+import { MQ, dur, scrubSmoothing } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { Mark } from "@/components/brand/Mark";
 import { Clock } from "@/components/layout/Clock";
@@ -92,7 +92,7 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
       const chars = SplitText.create(q("[data-manifesto-line]"), { type: "words,chars", aria: "none" }).chars;
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: 0.8, invalidateOnRefresh: true },
+        scrollTrigger: { trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: scrubSmoothing(0.8), invalidateOnRefresh: true },
       });
       // the capsule hands over to the full-size window at once, the words clear (0–0.16),
       // then the window opens out to the full screen (0.12–0.4)

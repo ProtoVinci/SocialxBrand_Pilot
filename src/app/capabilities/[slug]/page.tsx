@@ -46,7 +46,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
   const [lead, ...restIntro] = d.whatItIs;
 
   return (
-    <PageShell>
+    <PageShell key={slug}>
       <JsonLd data={serviceLd(d)} />
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Capabilities", path: "/capabilities" }, { name: d.name, path: `/capabilities/${slug}` }])} />
 

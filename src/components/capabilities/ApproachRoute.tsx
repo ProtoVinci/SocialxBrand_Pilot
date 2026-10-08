@@ -1,7 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { MQ, dur, cappedStagger, stagger } from "@/lib/motion/tokens";
+import { MQ, dur, cappedStagger, stagger, scrubSmoothing } from "@/lib/motion/tokens";
 import { observeOnce, REVEAL_MARGIN } from "@/lib/motion/observe";
 
 /**
@@ -24,7 +24,7 @@ export function ApproachRoute({ steps }: { steps: string[] }) {
       const dy = (i: number) => tickets[0].offsetTop - tickets[i].offsetTop - i * 3;
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: root.current, start: "top 85%", end: "top 30%", scrub: 0.6, invalidateOnRefresh: true },
+        scrollTrigger: { trigger: root.current, start: "top 85%", end: "top 30%", scrub: scrubSmoothing(0.6), invalidateOnRefresh: true },
       });
       // One from() per ticket rather than a staggered from(): a stagger is built as a sub-timeline
       // and immediateRender then only paints the first target, so the rest sat dealt out until

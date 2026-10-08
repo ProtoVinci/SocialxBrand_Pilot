@@ -29,6 +29,18 @@ export const stagger = {
 export const cappedStagger = (count: number, each: number) =>
   Math.min(each, stagger.maxTotal / Math.max(1, count - 1));
 
+/** Where Lenis smooth scroll runs: fine pointers without reduced motion (SmoothScroll reads this too). */
+export const lenisEnabled = () =>
+  !window.matchMedia("(prefers-reduced-motion: reduce)").matches && !window.matchMedia("(pointer: coarse)").matches;
+
+/**
+ * The `scrub` value for scroll-linked scenes. Where Lenis runs, the scroll position is already
+ * smoothed, so scenes follow it exactly (`true`): a second smoothing layer on top made every scene
+ * trail the wheel by most of a second and keep drifting after the scroll stopped. Native (touch)
+ * scroll arrives in raw steps, so there GSAP's own catch-up still smooths it.
+ */
+export const scrubSmoothing = (native = 0.6): true | number => (lenisEnabled() ? true : native);
+
 /** Shared ScrollTrigger entry point for one-shot reveals. */
 export const revealStart = "top 82%";
 

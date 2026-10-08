@@ -1,7 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { MQ } from "@/lib/motion/tokens";
+import { MQ, scrubSmoothing } from "@/lib/motion/tokens";
 
 /**
  * The giant edge-to-edge sign-off. It rises out of the footer floor as the page ends,
@@ -15,7 +15,7 @@ export function FooterWordmark() {
       gsap.from(ref.current!.querySelector("[data-word]"), {
         yPercent: 55,
         ease: "none",
-        scrollTrigger: { trigger: ref.current, start: "top bottom", end: "bottom bottom", scrub: 0.6 },
+        scrollTrigger: { trigger: ref.current, start: "top bottom", end: "bottom bottom", scrub: scrubSmoothing(0.6) },
       });
     });
     return () => mm.revert();

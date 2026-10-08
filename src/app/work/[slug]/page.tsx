@@ -41,7 +41,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
   const rest = { videos: videos.filter((v) => v.id !== cover.id), photos: photos.filter((p) => p.id !== cover.id) };
 
   return (
-    <PageShell>
+    <PageShell key={slug}>
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }, { name: s.title, path: `/work/${slug}` }])} />
       <header className="gutter grid gap-12 pb-20 pt-[calc(var(--nav-h)+3rem)] md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">

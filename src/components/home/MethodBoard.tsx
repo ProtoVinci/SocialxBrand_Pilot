@@ -1,7 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { MQ, dur } from "@/lib/motion/tokens";
+import { MQ, dur, scrubSmoothing } from "@/lib/motion/tokens";
 import { observeOnce, REVEAL_MARGIN } from "@/lib/motion/observe";
 import { method } from "@/content/site";
 import { pad } from "@/content/divisions";
@@ -75,7 +75,7 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
           // CSS sticky does the holding (see the markup), not a GSAP pin: a pin only engages on the
           // next scroll tick, so landing mid-board (back button, Back to top, restored scroll)
           // drew the board a screen out of place for a frame. Sticky is applied by the browser.
-          trigger: root.current, start: "top top", end: "bottom bottom", scrub: 0.6,
+          trigger: root.current, start: "top top", end: "bottom bottom", scrub: scrubSmoothing(0.6),
           onUpdate: (self) => {
             // the last ~6% of the pin is the arrival: every station cleared before the board leaves
             const i = self.progress > 0.94 ? method.length : Math.min(method.length - 1, Math.floor((self.progress / 0.94) * method.length * 0.999));

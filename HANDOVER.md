@@ -214,7 +214,7 @@ src/app/                 layout.tsx (fonts, head motion script, Nav/Footer/Smoot
                          globals.css (tokens, acts + textures, utilities incl. grid-paper/lane, view-transition CSS)
 src/content/             divisions.ts, site.ts, work.ts, media.generated.json
 src/lib/                 gsap.ts, motion/{tokens,observe}.ts, route/{store,suggest,enquiry}.ts, seo.ts, previews.ts
-src/components/home/     Opening, Ladder, Screenings, Marquee, MethodBoard, Audiences, AiAmplifies, Finale
+src/components/home/     Opening, Ladder, WorkShowcase, Marquee, MethodBoard, Audiences, AiAmplifies, Finale
 src/components/fx/       PointerFx (cursor + magnetic), SpinBadge
 src/components/          capabilities/{DivisionIndex,DivisionTicker,RouteToggle,ApproachRoute (tickets)}, work/{WorkIndex,ScreeningMedia},
                          route/RouteBuilder, approach/PrincipleStack, media/{Reel,Photo,video-budget}, motion/{SplitReveal,Reveal,SmoothScroll},

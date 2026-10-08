@@ -2,6 +2,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import type { VideoAsset } from "@/content/work";
 import { requestPlay, release } from "./video-budget";
+import { av1Efficient } from "./codec";
 import { MQ } from "@/lib/motion/tokens";
 
 type Props = {
@@ -32,6 +33,23 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
   const [reduced, setReduced] = useState(false);
   const [inLink, setInLink] = useState(false);
   const [userPlaying, setUserPlaying] = useState(false);
+  // the MP4 until this device is known to decode AV1 in hardware (see codec.ts)
+  const [webm, setWebm] = useState(false);
+
+  useEffect(() => {
+    if (!asset.src.webm) return;
+    let alive = true;
+    av1Efficient().then((ok) => { if (alive && ok) setWebm(true); });
+    return () => { alive = false; };
+  }, [asset.src.webm]);
+
+  // a <source> added after the element was inserted is ignored until load(): re-run source
+  // selection, but only while nothing has been requested yet (preload="none" and never played),
+  // so a reel that already started on the MP4 is never interrupted
+  useEffect(() => {
+    const el = videoRef.current;
+    if (webm && el && el.paused && el.readyState === HTMLMediaElement.HAVE_NOTHING) el.load();
+  }, [webm]);
 
   useImperativeHandle(handle, () => ({
     video: videoRef.current,
@@ -108,7 +126,7 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
         tabIndex={-1}
         disablePictureInPicture
       >
-        {asset.src.webm && <source src={asset.src.webm} type='video/webm; codecs="av01.0.05M.08"' />}
+        {webm && asset.src.webm && <source src={asset.src.webm} type='video/webm; codecs="av01.0.05M.08"' />}
         <source src={asset.src.mp4} type="video/mp4" />
       </video>
       {reduced && !inLink && mode !== "manual" && (
