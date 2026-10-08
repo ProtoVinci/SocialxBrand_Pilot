@@ -5,7 +5,6 @@ import { gsap, useGSAP, SplitText } from "@/lib/gsap";
 import { MQ, dur, scrubSmoothing } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { Mark } from "@/components/brand/Mark";
-import { Clock } from "@/components/layout/Clock";
 import { ToolsOrbit } from "@/components/fx/ToolsOrbit";
 import { HeroGlare } from "@/components/fx/HeroGlare";
 import { HeroPill } from "@/components/home/HeroPill";
@@ -147,7 +146,6 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
             <span className="h-2 w-2 rounded-full bg-signal" />
             Digital marketing agency · India &amp; Global
           </span>
-          <Clock className="rounded-full border border-line bg-white px-4 py-1.5 text-ink/75 shadow-[0_2px_12px_rgb(28_25_23/0.03)]" />
         </div>
 
         <h1 id="hero-title" data-hero-title data-reveal className="font-display text-[clamp(2.4rem,14vw,3.3rem)] font-medium leading-[1.08] tracking-[-0.05em] sm:text-[clamp(2.4rem,8.4vw,8.6rem)]">

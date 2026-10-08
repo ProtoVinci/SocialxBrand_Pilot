@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { site, closing } from "@/content/site";
 import { Mark } from "@/components/brand/Mark";
-import { Clock } from "./Clock";
 import { FooterWordmark } from "./FooterWordmark";
 
 const whatsapp = `https://wa.me/${site.phoneE164.replace("+", "")}`;
@@ -45,7 +44,6 @@ export function Footer() {
         </nav>
         <div className="flex items-center gap-6">
           <a href="#main" className="label rounded-full border border-line bg-white px-4 py-2.5 text-ink shadow-sm transition-colors hover:border-line-strong">Back to top <span aria-hidden>↑</span></a>
-          <Clock className="text-muted" />
         </div>
       </div>
 

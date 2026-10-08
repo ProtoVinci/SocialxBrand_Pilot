@@ -4,7 +4,6 @@ import { PageShell } from "@/components/layout/PageShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { WhereNext } from "@/components/layout/WhereNext";
 import { RouteBuilder } from "@/components/route/RouteBuilder";
-import { Clock } from "@/components/layout/Clock";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo";
 import { site } from "@/content/site";
@@ -42,7 +41,6 @@ export default function RoutePage() {
               <div><dt className="label text-blue">WhatsApp</dt><dd className="mt-1"><a className="link-underline" href={wa} target="_blank" rel="noopener">Message us ↗</a></dd></div>
               <div><dt className="label text-blue">Web</dt><dd className="mt-1">www.sxbp.com</dd></div>
             </dl>
-            <Clock className="mt-8 text-muted" />
           </div>
         </aside>
       </div>

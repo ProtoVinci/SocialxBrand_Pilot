@@ -5,7 +5,6 @@ import { MQ, dur, scrubSmoothing } from "@/lib/motion/tokens";
 import { observeOnce, REVEAL_MARGIN } from "@/lib/motion/observe";
 import { method } from "@/content/site";
 import { pad } from "@/content/divisions";
-import { Clock } from "@/components/layout/Clock";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const STATUS = { next: "Next", now: "Boarding", done: "Cleared" } as const;
@@ -118,7 +117,6 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
           {/* board header */}
           <div className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-2.5 md:px-7">
             <span className="label text-ink">Departures<span className="max-sm:hidden"> · The Pilot Route</span></span>
-            <Clock className="whitespace-nowrap text-muted" />
           </div>
           <div aria-hidden className="hidden grid-cols-[4.5rem_minmax(0,1fr)_minmax(0,1.6fr)_8.5rem] gap-6 border-b border-ink/10 px-7 py-2 md:grid">
             {["Stn", "Station", "What happens", "Status"].map((h) => <span key={h} className="label text-blue">{h}</span>)}

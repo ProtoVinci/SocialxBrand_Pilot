@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
 
@@ -111,10 +111,24 @@ const block = "flex flex-col gap-4 pb-4 sm:gap-6 sm:pb-6 md:gap-[clamp(1.25rem,3
 
 function Tile({ tile }: { tile: ShowcaseTile }) {
   const [hot, setHot] = useState(false);
+  // playing on a touch screen: only the video wakes, never the hover look (title chip, lifted dim)
+  const [onScreen, setOnScreen] = useState(false);
+  const link = useRef<HTMLAnchorElement>(null);
+  // Touch screens have no hover, so nothing ever woke the videos there: a tile plays while it is
+  // mostly on screen instead (about three at a time in the one-column layout) and rests when it
+  // scrolls away. Reduced motion keeps posters.
+  useEffect(() => {
+    const el = link.current;
+    if (!el || !window.matchMedia("(hover: none)").matches || window.matchMedia(MQ.reduce).matches) return;
+    const io = new IntersectionObserver(([e]) => setOnScreen(e.isIntersecting), { threshold: 0.7 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const cards = tile.cards.slice(0, 3);
   const back = tile.wide ?? cards[0];
   return (
     <Link
+      ref={link}
       href={`/work/${tile.slug}`}
       transitionTypes={["nav-forward"]}
       aria-label={`${tile.title}: ${tile.format}`}
@@ -131,7 +145,7 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
       className="group relative block aspect-[4/3] shrink-0 overflow-hidden rounded-[22px] bg-[#2a2725] outline-offset-4"
     >
       {tile.wide ? (
-        <Frame frame={tile.wide} hot={hot} className="absolute inset-0 h-full w-full object-cover" />
+        <Frame frame={tile.wide} hot={hot || onScreen} className="absolute inset-0 h-full w-full object-cover" />
       ) : (
         <>
           {/* the footage's own light, blurred into a backdrop */}
@@ -149,7 +163,7 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
                   style={{ rotate: `${tilt}deg` }}
                   className={`relative aspect-[9/16] overflow-hidden rounded-[12px] shadow-[0_24px_40px_-18px_rgb(0_0_0/0.7)] ring-1 ring-white/15 transition-[translate,rotate] duration-500 ease-[var(--ease-pilot)] ${mid ? "z-10 h-[86%]" : "h-[74%]"} ${k === 0 && cards.length > 1 ? "group-data-[hot]:-translate-x-2" : ""} ${k === 2 ? "group-data-[hot]:translate-x-2" : ""}`}
                 >
-                  <Frame frame={f} hot={hot && mid} className="h-full w-full object-cover" />
+                  <Frame frame={f} hot={(hot || onScreen) && mid} className="h-full w-full object-cover" />
                 </span>
               );
             })}
