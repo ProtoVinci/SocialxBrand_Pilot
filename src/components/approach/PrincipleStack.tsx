@@ -19,10 +19,15 @@ export function PrincipleStack() {
       cards.forEach((card, i) => {
         const nextCard = cards[i + 1];
         if (!nextCard) return;
-        gsap.to(card.firstElementChild, {
-          scale: 0.94, autoAlpha: 0.45, ease: "none",
+        // Dim with an overlay, never with opacity: a see-through card shows the cards stacked
+        // beneath it, so their headings ghosted through the front one. The card stays opaque and
+        // a shell-coloured wash over it fades it back instead.
+        const tl = gsap.timeline({
+          defaults: { ease: "none" },
           scrollTrigger: { trigger: nextCard, start: "top bottom", end: "top 30%", scrub: true },
         });
+        tl.to(card.firstElementChild, { scale: 0.94 }, 0)
+          .to(card.querySelector("[data-dim]"), { opacity: 0.55 }, 0);
       });
     });
     return () => mm.revert();
@@ -32,7 +37,7 @@ export function PrincipleStack() {
     <div ref={root} className="flex flex-col gap-6">
       {principles.map((p, i) => (
         <div key={p.title} data-card className="sticky" style={{ top: `calc(var(--nav-h) + 1.5rem + ${i * 18}px)` }}>
-          <article className={`origin-top rounded-[22px] border border-ink/10 p-8 md:p-12 ${i % 2 === 0 ? "act-periwinkle" : "act-rose"}`}>
+          <article className={`relative origin-top rounded-[22px] border border-ink/10 p-8 md:p-12 ${i % 2 === 0 ? "act-periwinkle" : "act-rose"}`}>
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <span className="label text-signal-ink">{pad(i + 1)} / {pad(principles.length)}</span>
@@ -40,6 +45,7 @@ export function PrincipleStack() {
               </div>
               <p className="max-w-sm text-lede text-ink/75 md:text-right">{p.body}</p>
             </div>
+            <span data-dim aria-hidden className="pointer-events-none absolute inset-0 rounded-[22px] bg-shell opacity-0" />
           </article>
         </div>
       ))}
