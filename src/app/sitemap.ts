@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/content/site";
+import { siteUrl } from "@/lib/site-url";
 import { divisions } from "@/content/divisions";
 import { liveScreenings } from "@/content/work";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const url = (p: string) => new URL(p, site.url).toString();
+  const url = (p: string) => new URL(p, siteUrl).toString();
   return [
     { url: url("/"), changeFrequency: "monthly", priority: 1 },
     { url: url("/work"), changeFrequency: "monthly", priority: 0.9 },

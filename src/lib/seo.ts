@@ -1,7 +1,8 @@
 import { site } from "@/content/site";
+import { siteUrl } from "@/lib/site-url";
 import type { Division } from "@/content/divisions";
 
-const abs = (path: string) => new URL(path, site.url).toString();
+const abs = (path: string) => new URL(path, siteUrl).toString();
 
 export function organizationLd() {
   return {
@@ -11,7 +12,7 @@ export function organizationLd() {
     name: site.name,
     alternateName: site.shortName,
     description: site.description,
-    url: site.url,
+    url: siteUrl,
     email: site.email,
     telephone: site.phoneE164,
     slogan: "We will show, you will grow.",

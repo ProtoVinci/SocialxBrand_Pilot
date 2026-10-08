@@ -10,6 +10,7 @@ import { DevWarmup } from "@/components/layout/DevWarmup";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/content/site";
 import { organizationLd } from "@/lib/seo";
+import { siteUrl } from "@/lib/site-url";
 import { allVideos } from "@/content/work";
 
 // The menu's hover previews, picked here on the server: importing the media list into the
@@ -18,7 +19,7 @@ const videos = allVideos();
 const menuPreviews = [0, 1, 2, 3, 4].map((i) => videos[(i * 7) % Math.max(1, videos.length)]).filter(Boolean);
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL(siteUrl),
   title: {
     default: `${site.name} — Digital Marketing Agency · India & Global`,
     template: `%s · ${site.name}`,
