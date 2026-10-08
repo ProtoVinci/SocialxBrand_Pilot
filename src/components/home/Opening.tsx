@@ -150,23 +150,23 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
           <Clock className="rounded-full border border-line bg-white px-4 py-1.5 text-ink/75 shadow-[0_2px_12px_rgb(28_25_23/0.03)]" />
         </div>
 
-        <h1 id="hero-title" data-hero-title data-reveal className="font-display text-[clamp(2.4rem,8.4vw,8.6rem)] font-medium leading-[1.08] tracking-[-0.05em]">
+        <h1 id="hero-title" data-hero-title data-reveal className="font-display text-[clamp(2.4rem,14vw,3.3rem)] font-medium leading-[1.08] tracking-[-0.05em] sm:text-[clamp(2.4rem,8.4vw,8.6rem)]">
           <span className="block overflow-y-clip pb-[0.06em]">
-          <span data-line className="block whitespace-nowrap">
+          <span data-line className="block whitespace-normal sm:whitespace-nowrap">
             Every
-            <span data-pill="top" className="inline-block"><HeroPill slides={pillsTop} interval={1400} tilt={-2} className="h-[0.9em] w-[1.3em]" /></span>
+            <span data-pill="top" className="inline-block"><HeroPill slides={pillsTop} interval={1400} tilt={-2} className="h-[0.9em] w-[1.3em] max-sm:h-[1em] max-sm:w-[1.38em]" /></span>
             business
           </span>
           </span>
           <span className="block overflow-y-clip pb-[0.06em]">
-          <span data-line className="block whitespace-nowrap">
+          <span data-line className="block whitespace-normal sm:whitespace-nowrap">
             <span className="ink-cobalt">has</span>
-            <span data-pill className="inline-block"><HeroPill slides={pillsBottom} interval={1700} tilt={2} className="h-[0.9em] w-[1.2em]" /></span>
+            <span data-pill className="inline-block"><HeroPill slides={pillsBottom} interval={1700} tilt={2} className="h-[0.9em] w-[1.2em] max-sm:h-[1em] max-sm:w-[1.28em]" /></span>
             <span className="ink-cobalt">something</span>
           </span>
           </span>
           <span className="block overflow-y-clip pb-[0.06em]">
-          <span data-line className="block whitespace-nowrap">
+          <span data-line className="block whitespace-normal sm:whitespace-nowrap">
             <span className="serif-accent">worth </span><span className="serif-accent text-signal">showing.</span>
           </span>
           </span>
