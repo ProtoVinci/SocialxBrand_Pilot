@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ, dur } from "@/lib/motion/tokens";
+import { observeOnce } from "@/lib/motion/observe";
 import { aiPhilosophy } from "@/content/site";
 
 /**
@@ -15,13 +16,19 @@ export function AiAmplifies() {
   useGSAP(() => {
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {
-      gsap.utils.toArray<HTMLElement>("[data-pair]").forEach((pair) => {
-        const tl = gsap.timeline({ scrollTrigger: { trigger: pair, start: "top 85%", once: true } });
+      // One-shot: each pair plays once as it enters, through the IntersectionObserver helper (no
+      // ScrollTrigger per pair). The paused timelines paint their start state straight away.
+      const pairs = gsap.utils.toArray<HTMLElement>("[data-pair]");
+      const plays = new Map<Element, gsap.core.Timeline>();
+      pairs.forEach((pair) => {
+        const tl = gsap.timeline({ paused: true });
         tl.from(pair.querySelector("[data-not]"), { autoAlpha: 0, y: 20, duration: dur.base })
           .from(pair.querySelector("[data-strike]"), { scaleX: 0, duration: dur.base, ease: "glide" }, "-=0.2")
           .to(pair.querySelector("[data-not]"), { opacity: 0.35, duration: dur.quick }, "<0.2")
           .from(pair.querySelector("[data-should]"), { yPercent: 110, duration: dur.slow }, "<0.1");
+        plays.set(pair, tl);
       });
+      return observeOnce(pairs, "0px 0px -15% 0px", (batch) => batch.forEach((p) => plays.get(p)?.play()));
     });
     return () => mm.revert();
   }, { scope: root });

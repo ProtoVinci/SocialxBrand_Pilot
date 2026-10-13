@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
 import { principles } from "@/content/site";
-import { pad } from "@/content/divisions";
+import { pad } from "@/lib/pad";
 
 /**
  * "What we stand for" as a sticky deck: each principle card sticks a little lower than the

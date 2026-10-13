@@ -16,6 +16,14 @@ type Props = {
   /** eager-load the poster (above the fold) */
   eager?: boolean;
   fit?: "cover" | "contain";
+  /**
+   * "full" (default): the 720p clip, AV1 where the device decodes it in hardware, else H.264.
+   * "preview": the 360p H.264 clip (about a tenth of the bytes) for small thumbnails, where the
+   * extra resolution cannot show.
+   */
+  variant?: "full" | "preview";
+  /** Poster only: no <video> element at all (a tile that only ever shows its still). */
+  still?: boolean;
 };
 
 export type ReelHandle = { video: HTMLVideoElement | null; play: () => void; pause: () => void };
@@ -26,30 +34,32 @@ export type ReelHandle = { video: HTMLVideoElement | null; play: () => void; pau
  * autoplays; a play/pause button is offered instead.
  */
 export const Reel = forwardRef<ReelHandle, Props>(function Reel(
-  { asset, className = "", label, mode = "inview", priority = 0, eager = false, fit = "cover" },
+  { asset, className = "", label, mode = "inview", priority = 0, eager = false, fit = "cover", variant = "full", still = false },
   handle,
 ) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [reduced, setReduced] = useState(false);
   const [inLink, setInLink] = useState(false);
   const [userPlaying, setUserPlaying] = useState(false);
-  // the MP4 until this device is known to decode AV1 in hardware (see codec.ts)
+  // The clip is chosen through the video's src attribute: the MP4 until this device is known to
+  // decode AV1 in hardware (see codec.ts), the WebM after. Setting src on a preload="none" video
+  // costs nothing; calling video.load() does not (Chromium then fetches the whole file), which is
+  // why there is no load() here: it made every reel on a page download as soon as it mounted.
   const [webm, setWebm] = useState(false);
+  const [broken, setBroken] = useState(false);
 
   useEffect(() => {
-    if (!asset.src.webm) return;
+    if (!asset.src.webm || variant === "preview" || still) return;
     let alive = true;
-    av1Efficient().then((ok) => { if (alive && ok) setWebm(true); });
+    av1Efficient().then((ok) => {
+      const el = videoRef.current;
+      // a reel that has already started on the MP4 is never switched mid-play
+      if (alive && ok && el && el.paused && el.readyState === HTMLMediaElement.HAVE_NOTHING) setWebm(true);
+    });
     return () => { alive = false; };
-  }, [asset.src.webm]);
+  }, [asset.src.webm, variant, still]);
 
-  // a <source> added after the element was inserted is ignored until load(): re-run source
-  // selection, but only while nothing has been requested yet (preload="none" and never played),
-  // so a reel that already started on the MP4 is never interrupted
-  useEffect(() => {
-    const el = videoRef.current;
-    if (webm && el && el.paused && el.readyState === HTMLMediaElement.HAVE_NOTHING) el.load();
-  }, [webm]);
+  const src = variant === "preview" ? asset.src.preview : webm && !broken && asset.src.webm ? asset.src.webm : asset.src.mp4;
 
   useImperativeHandle(handle, () => ({
     video: videoRef.current,
@@ -114,22 +124,24 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
           className={`absolute inset-0 h-full w-full ${objectFit}`}
         />
       </picture>
+      {!still && (
       <video
         ref={videoRef}
         className={`absolute inset-0 h-full w-full ${objectFit}`}
         muted
         loop
         playsInline
+        src={src}
         preload="none"
+        // a WebM that fails to load falls back to the MP4
+        onError={() => { if (webm) setBroken(true); }}
         aria-label={label}
         aria-hidden={label ? undefined : true}
         tabIndex={-1}
         disablePictureInPicture
-      >
-        {webm && asset.src.webm && <source src={asset.src.webm} type='video/webm; codecs="av01.0.05M.08"' />}
-        <source src={asset.src.mp4} type="video/mp4" />
-      </video>
-      {reduced && !inLink && mode !== "manual" && (
+      />
+      )}
+      {reduced && !inLink && !still && mode !== "manual" && (
         <button
           type="button"
           onClick={toggle}

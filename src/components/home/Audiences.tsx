@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { gsap, useGSAP, Flip } from "@/lib/gsap";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { Flip } from "@/lib/gsap-flip";
 import { MQ, dur } from "@/lib/motion/tokens";
 import { audiences, type AudienceId } from "@/content/site";
 import { divisionBySlug, pad } from "@/content/divisions";

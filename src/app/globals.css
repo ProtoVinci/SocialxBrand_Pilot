@@ -89,7 +89,11 @@
 
 /* Prototype 1's "digital mesh": a faint warm 36px grid under a red glow (top) and a cobalt
    glow (top right), faded out toward the edges. Used on plain shell surfaces. */
+/* will-change: the texture is static and masked, so it is drawn once and kept as its own layer;
+   without it the large masked area was re-rasterised as it scrolled (about half the raster work
+   on /approach in a 7000px scroll test) */
 @utility grid-paper {
+  will-change: transform;
   background-image:
     radial-gradient(ellipse 70% 50% at 50% 0%, rgb(217 65 46 / 0.05) 0%, transparent 70%),
     radial-gradient(ellipse 60% 40% at 85% 20%, rgb(42 59 164 / 0.045) 0%, transparent 60%),
@@ -271,9 +275,12 @@ body {
   to { transform: translate3d(3%, 2%, 0) rotate(0.4deg); }
 }
 .glare-drift { animation: glare-drift 28s ease-in-out infinite alternate; will-change: transform; }
+@media (max-width: 767.98px) { .glare-drift { animation: none; } }
 
 /* Division board stage: the words rise gently into place on each change */
 @keyframes stage-in { from { opacity: 0; translate: 0 10px; } }
+/* A stage reel arriving: the slow dissolve with a slight settle (the leaving reel eases out by transition) */
+@keyframes layer-in { from { opacity: 0; scale: 1.04; filter: blur(3px); } }
 
 /* Tools orbit (hero): rings counter-rotate, tiles counter-spin so logos stay upright; hover pauses */
 @keyframes orbit-cw { to { rotate: 360deg; } }
@@ -315,16 +322,17 @@ video::-webkit-media-controls { display: none !important; }
 /* The menu, when one of its links changes the page: captured open with the old page, it wipes
    up and away (the same clip as its own close) while the new page rises in underneath. */
 ::view-transition-group(site-menu) { animation: none; z-index: 90; }
-::view-transition-old(site-menu) { animation: 560ms var(--ease-glide) both vt-wipe-up; }
+::view-transition-old(site-menu) { animation: 440ms var(--ease-glide) both vt-wipe-up; }
 
 /* The old page steps back and fades while the new one rises in, slightly overlapped, so the cut
-   reads as one movement. The new page is readable within ~350ms; nothing runs past 600ms
-   (ROUTE_SETTLE_MS in SmoothScroll waits for this before re-measuring scroll scenes). */
+   reads as one movement. The new page is readable within ~300ms and nothing runs past 440ms (it
+   was 670ms: the longest sequence outlasted the page it was introducing; ROUTE_SETTLE_MS in
+   SmoothScroll waits for this before re-measuring scroll scenes). */
 ::view-transition-old(.route-out) {
-  animation: 220ms var(--ease-glide) both vt-fade-out, 360ms var(--ease-glide) both vt-lift-out;
+  animation: 180ms var(--ease-glide) both vt-fade-out, 320ms var(--ease-glide) both vt-lift-out;
 }
 ::view-transition-new(.route-in) {
-  animation: 300ms var(--ease-pilot) 110ms both vt-fade-in, 560ms var(--ease-pilot) both vt-rise-in;
+  animation: 240ms var(--ease-pilot) 70ms both vt-fade-in, 440ms var(--ease-pilot) both vt-rise-in;
 }
 ::view-transition-group(.morph) { animation-duration: 420ms; animation-timing-function: var(--ease-pilot); }
 ::view-transition-image-pair(.morph) { animation-name: vt-via-blur; }
@@ -356,16 +364,22 @@ video::-webkit-media-controls { display: none !important; }
 @keyframes nav-progress-done { from { transform: scaleX(0.92); opacity: 1; } 55% { transform: scaleX(1); opacity: 1; } to { transform: scaleX(1); opacity: 0; } }
 html[data-navigating], html[data-navigating] a, html[data-navigating] button { cursor: progress; }
 
-/* Every link and button eases its colour, border, shadow and opacity instead of snapping, and
-   presses in a touch when clicked. In the base layer, so any transition a component sets itself
+/* Every link and button eases its colour and border instead of snapping, and buttons press in a
+   touch when clicked. In the base layer, so any transition a component sets itself
    (Tailwind utilities) still wins. transform is left out on purpose: GSAP drives it on magnetic
    and revealed elements, and a CSS transition on top of it would lag every tween. The press uses
    the separate "scale" property for the same reason. */
 @layer base {
+  /* cheap properties only, on every interactive element; a component that wants a shadow or
+     opacity transition asks for it itself (as the cards do). */
   a, button, [role="button"], summary, label[for], input, textarea, select {
-    transition-property: color, background-color, border-color, text-decoration-color, box-shadow, opacity, scale;
+    transition-property: color, background-color, border-color, text-decoration-color;
     transition-duration: 220ms;
     transition-timing-function: var(--ease-pilot);
+  }
+  /* the press: buttons only, through the separate "scale" property */
+  button, [role="button"], .magnetic {
+    transition-property: color, background-color, border-color, text-decoration-color, scale;
   }
   button:not(:disabled):active, [role="button"]:active, .magnetic:active { scale: 0.97; transition-duration: 90ms; }
   :focus-visible { transition: outline-offset 160ms var(--ease-pilot); }

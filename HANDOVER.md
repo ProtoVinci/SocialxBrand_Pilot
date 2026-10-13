@@ -2,7 +2,7 @@
 
 > **New session told only "continue"?** Read this whole file, then `AGENTS.md`. Pick up at **§7 Next steps**, in order. Keep this file current and commit it with your changes.
 
-Last updated: 2026-10-06 (cloud session). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot. **Work directly on `main`.** The client asked for one branch only. A leftover remote branch `claude/epic-einstein-dj8x13` points at an old commit of `main`; delete it if it still exists (the cloud session's git proxy refuses branch deletions).
+Last updated: 2026-10-09 (local session: audit-plan implementation, see §5 and `docs/reviews/audit-implementation-2026-10-09.md`). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot. **Work directly on `main`.** The client asked for one branch only. A leftover remote branch `claude/epic-einstein-dj8x13` points at an old commit of `main`; delete it if it still exists (the cloud session's git proxy refuses branch deletions).
 
 ---
 
@@ -36,12 +36,12 @@ Build the complete, motion-led website for **SOCIALxBRAND PILOT** (SxBP), an Ind
 | Stack | Next.js **16.3.8** (Turbopack), React 19.2, TS 5, Tailwind **4**, ESLint 9, gsap 3.15 (ScrollTrigger, SplitText, Flip, CustomEase, DrawSVG), @gsap/react, Lenis 1.3 |
 | Pages | `/`, `/work`, `/work/[slug]` (14), `/capabilities`, `/capabilities/[slug]` (18), `/approach`, `/route`; `/contact` → `/route`; 404. **43 static pages build.** |
 | Content | All 18 divisions verbatim (`divisions.ts`), the company profile (`site.ts`), 14 screenings (`work.ts`), 95 curated media assets (43 videos, 52 photos) in `public/media/` |
-| SEO | metadataBase `https://www.sxbp.com`, canonicals, sitemap, robots, OG image (in the current palette), JSON-LD |
-| Tests | `npm test` → **33/33 pass** (smoke + overflow at 3 viewports, axe, reduced motion, route builder → WhatsApp, content audit) |
-| Checks | `npx tsc --noEmit`, `npx eslint src` and `npm run build` are clean. The axe colour-contrast audit is clean apart from elements caught mid-animation. |
+| SEO | metadataBase = `siteUrl` (`src/lib/site-url.ts`: `NEXT_PUBLIC_SITE_URL`, else the Vercel production domain, else `site.url` = `https://www.sxbp.com`), canonicals, sitemap, robots, JSON-LD. The share image is the owner's static `src/app/opengraph-image.jpg` (1200×630). |
+| Tests | `npm test` (run it with `--workers=1`) → **51 passed, 0 failed, 30 skipped by design** (each run-once test is skipped on the other two projects): smoke + overflow at 3 viewports, axe, reduced motion, route builder → WhatsApp / mailto / copy, content audit, and one regression guard per fixed audit item (`tests/regressions.spec.ts`). With more than one worker a random page can time out on `networkidle` on the loaded dev laptop (this also happened before the audit work); it passes singly. |
+| Checks | `npx tsc --noEmit`, `npx eslint src tests` and `npm run build` are clean (2026-10-09). The axe colour-contrast audit is clean apart from elements caught mid-animation. |
 | Launcher | `startup.bat` (Windows), tested under Wine with Windows Node 22 across 12 scenarios |
-| Performance | Measured with `scripts/qa/perf.mjs` at 4× CPU: home load blocking time 2.4s (was 4.1s), home scroll ~30 fps (was 24), capabilities ~50 fps (was 34, with a 2s freeze removed), work ~53 fps, approach ~45 fps |
-| Docs | `docs/design-brief.md` (the **current** colour and texture system), `docs/motion-system.md` (current), `design-research.md`, `site-architecture.md`, `content-map.md`, `plan.md` (the original approved plan, kept as a record) |
+| Performance | 2026-10-09, production build, 4× CPU, 3 runs, medians (full tables and caveats in `docs/reviews/audit-implementation-2026-10-09.md`). Load blocking time: `/` 1158ms, `/work` 294, `/capabilities` 253, `/approach` 353, `/route` 284. Scroll fps: `/` ~21 (**the weak spot: the hero and takeover scene**), `/work` 52, `/capabilities` 57, `/approach` 32, `/route` 60. Home media at load 408KB (was 2686). Frame rate varies ±10 fps run to run on the dev laptop; compare compositor work, not fps (see the motion-system notes). |
+| Docs | `docs/design-brief.md` (the **current** colour and texture system), `docs/motion-system.md` (current), `design-research.md`, `site-architecture.md`, `content-map.md`, `plan.md` (the original approved plan, kept as a record), `docs/reviews/audit-implementation-2026-10-09.md` (the 37 + 12 audit items, status and evidence) |
 
 ---
 
@@ -67,6 +67,7 @@ npm test                            # Playwright; starts/reuses a server on :310
 node scripts/qa/shoot.mjs --url=/ --vp=1440x900 --at="0,25%,#method-title+200" --wait=1400 --repeat
 node scripts/qa/debug.mjs --url=/ --scroll=4000                # page errors + probes
 node scripts/qa/perf.mjs --url=/ --cpu=4 --scroll=7000         # load metrics + scroll fps/jank (prod build only)
+node scripts/qa/media-audit.mjs [--vp=390x844 --touch] [--detail]   # <video> elements mounted/playing, video requests and bytes per route (prod build only)
 ```
 
 - `shoot.mjs` positions accept px, `vh`, `%` or `#id+offset` (negative offsets as `#id+-200`). `--repeat` skips the intro curtain, and `--reduce` emulates reduced motion.
@@ -124,11 +125,20 @@ Acts: `act-iris` (cobalt mid-tones), `act-rouge` (vermilion mid-tones), `act-per
 
 ### Wayfinding
 `Crumbs` on every inner page, `WhereNext` at every inner page end, nav Home link, and the nav reappears near the
-page end. Footer has Home and Back to top.
+page end. Footer has Home and Back to top. Labels (2026-10-09): nav, footer, crumbs and page labels say **Services** (route `/capabilities`) and **Selected work** (route `/work`); the hero CTAs are "Build your marketing brief" and "See selected work".
 
 ---
 
 ## 5. Changes history (newest first, condensed)
+
+00. **Audit-plan implementation (2026-10-09, local session).** Source: `SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md`; every item, with status and evidence, is in `docs/reviews/audit-implementation-2026-10-09.md`. In short:
+   - **Fixed a real download bug:** calling `video.load()` on a `preload="none"` video fetches the whole file in Chromium; the earlier AV1 switch called it on mount, so hardware-AV1 machines downloaded every reel on a page at once. `Reel` now picks its clip through the `src` attribute (see §6).
+   - Media: the hero takeover reel (2.5MB) is started by the pinned scene, not at load; the capabilities stage and cursor preview mount at most two reels (were 18); small thumbnails and phone layouts use the 360p clip (`Reel variant="preview"`); Nav menu previews are poster-only (`still`).
+   - Runtime: no tween/delayedCall per scroll update (WorkShowcase, Marquee); PointerFx on one rAF per frame; touch ignored by pointer effects; DivisionTicker listeners cleaned up with an AbortController; one-shot reveals via `observeOnce`; RouteBuilder scrolls through Lenis when it runs; below-the-fold sections set up when about a screen away (`useGSAPNear`).
+   - Cost: WorkShowcase card backdrop uses the 16×28 placeholder (raster −27%); `.grid-paper` is its own layer (raster on `/approach` −53%); phones get a lighter hero glare (draw −30%); global CSS transitions narrowed; route transitions 670ms → 440ms.
+   - Bundle: Flip and DrawSVG left the shared bundle; `pad()` moved out of `content/divisions.ts` so Work and Approach stop shipping the division content (shared JS 244 → 234KB gz).
+   - Client-facing: hero lede + CTAs, Services / Selected work labels, direct contact row on phones, honest enquiry copy, adapters tested. Needs-owner-input items are listed in the report and in §7.
+   - Earlier the same day: menu overlap fix, hydration warning (browser extension) suppressed, share thumbnail + deployment-aware site URL, India/IST clock removed, hero headline larger on phones, touch video playback on the work panel.
 
 0. **Prototype-1 merge (2026-10-07, local session).** In order:
    - Retheme: Inter, warm canvas, vermilion and cobalt.
@@ -176,10 +186,14 @@ page end. Footer has Home and Back to top.
 11. **GSAP's `context.add(fn)` returns void** (it runs `fn` now, inside the context). For late work inside a `matchMedia` handler, call `() => context.add(() => …)`.
 12. **Keep ScrollTriggers few.** Every `ScrollTrigger.refresh()` re-measures them all, and with three pins on home each extra trigger made refreshes slower. One-shot reveals go through `observeOnce` (IntersectionObserver); per-item scroll effects go in one `onUpdate`.
 13. **Hover state never goes in React state on big lists.** `DivisionIndex` re-rendered 18 reels per hover (a 2s freeze); it now toggles data attributes.
-14. **Videos:** never set `preload="auto"` on visibility. `play()` from the budget starts the download, so reels that stay on their poster cost nothing.
+14. **Videos:** never set `preload="auto"` on visibility, and **never call `video.load()` on a `preload="none"` reel** (Chromium fetches the whole file, measured; `Reel` switches clips by `src`). `play()` from the budget starts the download, so reels that stay on their poster cost nothing.
 15. **Next 16:** `params` is a Promise (`PageProps<"/x/[slug]">`). `next lint` no longer exists.
 16. **Windows:** PowerShell `Set-Content` re-encodes UTF-8, so use the Edit tool. With PowerShell 5.1 quoting, prefer `git commit -F file`.
 17. **Batch files:** call any `.cmd` (npm, a node shim) with `call`, or the script ends silently. Wine's `where` and `findstr /r /x` don't behave like Windows', so the launcher avoids them.
+18. **Manual reels are started by their owner** (the hero takeover from the pinned scene's `onUpdate`; the stage via its handle), never by an IntersectionObserver on a hidden box: it counts as visible and loads at page load.
+19. **`useGSAPNear` is only for non-pinned sections that do not change layout when set up.** The Method board's text scramble caused layout shift when set up on arrival and is eager again.
+20. **Measure work, not fps.** Frame rate varies ±10 fps on the dev laptop; use the trace-event compositor draw/raster time for an identical scripted scroll (method in `docs/motion-system.md`). Headless Chromium uses a software renderer: real GPU cost is not measured.
+21. **Git Bash:** `MSYS_NO_PATHCONV=1` stops `/work`-style arguments becoming Windows paths, but also stops `/tmp/...` arguments being translated for node; set it only for the commands that need it.
 
 ---
 
@@ -190,18 +204,18 @@ page end. Footer has Home and Back to top.
 1. **Reviewer round 1 is done** (`docs/reviews/round-1.json`), and batches 1 and 2 are fixed (`ea11be2`). Still open:
    - Footer: contact-grid and wordmark collisions; WhatsApp prominence; tap targets (RouteToggle h-9, footer links).
    - AI struck-line contrast: raise to about 0.55.
-   - Dead-end CTA bands at the end of `/work`, `/work/[slug]` and the division pages.
-   - Code: ScreeningMedia/AiAmplifies one-shots → `observeOnce`; DivisionTicker listener cleanup; DivisionIndex lazy previews; WorkIndex `aria-live` → count element.
+   - (Done 2026-10-09: the dead-end CTA bands (every inner page ends in `WhereNext` with a primary "Plan your route"), the ScreeningMedia/AiAmplifies one-shots, the DivisionTicker cleanup, the DivisionIndex lazy previews, the hero CTA copy.)
+   - Code: WorkIndex `aria-live` → count element.
    - Media: logo tile in 9:16 → contain; re-extract the blurred Celebrations poster.
-   - Copy: hero CTA microcopy.
    - Creative: manifesto→ladder seam; inner-page hero objects; a `/route` redesign.
 
    After that, run reviewer round 2. The Workflow runner script has CRLF line endings, so pass it **inline**, not by `scriptPath`, and pin `model: "claude-opus-5-5"`.
 2. **Re-sweep** after the fixes: `node scripts/qa/sweep.mjs`, and again with `--reduce`. The last full sweep was clean at all 6 viewports.
-3. **Home load cost.** It's still the heaviest page (blocking time ~2.4s at 4× CPU), mostly React hydration plus the setup of the three pinned acts. Ideas: defer setup of below-the-fold acts to idle time (mind pin order: `refreshPriority` / `ScrollTrigger.sort()`); trim the hero's first-frame work.
-4. **Route builder tests** for the mailto and copy adapters (WhatsApp is covered).
-5. **Production smoke test:** the sitemap output, the OG image render, all 14 + 18 slugs.
-6. **Optional:** a `/lab` bench for hero variants; a scroll-scrubbed short-GOP hero clip.
+3. **Home hero cost (the remaining performance work).** Home load blocking is now ~1.2s at 4× CPU (was ~2.1s) and media at load 0.4MB (was 2.7MB), but **home scroll is still ~21 fps at 4× CPU** and nearly all of it is the first 3000px: the hero glare is ~40% of the hero's draw time on desktop, and the takeover card animates `left/top/width/height` (layout) instead of a transform. Both are the signature of the design, so they need the owner's sign-off: options are a pre-rendered glare bitmap (per layout width) and a scale-based takeover. Profile on a real laptop and phone first (headless here uses a software renderer). Older note: it's mostly React hydration plus the setup of the three pinned acts. Ideas: defer setup of below-the-fold acts to idle, mostly React hydration plus the setup of the three pinned acts. Ideas: defer setup of below-the-fold acts to idle time (mind pin order: `refreshPriority` / `ScrollTrigger.sort()`); trim the hero's first-frame work.
+4. **Owner decisions and evidence the audit plan could not supply** (nothing was invented; see the client table in `docs/reviews/audit-implementation-2026-10-09.md`): what SxBP did versus the production partner on each piece; which work to lead with; real case-study context and permitted outcomes; deliverable exclusions, quantities, revisions, reporting cadence; timelines and client responsibilities; team and testimonials with permission; verified social URLs and a domain-branded mailbox; a privacy statement; analytics choice.
+5. **The domain.** The Route page, the footer and `site.url` still print/assume `www.sxbp.com` (from the company profile), but the site is deployed at `socialxbrand-pilot.vercel.app` and the owner bought `socialxbrandpilot.com`. Confirm the public address, then update `site.ts` (`url`, and the printed web address) and the content-audit test that pins it. On Vercel set `NEXT_PUBLIC_SITE_URL` to the primary domain (e.g. `https://www.socialxbrandpilot.com`).
+6. **A mid-resolution video tier** (~480p) for the 3–4-column tiles: needs ffmpeg with libsvtav1 + libx264 and the raw originals (not in the repo).
+7. **Optional: a `/lab` bench for hero variants; a scroll-scrubbed short-GOP hero clip.
 
 ---
 
@@ -209,18 +223,19 @@ page end. Footer has Home and Back to top.
 
 ```
 startup.bat              Windows launcher (+ scripts/tooling/{deps-fresh,free-port,open-when-ready}.mjs)
-src/app/                 layout.tsx (fonts, head motion script, Nav/Footer/SmoothScroll/PointerFx, JSON-LD), page.tsx (home acts),
-                         work/, capabilities/, approach/, route/, sitemap.ts, robots.ts, opengraph-image.tsx, not-found.tsx,
+src/app/                 layout.tsx (fonts, head motion script, Nav/Footer/SmoothScroll/PointerFx/NavProgress/DevWarmup, JSON-LD), page.tsx (home acts),
+                         work/, capabilities/, approach/, route/, sitemap.ts, robots.ts, opengraph-image.jpg (+ .alt.txt), not-found.tsx,
                          globals.css (tokens, acts + textures, utilities incl. grid-paper/lane, view-transition CSS)
 src/content/             divisions.ts, site.ts, work.ts, media.generated.json
-src/lib/                 gsap.ts, motion/{tokens,observe}.ts, route/{store,suggest,enquiry}.ts, seo.ts, previews.ts
-src/components/home/     Opening, Ladder, WorkShowcase, Marquee, MethodBoard, Audiences, AiAmplifies, Finale
-src/components/fx/       PointerFx (cursor + magnetic), SpinBadge
+src/lib/                 gsap.ts (+ gsap-flip.ts, gsap-drawsvg.ts: plugins kept out of the shared bundle), motion/{tokens,observe,defer}.ts, route/{store,suggest,enquiry}.ts,
+                         seo.ts, site-url.ts, pad.ts, use-min-width.ts, previews.ts
+src/components/home/     Opening, HeroPill, Ladder, WorkShowcase, Marquee, MethodBoard, Audiences, AiAmplifies, Finale
+src/components/fx/       PointerFx (cursor + magnetic), SpinBadge, HeroGlare, ToolsOrbit
 src/components/          capabilities/{DivisionIndex,DivisionTicker,RouteToggle,ApproachRoute (tickets)}, work/{WorkIndex,ScreeningMedia},
-                         route/RouteBuilder, approach/PrincipleStack, media/{Reel,Photo,video-budget}, motion/{SplitReveal,Reveal,SmoothScroll},
-                         layout/{Nav,Footer,FooterWordmark,Clock,PageShell,PageHeader}, brand/{Mark,mark-paths}, seo/JsonLd
-tests/                   site.spec.ts, content-audit.spec.ts (playwright.config.ts honours PW_CHROMIUM_PATH)
-scripts/qa/              shoot.mjs, debug.mjs, perf.mjs
+                         route/RouteBuilder, approach/PrincipleStack, media/{Reel,Photo,video-budget,codec}, motion/{SplitReveal,Reveal,SmoothScroll},
+                         layout/{Nav,NavProgress,DevWarmup,Footer,FooterWordmark,PageShell,PageHeader,WhereNext,Crumbs}, brand/{Mark,mark-paths}, seo/JsonLd
+tests/                   site.spec.ts, regressions.spec.ts (audit-plan guards, one per fixed item), content-audit.spec.ts (playwright.config.ts honours PW_CHROMIUM_PATH)
+scripts/qa/              shoot.mjs, debug.mjs, perf.mjs, media-audit.mjs, check-flow/check-shift/check-motion.mjs, sweep.mjs, record.mjs
 scripts/media/           inventory, contact-sheet, mosaic, selection.json, download, transcode
 scripts/tooling/         agents.mjs (regenerates reviewer agents), review-workflow.js
 docs/                    design-brief (current colour/texture), motion-system (current), design-research, site-architecture,

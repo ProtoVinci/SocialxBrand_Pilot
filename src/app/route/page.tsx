@@ -24,10 +24,17 @@ export default function RoutePage() {
         label="The Pilot Route — plan, then talk"
         crumbs={[{ name: "Start your route" }]}
         title={<>Start your <span className="serif-accent font-normal text-signal">route.</span></>}
-        lede={<p>A minute of context helps us start in the right place. Choose who you are and what you need, pick a starting mix, and send it however you like.</p>}
+        lede={<p>The Pilot Route is a short brief you build in about a minute, so we can start in the right place: choose who you are and what you need, pick a starting mix of divisions, and send it however you like.</p>}
       />
       <div className="gutter grid gap-10 pb-32 lg:grid-cols-12">
         <div className="lg:col-span-8">
+          {/* phones: the direct way in sits above the five-step builder (the "talk to us" panel is below it) */}
+          <p className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm lg:hidden">
+            <span className="label text-blue">Prefer to talk?</span>
+            <a className="link-underline inline-flex min-h-11 items-center" href={wa} target="_blank" rel="noopener">WhatsApp</a>
+            <a className="link-underline inline-flex min-h-11 items-center" href={`tel:${site.phoneE164}`}>Call</a>
+            <a className="link-underline inline-flex min-h-11 items-center" href={`mailto:${site.email}`}>Email</a>
+          </p>
           <Suspense fallback={<div className="h-[40rem] rounded-[24px] border border-ink/10 bg-petal" />}>
             <RouteBuilder />
           </Suspense>
@@ -46,7 +53,7 @@ export default function RoutePage() {
       </div>
       <WhereNext title="Not ready yet?" links={[
         { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
-        { href: "/capabilities", label: "Capabilities", hint: "The 18 divisions, and what each one does." },
+        { href: "/capabilities", label: "Services", hint: "The 18 divisions, and what each one does." },
         { href: "/approach", label: "How we work", hint: "Who we are and what we stand for." },
       ]} />
     </PageShell>

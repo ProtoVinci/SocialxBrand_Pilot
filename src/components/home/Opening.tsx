@@ -3,13 +3,13 @@ import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP, SplitText } from "@/lib/gsap";
 import { MQ, dur, scrubSmoothing } from "@/lib/motion/tokens";
-import { Reel } from "@/components/media/Reel";
+import { Reel, type ReelHandle } from "@/components/media/Reel";
 import { Mark } from "@/components/brand/Mark";
 import { ToolsOrbit } from "@/components/fx/ToolsOrbit";
 import { HeroGlare } from "@/components/fx/HeroGlare";
 import { HeroPill } from "@/components/home/HeroPill";
 import type { MediaAsset, VideoAsset } from "@/content/work";
-import { impact } from "@/content/site";
+import { heroLede, impact } from "@/content/site";
 import { observeOnce, REVEAL_MARGIN } from "@/lib/motion/observe";
 
 type Props = { takeover: VideoAsset; pillsTop: MediaAsset[]; pillsBottom: MediaAsset[] };
@@ -27,6 +27,7 @@ type Props = { takeover: VideoAsset; pillsTop: MediaAsset[]; pillsBottom: MediaA
  */
 export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
   const root = useRef<HTMLElement>(null);
+  const takeoverReel = useRef<ReelHandle>(null);
 
   useGSAP(() => {
     const q = gsap.utils.selector(root);
@@ -89,9 +90,24 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
 
       // aria "none": the visible lines are aria-hidden and an sr-only sentence carries the text
       const chars = SplitText.create(q("[data-manifesto-line]"), { type: "words,chars", aria: "none" }).chars;
+      let takeoverLive = false;
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: scrubSmoothing(0.8), invalidateOnRefresh: true },
+        scrollTrigger: {
+          trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: scrubSmoothing(0.8), invalidateOnRefresh: true,
+          // The takeover reel is a manual Reel: its 2.5MB clip is requested and played only while the
+          // scene is actually under way (the card appears with the first scroll), not at page load
+          // behind the hero, where an IntersectionObserver would count its hidden box as visible.
+          onUpdate: (self) => {
+            // a few px past the start, not progress > 0: ScrollTrigger reports a non-zero progress
+            // while it settles at load, before anyone has scrolled
+            const live = self.scroll() - self.start > 6 && self.progress < 0.995;
+            if (live === takeoverLive) return;
+            takeoverLive = live;
+            if (live) takeoverReel.current?.play();
+            else takeoverReel.current?.pause();
+          },
+        },
       });
       // the capsule hands over to the full-size window at once, the words clear (0–0.16),
       // then the window opens out to the full screen (0.12–0.4)
@@ -110,6 +126,8 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
         .to(q("[data-impact], [data-impact] *"), { color: "#1f2c85", duration: 0.06 }, 0.82)
         .to(q("[data-dim]"), { autoAlpha: 0.96, duration: 0.12 }, 0.84)
         .to({}, { duration: 0.08 });
+      // leaving the cinema layout (resize, reduced motion) must not leave the clip playing unseen
+      return () => { takeoverReel.current?.pause(); };
     });
 
     return () => mm.revert();
@@ -134,7 +152,7 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
       {/* Stage (desktop motion only): the reel that takes over the screen, and the field over it */}
       <div className="pointer-events-none absolute inset-0 z-0 hidden cinema:block" aria-hidden>
         <div data-takeover className="invisible absolute left-0 top-0 h-24 w-40 overflow-hidden shadow-[0_30px_70px_-24px_rgb(28_25_23/0.4)]">
-          <Reel asset={takeover} priority={5} className="h-full w-full" />
+          <Reel ref={takeoverReel} asset={takeover} mode="manual" priority={5} className="h-full w-full" />
         </div>
         <div data-dim className="act-iris absolute inset-0 opacity-0" />
       </div>
@@ -171,15 +189,15 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
         </h1>
 
         <p data-hero-lede data-reveal className="mx-auto max-w-2xl text-lede text-ink/70">
-          We build the strategy, creative and growth systems that help the right people see it.
+          {heroLede}
         </p>
 
         <div data-hero-cta data-reveal className="flex flex-wrap items-center justify-center gap-3">
           <Link href="/route" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full bg-cta px-7 py-3.5 font-medium text-white shadow-sm transition-colors duration-300 hover:bg-cta-hover">
-            Start your Pilot Route <span aria-hidden>↗</span>
+            Build your marketing brief <span aria-hidden>↗</span>
           </Link>
           <Link href="/work" transitionTypes={["nav-forward"]} className="magnetic inline-flex items-center gap-3 rounded-full border border-line bg-white px-7 py-3.5 font-medium shadow-sm transition-colors hover:border-line-strong hover:bg-sand">
-            See the work <span aria-hidden className="text-muted">↓</span>
+            See selected work <span aria-hidden className="text-muted">↓</span>
           </Link>
         </div>
       </div>

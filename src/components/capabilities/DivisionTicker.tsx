@@ -23,13 +23,18 @@ export function DivisionTicker() {
         return gsap.to(track, { xPercent: dir === -1 ? -50 : 0, duration: i % 2 === 0 ? 46 : 58, ease: "none", repeat: -1 });
       });
       const slow = (t: gsap.core.Tween, v: number) => gsap.to(t, { timeScale: v, duration: 0.6, overwrite: true });
+      // One AbortController owns every listener of this breakpoint: aborting removes each of them
+      // exactly (no anonymous handlers left behind when reduced motion toggles or the page unmounts).
+      // Only a mouse or pen slows a row; a finger brushing it while scrolling must not.
+      const ac = new AbortController();
+      const { signal } = ac;
       root.current!.querySelectorAll("[data-ticker-row]").forEach((row, i) => {
-        row.addEventListener("pointerenter", () => slow(tweens[i], 0.12));
-        row.addEventListener("pointerleave", () => slow(tweens[i], 1));
+        row.addEventListener("pointerenter", (e) => { if ((e as PointerEvent).pointerType !== "touch") slow(tweens[i], 0.12); }, { signal });
+        row.addEventListener("pointerleave", () => slow(tweens[i], 1), { signal });
       });
       const io = new IntersectionObserver(([e]) => tweens.forEach((t) => (e.isIntersecting ? t.play() : t.pause())));
       io.observe(root.current!);
-      return () => io.disconnect();
+      return () => { ac.abort(); io.disconnect(); };
     });
     return () => mm.revert();
   }, { scope: root });

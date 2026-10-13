@@ -1,6 +1,7 @@
 "use client";
 import { Fragment, useRef } from "react";
-import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useGSAPNear } from "@/lib/motion/defer";
 import { MQ, dur } from "@/lib/motion/tokens";
 import type { VideoAsset } from "@/content/work";
 import { philosophy } from "@/content/site";
@@ -15,7 +16,7 @@ import { philosophy } from "@/content/site";
 export function Marquee({ chips }: { chips: VideoAsset[] }) {
   const root = useRef<HTMLElement>(null);
 
-  useGSAP(() => {
+  useGSAPNear(() => {
     const q = gsap.utils.selector(root);
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {
@@ -37,7 +38,13 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
       const skewTo = gsap.quickTo(lean, "skewX", { duration: dur.base, ease: "pilot" });
       let dir = 1;
       let lastBoost = 1;
-      let settle: gsap.core.Tween | undefined;
+      // One delayed call, made once and restarted on every scroll update (a new delayedCall per
+      // update, as before, allocated one per frame while scrolling).
+      const settle = gsap.delayedCall(0.18, () => {
+        lastBoost = 1;
+        gsap.to(drive, { speed: dir, duration: dur.slow, ease: "pilot", overwrite: true });
+        skewTo(0);
+      }).pause();
       let running = false;
       const run = (on: boolean) => {
         if (on === running) return;
@@ -61,16 +68,11 @@ export function Marquee({ chips }: { chips: VideoAsset[] }) {
             gsap.to(drive, { speed: dir * boost, duration: dur.quick, overwrite: true });
           }
           skewTo(gsap.utils.clamp(-10, 10, -v / 220));
-          settle?.kill();
-          settle = gsap.delayedCall(0.18, () => {
-            lastBoost = 1;
-            gsap.to(drive, { speed: dir, duration: dur.slow, ease: "pilot", overwrite: true });
-            skewTo(0);
-          });
+          settle.restart(true);
         },
       });
       run(st.isActive);
-      return () => { st.kill(); settle?.kill(); run(false); };
+      return () => { st.kill(); settle.kill(); run(false); };
     });
     return () => mm.revert();
   }, { scope: root });

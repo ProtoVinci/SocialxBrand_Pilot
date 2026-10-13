@@ -42,10 +42,10 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
 
   return (
     <PageShell key={slug}>
-      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }, { name: s.title, path: `/work/${slug}` }])} />
+      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Selected work", path: "/work" }, { name: s.title, path: `/work/${slug}` }])} />
       <header className="gutter grid gap-12 pb-20 pt-[calc(var(--nav-h)+3rem)] md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">
-          <Crumbs trail={[{ name: "Work", href: "/work" }, { name: s.title }]} />
+          <Crumbs trail={[{ name: "Selected work", href: "/work" }, { name: s.title }]} />
           <p className="label mt-8 text-signal-ink">[ {pad(idx + 1)} / {pad(all.length)} ] {s.kicker}</p>
           <SplitReveal as="h1" trigger="mount" className="mt-4 font-display text-display font-medium">{s.title}</SplitReveal>
           <p className="mt-8 max-w-xl text-lede text-ink/80">{s.line}</p>
@@ -53,7 +53,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
             <div><dt className="label text-blue">Format</dt><dd className="mt-2">{s.format}</dd></div>
             <div><dt className="label text-blue">Pieces shown</dt><dd className="mt-2">{assets.length}</dd></div>
             <div className="col-span-2">
-              <dt className="label text-blue">Capabilities shown</dt>
+              <dt className="label text-blue">Services shown</dt>
               <dd className="mt-3 flex flex-wrap gap-2">
                 {s.divisions.map(divisionBySlug).filter(Boolean).map((d) => (
                   <Link key={d!.slug} href={`/capabilities/${d!.slug}`} transitionTypes={["nav-forward"]} className="rounded-full border border-ink/20 px-3 py-1.5 text-xs transition-colors hover:border-signal hover:text-signal">
@@ -88,7 +88,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
           </div>
           {nextCover && (
             <div className="hidden aspect-[9/16] w-40 shrink-0 overflow-hidden rounded-[14px] md:block">
-              {nextCover.kind === "video" ? <Reel asset={nextCover} mode="hover" className="h-full w-full" /> : <Photo asset={nextCover} alt="" sizes="160px" className="h-full w-full" />}
+              {nextCover.kind === "video" ? <Reel asset={nextCover} mode="hover" variant="preview" className="h-full w-full" /> : <Photo asset={nextCover} alt="" sizes="160px" className="h-full w-full" />}
             </div>
           )}
         </div>
@@ -96,7 +96,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
       <WhereNext links={[
         { href: "/route", label: "Plan your route", hint: "Want work like this? Start with a one-minute brief.", primary: true },
         { href: "/work", label: "All work", hint: "Every screening, filtered by format." },
-        { href: "/capabilities", label: "Capabilities", hint: "The divisions behind this screening." },
+        { href: "/capabilities", label: "Services", hint: "The divisions behind this screening." },
       ]} />
     </PageShell>
   );

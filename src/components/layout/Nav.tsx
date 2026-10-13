@@ -12,8 +12,8 @@ import type { VideoAsset } from "@/content/work";
 
 const links = [
   { href: "/", label: "Home", hint: "Back to the start" },
-  { href: "/work", label: "Work", hint: "Real reels, films, photography and design" },
-  { href: "/capabilities", label: "Capabilities", hint: "18 divisions, combined around the business" },
+  { href: "/work", label: "Selected work", hint: "Real reels, films, photography and design" },
+  { href: "/capabilities", label: "Services", hint: "18 divisions, combined around the business" },
   { href: "/approach", label: "Approach", hint: "Understand → Grow, and what we stand for" },
   { href: "/route", label: "Start your route", hint: "Plan the right mix, then talk to us" },
 ];
@@ -240,7 +240,7 @@ export function Nav({ previews }: { previews: VideoAsset[] }) {
                   <PendingLine />
                   <span className="hidden max-w-60 text-right text-sm text-muted md:block">{l.hint}</span>
                   {preview && (
-                    <Reel asset={preview} mode="manual" className="hidden aspect-[9/16] w-16 shrink-0 rounded-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:block" />
+                    <Reel asset={preview} still className="hidden aspect-[9/16] w-16 shrink-0 rounded-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:block" />
                   )}
                 </Link>
               </li>

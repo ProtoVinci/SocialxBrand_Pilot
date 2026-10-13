@@ -62,9 +62,9 @@ Scroll reveals (`rise`, `blur`, `lift`) are driven by IntersectionObserver, and 
 
 ## Micro motion (feedback)
 
-Rolling nav labels (0.45s pilot); CTA lift −2px; route toggle (+ rotates to ✓, fills purple); a nav badge pop; a cursor-following reel preview on the capabilities index (fine pointers, `quickTo` x/y 0.6s); capability rows flood cornflower on hover (CSS, no React state); a menu clip-path reveal.
+Rolling nav labels (0.45s pilot); CTA lift −2px; route toggle (+ rotates to ✓, fills purple); a nav badge pop; a cursor-following reel preview on the capabilities index (fine pointers, `quickTo` x/y 0.22s: at 0.6s it trailed the pointer enough to read as latency; it mounts at most two reels); capability rows flood cornflower on hover (CSS, no React state); a menu clip-path reveal.
 
-**Pointer gimmicks** (`components/fx/`, fine pointers + motion only): a blue cursor dot that swells into a labelled bubble over `[data-cursor]` ("Watch", "View", "Go"); magnetic `.magnetic` CTAs; a spinning "Start your Pilot Route" badge in the hero; stickers that slap onto the hero fan; screening cards that lift and tip on hover.
+**Pointer gimmicks** (`components/fx/`, fine pointers + motion only, mouse and pen only: touch pointers are ignored; one requestAnimationFrame per frame, geometry measured once per magnet entry): a blue cursor dot that swells into a labelled bubble over `[data-cursor]` ("Watch", "View", "Go"); magnetic `.magnetic` CTAs; a spinning "Start your Pilot Route" badge in the hero; stickers that slap onto the hero fan; screening cards that lift and tip on hover.
 
 ## Media behaviours (variation is intentional)
 
@@ -90,6 +90,14 @@ Rolling nav labels (0.45s pilot); CTA lift −2px; route toggle (+ rotates to �
 - **Video elements are created once and only played/paused.** Mounting a `<video>` on a beat (the hero capsules did) puts a fetch and a decoder start-up exactly on the animation; the incoming clip then rose in as a still frame. Warm the next one ahead, park the outgoing one when it is invisible.
 - **Hover states on moving content key off real pointer movement** (`pointermove` + a `data-*` attribute), never `pointerenter`/`:hover`, which fire when content slides or scrolls under a resting cursor.
 - **AV1 only on hardware decoders** (`media/codec.ts`): software AV1 decoding of several reels starves scrolling; other devices get the H.264 MP4.
+- **Never call `video.load()` on a `preload="none"` reel.** In Chromium it fetches the whole file (measured), which silently turned "nothing downloads until it plays" into "every reel downloads on mount". `Reel` picks its clip through the `src` attribute, which costs nothing until `play()`.
+- **Manual reels are started by the thing that owns them**, never by an IntersectionObserver on a hidden box. The hero takeover reel (a 2.5MB clip) is played from the pinned scene's `onUpdate` once the visitor has scrolled; at load it fetches nothing.
+- **Small thumbnails use the 360p clip** (`Reel variant="preview"`): the cursor preview, the phone-sized capabilities stage, the "next screening" thumbnail, and (below md) the ladder and the work-detail reel grid. Larger tiles keep the 720p clip; a mid-resolution tier needs ffmpeg and the raw sources (see HANDOVER).
+- **Bound mounted media.** The capabilities stage and cursor preview mount the active reel plus the previous one (for the cross-fade), never one per division.
+- **Per-frame callbacks allocate nothing.** `onUpdate` and pointer handlers reuse one tween / delayedCall / quickTo (restart it) instead of creating one per call. Listeners that a breakpoint adds are removed with one `AbortController`.
+- **One-shot reveals are IntersectionObserver reveals** (`observeOnce`), not ScrollTriggers. Sections far below the fold that are not pinned set up when about a screen away (`useGSAPNear`): startup blocking time on the home page fell from a median 1784ms to 1171ms (4x CPU, alternating A/B). Never use it for the pinned hero or anything that must be in place before it can be seen.
+- **Only one owner scrolls.** Programmatic scrolls go through Lenis when it runs (`useLenis`), and through the browser's own smooth scroll when it does not (touch, reduced motion); never both.
+- **Cost is measured as work, not frame rate.** On this setup frame rate varies by ±10fps run to run; the compositor draw and raster time for an identical scripted scroll (trace events `DirectRenderer::DrawFrame`, `DisplayItemList::Raster`) is stable enough to compare. Layers worth promoting are the large static masked ones (`.grid-paper`); promoting the textured act sections traded raster for draw cost and was not adopted.
 
 ## Responsive motion
 

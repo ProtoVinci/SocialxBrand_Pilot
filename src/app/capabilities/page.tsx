@@ -11,7 +11,7 @@ import { servicesIntro } from "@/content/site";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Capabilities — 18 marketing divisions",
+  title: "Services — 18 marketing divisions",
   description:
     "Strategy & consulting, social media, content, design, video, photography, branding, campaigns, performance marketing, SEO, WhatsApp, creators, YouTube, reputation & PR, and AI marketing: 18 divisions, combined around what your business needs.",
   alternates: { canonical: "/capabilities" },
@@ -20,11 +20,11 @@ export const metadata: Metadata = {
 export default function CapabilitiesPage() {
   return (
     <PageShell>
-      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Capabilities", path: "/capabilities" }])} />
+      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Services", path: "/capabilities" }])} />
       <PageHeader
         index="C"
-        label="Capabilities — 18 core marketing divisions"
-        crumbs={[{ name: "Capabilities" }]}
+        label="Services — 18 core marketing divisions"
+        crumbs={[{ name: "Services" }]}
         title={<>The right mix, <span className="serif-accent font-normal ink-cobalt">not the full menu.</span></>}
         lede={
           <>

@@ -8,7 +8,7 @@ import { breadcrumbLd } from "@/lib/seo";
 import { liveScreenings, mediaFor, partnerCredit } from "@/content/work";
 
 export const metadata: Metadata = {
-  title: "Work",
+  title: "Selected work",
   description: "Real work from SOCIALxBRAND PILOT: creator reels, restaurant and hospitality content, brand films, wedding films and photography, menus, posters and logo identities.",
   alternates: { canonical: "/work" },
 };
@@ -25,11 +25,11 @@ export default function WorkPage() {
 
   return (
     <PageShell>
-      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }])} />
+      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Selected work", path: "/work" }])} />
       <PageHeader
         index="W"
-        label="Work — screenings"
-        crumbs={[{ name: "Work" }]}
+        label="Selected work — screenings"
+        crumbs={[{ name: "Selected work" }]}
         title={<>The work, <span className="serif-accent font-normal text-signal">as it was made.</span></>}
         lede={
           <>
@@ -43,7 +43,7 @@ export default function WorkPage() {
       </div>
       <WhereNext links={[
         { href: "/route", label: "Plan your route", hint: "Seen something you want for your business? Start here.", primary: true },
-        { href: "/capabilities", label: "Capabilities", hint: "The 18 divisions behind this work." },
+        { href: "/capabilities", label: "Services", hint: "The 18 divisions behind this work." },
         { href: "/approach", label: "How we work", hint: "From understanding the business to growing it." },
       ]} />
     </PageShell>

@@ -25,6 +25,9 @@ export const whoWeAre = [
 
 export const pillars = ["Strategy", "Creativity", "Technology", "Execution"] as const;
 
+/** What the agency does, in one plain sentence: the four pillars, the 18 divisions and the business-first promise, as the site description already says it. */
+export const heroLede = "Strategy, creativity, technology and execution across 18 marketing divisions, built around what your business actually needs.";
+
 export const quote = {
   lead: "We are not here simply to make brands look good online.",
   turn: "We are here to make them matter.",

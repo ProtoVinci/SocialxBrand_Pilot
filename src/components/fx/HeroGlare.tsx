@@ -4,6 +4,11 @@
  * On an off-white canvas the beams only read because of the shadow bands around them, so the
  * shadows run somewhat stronger than prototype 1's. Static and decorative; the blur filters
  * are paid once: the drift moves the layer as one composited texture (transform only).
+ *
+ * Phones get a lighter version (measured on a 390x844 viewport: about 30% less compositor draw
+ * time for the hero, no visible difference): the big hotspot's blur radius drops from 80px to
+ * 32px (it is a radial gradient already), the overlay-blended sheen between the beams is
+ * dropped, and the slow drift is stopped (see .glare-drift in globals.css). Desktop is unchanged.
  */
 const BEAMS = [
   { left: "calc(-1.5% - 291px)", w: 582, mask: "transparent 11.4%, #000 25.56%, rgb(0 0 0/.6) 41.7%, rgb(0 0 0/.25) 67.12%, #000 78.23%, transparent 97.3%" },
@@ -22,7 +27,7 @@ export function HeroGlare() {
       {/* everything below drifts slowly under the fixed mask, like sun moving through a window */}
       <div className="glare-drift absolute -inset-[6%]">
       {/* daylight hotspot */}
-      <div className="absolute -left-[12%] -top-[18%] h-[900px] w-[1050px] rounded-full bg-[radial-gradient(circle_at_20%_20%,#fff_0%,rgb(255_255_255/.8)_30%,rgb(255_255_255/.25)_60%,transparent_80%)] blur-[80px]" />
+      <div className="absolute -left-[12%] -top-[18%] h-[900px] w-[1050px] rounded-full bg-[radial-gradient(circle_at_20%_20%,#fff_0%,rgb(255_255_255/.8)_30%,rgb(255_255_255/.25)_60%,transparent_80%)] blur-[80px] max-md:blur-[32px]" />
       {/* louver shadow slats: these are what make the light visible */}
       <div className="absolute -left-[150px] -top-[300px] h-[1600px] w-[130%] skew-x-[45deg] mix-blend-multiply blur-[26px] [background:repeating-linear-gradient(90deg,transparent_0px,transparent_110px,rgb(32_28_24/.12)_110px,rgb(32_28_24/.18)_180px,transparent_230px,transparent_310px)]" />
       {/* deeper shadow along the left edge */}
@@ -36,7 +41,7 @@ export function HeroGlare() {
         />
       ))}
       {/* sheen bridging the beams */}
-      <div className="absolute -left-[100px] -top-[200px] h-[1400px] w-[900px] skew-x-[45deg] opacity-50 mix-blend-overlay blur-[32px] [background:linear-gradient(90deg,rgb(255_255_255/.9)_0%,transparent_20%,rgb(255_255_255/.7)_35%,transparent_60%,rgb(255_255_255/.8)_80%,transparent_100%)]" />
+      <div className="absolute -left-[100px] -top-[200px] h-[1400px] w-[900px] skew-x-[45deg] opacity-50 mix-blend-overlay blur-[32px] max-md:hidden [background:linear-gradient(90deg,rgb(255_255_255/.9)_0%,transparent_20%,rgb(255_255_255/.7)_35%,transparent_60%,rgb(255_255_255/.8)_80%,transparent_100%)]" />
       </div>
     </div>
   );

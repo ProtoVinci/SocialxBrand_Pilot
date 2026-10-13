@@ -5,6 +5,7 @@ import { MQ, dur } from "@/lib/motion/tokens";
 import { Reel, type ReelHandle } from "@/components/media/Reel";
 import type { VideoAsset } from "@/content/work";
 import { philosophy } from "@/content/site";
+import { useMinWidth } from "@/lib/use-min-width";
 
 /**
  * ACT 3 — "Marketing is more than being seen." One word changes in place while the framed
@@ -17,6 +18,9 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
   const root = useRef<HTMLElement>(null);
   const players = useRef<(ReelHandle | null)[]>([]);
   const steps = philosophy.ladder;
+  // the framed reel is ~160px wide on a phone and up to ~650px tall from md up: the 360p clip is
+  // enough below md (about a tenth of the bytes of five 720p clips)
+  const md = useMinWidth(768);
 
   useGSAP(() => {
     const q = gsap.utils.selector(root);
@@ -110,7 +114,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
               return (
                 // without JS motion the first rung stays visible as a still frame
                 <div key={s} data-layer className={`absolute inset-0 opacity-0 ${i === 0 ? "[html:not(.js-motion)_&]:opacity-100" : ""}`}>
-                  {reel && <Reel ref={(r) => { players.current[i] = r; }} asset={reel} mode="manual" className="absolute inset-0 h-full w-full" />}
+                  {reel && <Reel ref={(r) => { players.current[i] = r; }} asset={reel} mode="manual" variant={md ? "full" : "preview"} className="absolute inset-0 h-full w-full" />}
                 </div>
               );
             })}

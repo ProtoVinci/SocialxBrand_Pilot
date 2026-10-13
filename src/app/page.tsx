@@ -16,8 +16,8 @@ import { divisionPreviews } from "@/lib/previews";
 
 const frame = (m: MediaAsset): ShowcaseFrame =>
   m.kind === "video"
-    ? { poster: m.poster.webp, video: m.src.preview }
-    : { poster: (m.srcset.webp.find((s) => s.w >= 960) ?? m.srcset.webp.at(-1)!).url };
+    ? { poster: m.poster.webp, lqip: m.lqip, video: m.src.preview }
+    : { poster: (m.srcset.webp.find((s) => s.w >= 960) ?? m.srcset.webp.at(-1)!).url, lqip: m.lqip };
 const pick = (ids: string[]) => ids.map((id) => findMedia(id)).filter((m): m is VideoAsset => m?.kind === "video");
 
 export default function Home() {
@@ -48,14 +48,14 @@ export default function Home() {
         <section aria-labelledby="capabilities-title" className="relative bg-shell bg-[linear-gradient(to_right,rgb(232_226_216/0.75)_1px,transparent_1px)] bg-[size:clamp(8rem,12.5vw,12rem)_100%] py-16 md:py-20 lg:flex lg:min-h-svh lg:flex-col lg:justify-center lg:py-[clamp(1.5rem,4svh,3rem)] lg:pt-[calc(var(--nav-h)+1rem)] short:pt-[calc(var(--nav-h)+0.25rem)] short:pb-4">
           <div className="gutter grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
             <div>
-              <p className="label text-blue">[ 04 ] Capabilities — 18 divisions</p>
+              <p className="label text-blue">[ 04 ] Services — 18 divisions</p>
               <SplitReveal as="h2" id="capabilities-title" className="mt-3 max-w-[20ch] font-display text-headline font-medium short:text-[clamp(1.8rem,3.2vw,2.6rem)]">
                 Not every business needs <span className="serif-accent font-normal text-signal">every</span> service.
               </SplitReveal>
             </div>
             <div>
               <p className="max-w-xl text-ink/75 lg:text-[1.05rem] short:line-clamp-3 short:text-[0.95rem]">{servicesIntro.body}</p>
-              <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-3 inline-block text-sm">Explore every capability →</Link>
+              <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-3 inline-block text-sm">Explore every service →</Link>
             </div>
           </div>
           <div className="gutter mt-8 lg:mt-[clamp(1.25rem,4svh,2.75rem)] short:mt-4">

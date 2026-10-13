@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
+import "@/lib/gsap-drawsvg";
+import { useGSAPNear } from "@/lib/motion/defer";
 import { MQ, scrubSmoothing } from "@/lib/motion/tokens";
 import { site } from "@/content/site";
 import { SpinBadge } from "@/components/fx/SpinBadge";
@@ -14,7 +16,7 @@ import { SpinBadge } from "@/components/fx/SpinBadge";
 export function Finale() {
   const root = useRef<HTMLElement>(null);
 
-  useGSAP(() => {
+  useGSAPNear(() => {
     const q = gsap.utils.selector(root);
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {

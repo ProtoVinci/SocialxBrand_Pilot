@@ -2,6 +2,8 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
+import { observeOnce } from "@/lib/motion/observe";
+import { useMinWidth } from "@/lib/use-min-width";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import type { PhotoAsset, VideoAsset } from "@/content/work";
@@ -16,6 +18,8 @@ export function ScreeningMedia({ title, videos, photos }: { title: string; video
   const root = useRef<HTMLDivElement>(null);
   const portrait = videos.filter((v) => v.orientation === "portrait");
   const landscape = videos.filter((v) => v.orientation === "landscape");
+  // two ~165px columns on a phone: the 360p clip is enough there; 3-4 columns from md up use the 720p clip
+  const md = useMinWidth(768);
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
@@ -25,8 +29,13 @@ export function ScreeningMedia({ title, videos, photos }: { title: string; video
         if (!img) return;
         gsap.fromTo(img, { yPercent: -6, scale: 1.14 }, { yPercent: 6, scale: 1.14, ease: "none", scrollTrigger: { trigger: frame, start: "top bottom", end: "bottom top", scrub: true } });
       });
-      gsap.utils.toArray<HTMLElement>("[data-rise]").forEach((el, i) => {
-        gsap.from(el, { autoAlpha: 0, y: 60, duration: 0.9, delay: (i % 3) * 0.08, scrollTrigger: { trigger: el, start: "top 88%", once: true } });
+      // One-shot rises through the shared IntersectionObserver helper (matching "top 88%"), not one
+      // ScrollTrigger per item: these never needed scroll progress, and every trigger is re-measured
+      // on each ScrollTrigger.refresh().
+      const rises = gsap.utils.toArray<HTMLElement>("[data-rise]");
+      gsap.set(rises, { autoAlpha: 0, y: 60 });
+      return observeOnce(rises, "0px 0px -12% 0px", (batch) => {
+        batch.forEach((el, k) => gsap.to(el, { autoAlpha: 1, y: 0, duration: 0.9, delay: (k % 3) * 0.08 }));
       });
     });
     return () => mm.revert();
@@ -44,7 +53,7 @@ export function ScreeningMedia({ title, videos, photos }: { title: string; video
         <ul className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
           {portrait.map((v, i) => (
             <li key={v.id} data-rise className={i % 2 === 1 ? "md:translate-y-16" : ""}>
-              <Reel asset={v} label={`${title} — reel ${i + 1}`} className="aspect-[9/16] w-full rounded-[16px]" />
+              <Reel asset={v} variant={md ? "full" : "preview"} label={`${title} — reel ${i + 1}`} className="aspect-[9/16] w-full rounded-[16px]" />
             </li>
           ))}
         </ul>

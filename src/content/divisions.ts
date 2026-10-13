@@ -439,4 +439,4 @@ export const divisions: Division[] = [
 ];
 
 export const divisionBySlug = (slug: string) => divisions.find((d) => d.slug === slug);
-export const pad = (n: number) => String(n).padStart(2, "0");
+export { pad } from "@/lib/pad";

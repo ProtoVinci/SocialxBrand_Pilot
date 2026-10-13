@@ -1,12 +1,48 @@
 "use client";
 import Link from "next/link";
-import { useRef, ViewTransition } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, ViewTransition } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ } from "@/lib/motion/tokens";
 import { clusters, divisions, pad } from "@/content/divisions";
 import type { VideoAsset } from "@/content/work";
 import { Reel, type ReelHandle } from "@/components/media/Reel";
 import { RouteToggle } from "./RouteToggle";
+
+type StageHandle = { show: (slug: string | null) => void };
+
+/**
+ * The cursor-following preview's reels. Only the shown division's reel and the one before it (so a
+ * row-to-row change can cross-fade) are ever mounted; the other sixteen never exist. It owns its
+ * own state, so showing a preview re-renders this stage only, never the 18 rows.
+ */
+const PreviewStage = forwardRef<StageHandle, { previews: Record<string, VideoAsset | undefined> }>(function PreviewStage({ previews }, handle) {
+  const [active, setActive] = useState<string | null>(null);
+  // newest first, at most two
+  const [layers, setLayers] = useState<string[]>([]);
+  const reels = useRef<Record<string, ReelHandle | null>>({});
+
+  useImperativeHandle(handle, () => ({
+    show: (slug) => {
+      setActive(slug);
+      if (slug) setLayers((l) => [slug, ...l.filter((s) => s !== slug)].slice(0, 2));
+    },
+  }), []);
+
+  // one reel plays: the shown one
+  useEffect(() => {
+    Object.entries(reels.current).forEach(([k, r]) => (k === active ? r?.play() : r?.pause()));
+  }, [active, layers]);
+
+  return layers.map((slug) => {
+    const asset = previews[slug];
+    return asset ? (
+      <div key={slug} className={`absolute inset-0 transition-opacity duration-300 ${slug === active ? "opacity-100" : "opacity-0"}`}>
+        {/* 176px wide: the 360p clip is plenty and a tenth of the bytes */}
+        <Reel ref={(r) => { reels.current[slug] = r; }} asset={asset} variant="preview" mode="manual" className="h-full w-full" />
+      </div>
+    ) : null;
+  });
+});
 
 type Props = {
   /** One preview reel per division slug (if its related work has video). */
@@ -24,7 +60,7 @@ type Props = {
 export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
   const root = useRef<HTMLDivElement>(null);
   const cursor = useRef<HTMLDivElement>(null);
-  const reels = useRef<Record<string, ReelHandle | null>>({});
+  const stage = useRef<StageHandle>(null);
   // set while the preview is enabled (fine pointer + motion); null otherwise
   const follow = useRef<{ x: (v: number) => void; y: (v: number) => void } | null>(null);
   const H = headingLevel;
@@ -34,8 +70,9 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
     mm.add(`${MQ.finePointer} and ${MQ.motion}`, () => {
       gsap.set(cursor.current, { xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 });
       follow.current = {
-        x: gsap.quickTo(cursor.current, "x", { duration: 0.6, ease: "pilot" }),
-        y: gsap.quickTo(cursor.current, "y", { duration: 0.6, ease: "pilot" }),
+        // short: at 0.6s the preview trailed the pointer by far enough to read as latency
+        x: gsap.quickTo(cursor.current, "x", { duration: 0.22, ease: "pilot" }),
+        y: gsap.quickTo(cursor.current, "y", { duration: 0.22, ease: "pilot" }),
       };
       return () => { follow.current = null; };
     });
@@ -44,22 +81,19 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
 
   // Plain event handlers: refs are read only when an event fires, never during render.
   function move(e: React.PointerEvent) {
-    if (!follow.current || !root.current) return;
+    if (e.pointerType === "touch" || !follow.current || !root.current) return;
     const box = root.current.getBoundingClientRect();
     follow.current.x(e.clientX - box.left);
     follow.current.y(e.clientY - box.top);
   }
 
-  const showPreview = (slug: string | null) =>
-    cursor.current?.querySelectorAll<HTMLElement>("[data-preview]").forEach((el) => el.toggleAttribute("data-on", el.dataset.preview === slug));
-
   function enter(slug: string) {
     if (!follow.current) return;
-    showPreview(slug);
     if (previews[slug]) {
+      stage.current?.show(slug);
       gsap.to(cursor.current, { scale: 1, autoAlpha: 1, duration: 0.5, ease: "pilot" });
-      Object.entries(reels.current).forEach(([k, r]) => (k === slug ? r?.play() : r?.pause()));
     } else {
+      stage.current?.show(null);
       gsap.to(cursor.current, { scale: 0, autoAlpha: 0, duration: 0.3 });
     }
   }
@@ -77,9 +111,8 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
   function leave() {
     window.clearTimeout(intent.current);
     shown.current = null;
-    showPreview(null);
+    stage.current?.show(null);
     gsap.to(cursor.current, { scale: 0, autoAlpha: 0, duration: 0.35, ease: "snap" });
-    Object.values(reels.current).forEach((r) => r?.pause());
   }
 
   return (
@@ -95,7 +128,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
               </div>
               <ul>
                 {rows.map((d) => (
-                  <li key={d.slug} className="group relative isolate border-b border-current/15 transition-colors duration-300" onPointerMove={() => intend(d.slug)}>
+                  <li key={d.slug} className="group relative isolate border-b border-current/15 transition-colors duration-300" onPointerMove={(e) => { if (e.pointerType !== "touch") intend(d.slug); }}>
                     {/* hover flood: the row fills with cornflower from the bottom edge */}
                     <span aria-hidden className="absolute -inset-x-3 inset-y-0 -z-10 hidden origin-bottom scale-y-0 rounded-[10px] bg-iris transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:scale-y-100 [@media(hover:hover)]:block md:-inset-x-5" />
                     <Link
@@ -124,13 +157,7 @@ export function DivisionIndex({ previews, headingLevel = "h3" }: Props) {
 
       {/* cursor-following preview (fine pointers only) */}
       <div ref={cursor} aria-hidden className="pointer-events-none absolute left-0 top-0 z-20 hidden aspect-[9/16] w-44 overflow-hidden rounded-xl shadow-2xl [@media(hover:hover)]:block" style={{ visibility: "hidden" }}>
-        {Object.entries(previews).map(([slug, asset]) =>
-          asset ? (
-            <div key={slug} data-preview={slug} className="absolute inset-0 opacity-0 transition-opacity duration-300 data-[on]:opacity-100">
-              <Reel ref={(r) => { reels.current[slug] = r; }} asset={asset} mode="manual" className="h-full w-full" />
-            </div>
-          ) : null,
-        )}
+        <PreviewStage ref={stage} previews={previews} />
       </div>
     </div>
   );

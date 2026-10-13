@@ -1,6 +1,7 @@
 "use client";
 import { useRef } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap } from "@/lib/gsap";
+import { useGSAPNear } from "@/lib/motion/defer";
 import { MQ, scrubSmoothing } from "@/lib/motion/tokens";
 
 /**
@@ -9,7 +10,7 @@ import { MQ, scrubSmoothing } from "@/lib/motion/tokens";
  */
 export function FooterWordmark() {
   const ref = useRef<HTMLDivElement>(null);
-  useGSAP(() => {
+  useGSAPNear(() => {
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {
       gsap.from(ref.current!.querySelector("[data-word]"), {

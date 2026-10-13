@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useRef, useState, ViewTransition } from "react";
-import { gsap, useGSAP, Flip } from "@/lib/gsap";
+import { gsap, useGSAP } from "@/lib/gsap";
+import { Flip } from "@/lib/gsap-flip";
 import { MQ, dur } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import type { MediaAsset, Screening } from "@/content/work";
-import { pad } from "@/content/divisions";
+import { pad } from "@/lib/pad";
 
 export type Family = "all" | "motion" | "photo" | "design";
 export type IndexItem = { screening: Screening; cover: MediaAsset; family: Exclude<Family, "all">; count: number };

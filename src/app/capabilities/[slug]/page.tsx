@@ -48,7 +48,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
   return (
     <PageShell key={slug}>
       <JsonLd data={serviceLd(d)} />
-      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Capabilities", path: "/capabilities" }, { name: d.name, path: `/capabilities/${slug}` }])} />
+      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Services", path: "/capabilities" }, { name: d.name, path: `/capabilities/${slug}` }])} />
 
       {/* identity */}
       <header className="gutter relative overflow-hidden pb-16 pt-[calc(var(--nav-h)+3rem)] md:pb-24">
@@ -56,7 +56,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
           {pad(d.number)}
         </span>
         <div className="relative">
-          <Crumbs trail={[{ name: "Capabilities", href: "/capabilities" }, { name: d.shortName }]} />
+          <Crumbs trail={[{ name: "Services", href: "/capabilities" }, { name: d.shortName }]} />
           <p className="label mt-8 text-signal-ink">[ {pad(d.number)} / 18 ] {cluster.name}</p>
           <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
             <h1 className="mt-4 max-w-[16ch] font-display text-display font-medium">{d.name}</h1>
@@ -175,7 +175,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       </nav>
       <WhereNext links={[
         { href: "/route", label: "Plan your route", hint: "Combine this with what else your business needs.", primary: true },
-        { href: "/capabilities", label: "All capabilities", hint: "The full set of 18 divisions." },
+        { href: "/capabilities", label: "All services", hint: "The full set of 18 divisions." },
         { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
       ]} />
     </PageShell>

@@ -6,6 +6,7 @@ import { clusters, divisions, pad } from "@/content/divisions";
 import type { VideoAsset } from "@/content/work";
 import { Reel, type ReelHandle } from "@/components/media/Reel";
 import { RouteToggle } from "./RouteToggle";
+import { useMinWidth } from "@/lib/use-min-width";
 
 // reduced-motion preference as a subscription (server render assumes calm: no tour until hydrated)
 const subscribe = (cb: () => void) => { const mq = window.matchMedia(MQ.reduce); mq.addEventListener("change", cb); return () => mq.removeEventListener("change", cb); };
@@ -73,12 +74,19 @@ const HOLD_MS = 9000;    // after a visitor picks a division, the tour waits thi
 export function DivisionBoard({ previews }: Props) {
   const [active, setActive] = useState(0);
   const root = useRef<HTMLDivElement>(null);
-  const reels = useRef<(ReelHandle | null)[]>([]);
+  const reels = useRef<Record<number, ReelHandle | null>>({});
   const intent = useRef<number | undefined>(undefined);
   const heldUntil = useRef(0);
   const [inView, setInView] = useState(false);
   const calm = useCalm();
+  // the stage is a wide column from 1024px up; below that it is a small thumbnail
+  const wide = useMinWidth(1024);
   const d = divisions[active];
+  // Only the active division's reel and the one before it (so the change can cross-fade) are
+  // mounted: the other sixteen used to sit in the DOM as hidden <video> elements. Adjusting state
+  // while rendering, as React documents, so the pair is ready in the same pass.
+  const [layers, setLayers] = useState<number[]>([0]);
+  if (layers[0] !== active) setLayers([active, layers[0]]);
   // divisions without footage of their own (strategy, SEO...) borrow from the pool of real work,
   // so the stage never goes dark
   const pool = divisions.map((x) => previews[x.slug]).filter((v): v is VideoAsset => Boolean(v));
@@ -107,8 +115,8 @@ export function DivisionBoard({ previews }: Props) {
 
   // one reel plays: the active one, and only while the board is on screen
   useEffect(() => {
-    reels.current.forEach((r, k) => (inView && !calm && k === active ? r?.play() : r?.pause()));
-  }, [active, inView, calm]);
+    Object.entries(reels.current).forEach(([k, r]) => (inView && !calm && Number(k) === active ? r?.play() : r?.pause()));
+  }, [active, inView, calm, layers]);
 
   const hover = (i: number) => {
     window.clearTimeout(intent.current);
@@ -141,7 +149,7 @@ export function DivisionBoard({ previews }: Props) {
                     href={`/capabilities/${x.slug}`}
                     transitionTypes={["nav-forward"]}
                     // pointermove, not pointerenter: a chip scrolling under a still cursor changes nothing
-                    onPointerMove={() => { if (active !== i) hover(i); }}
+                    onPointerMove={(e) => { if (e.pointerType !== "touch" && active !== i) hover(i); }}
                     onFocus={() => pick(i, true)}
                     aria-describedby={i === active ? "board-stage" : undefined}
                     data-on={i === active ? "" : undefined}
@@ -162,15 +170,17 @@ export function DivisionBoard({ previews }: Props) {
         <div className="flex gap-4 lg:flex-col">
           {/* the reel: stacked layers, only the active one visible; a slow dissolve with a slight settle */}
           <div aria-hidden className="relative aspect-[9/16] w-28 shrink-0 overflow-hidden rounded-[18px] bg-ink sm:w-36 lg:w-full lg:aspect-auto lg:h-[clamp(11rem,32svh,20rem)] short:h-[26svh]">
-            {divisions.map((x, k) => {
+            {layers.map((k) => {
               const asset = reelFor(k);
               const on = k === active;
               return asset ? (
                 <div
-                  key={x.slug}
-                  className={`absolute inset-0 transition-[opacity,scale,filter] ease-[var(--ease-pilot)] motion-reduce:duration-0 ${on ? "scale-100 opacity-100 blur-0 duration-[900ms]" : "scale-[1.04] opacity-0 blur-[3px] duration-[700ms]"}`}
+                  key={divisions[k].slug}
+                  // the entering layer plays layer-in; the leaving one eases out through the transition
+                  className={`absolute inset-0 transition-[opacity,scale,filter] ease-[var(--ease-pilot)] motion-reduce:duration-0 ${on ? "scale-100 opacity-100 blur-0 duration-[900ms] animate-[layer-in_900ms_var(--ease-pilot)_both] motion-reduce:animate-none" : "scale-[1.04] opacity-0 blur-[3px] duration-[700ms]"}`}
                 >
-                  <Reel ref={(r) => { reels.current[k] = r; }} asset={asset} mode="manual" className="h-full w-full" />
+                  {/* below 1024px the stage is a ~140px thumbnail: the 360p clip, a tenth of the bytes */}
+                  <Reel ref={(r) => { reels.current[k] = r; }} asset={asset} variant={wide ? "full" : "preview"} mode="manual" className="h-full w-full" />
                 </div>
               ) : null;
             })}

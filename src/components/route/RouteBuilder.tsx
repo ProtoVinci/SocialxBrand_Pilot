@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ, dur } from "@/lib/motion/tokens";
-import { audiences, type AudienceId } from "@/content/site";
+import { audiences, site, type AudienceId } from "@/content/site";
 import { clusters, divisions, divisionBySlug, pad } from "@/content/divisions";
 import { goals, suggestRoute, type GoalId } from "@/lib/route/suggest";
 import { routeStore, useRoute } from "@/lib/route/store";
 import { adapters, briefText, validate, type Brief, type BriefErrors } from "@/lib/route/enquiry";
+import { useLenis } from "@/components/motion/SmoothScroll";
 
 const STEPS = ["Business", "Goal", "Route", "Details", "Send"] as const;
 
@@ -22,6 +23,7 @@ export function RouteBuilder() {
   const stepRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const route = useRoute();
+  const lenis = useLenis();
   const [step, setStep] = useState(0);
   const [audience, setAudience] = useState<AudienceId | undefined>(() => (audiences.some((a) => a.id === params.get("audience")) ? (params.get("audience") as AudienceId) : undefined));
   const [goal, setGoal] = useState<GoalId | undefined>();
@@ -53,8 +55,16 @@ export function RouteBuilder() {
     if (step === 0) return;
     headingRef.current?.focus({ preventScroll: true });
     const top = root.current!.getBoundingClientRect().top;
-    if (top < 0 || top > window.innerHeight * 0.4) window.scrollBy({ top: top - 96, behavior: window.matchMedia(MQ.reduce).matches ? "auto" : "smooth" });
-  }, [step]);
+    if (top < 0 || top > window.innerHeight * 0.4) {
+      const reduce = window.matchMedia(MQ.reduce).matches;
+      const smooth = lenis?.current;
+      // One owner for animated scrolling: while Lenis runs it moves the page itself, and a native
+      // behavior:"smooth" scroll on top of it would fight its loop (double easing, overshoot).
+      // Without Lenis (touch, reduced motion) the browser's own scroll is the only one.
+      if (smooth) smooth.scrollTo(window.scrollY + top - 96, { duration: 0.8 });
+      else window.scrollBy({ top: top - 96, behavior: reduce ? "auto" : "smooth" });
+    }
+  }, [step, lenis]);
 
   const go = (n: number) => {
     if (n === 2 && step === 1 && suggested.length) {
@@ -198,6 +208,7 @@ export function RouteBuilder() {
               <span className="label text-blue">Anything we should know? (optional)</span>
               <textarea rows={4} value={details.message} onChange={(e) => setDetails({ ...details, message: e.target.value })} className="rounded-[12px] border border-ink/15 bg-shell px-4 py-3.5 text-ink outline-none transition-colors focus:border-signal" />
             </label>
+            <p className="text-sm text-muted md:col-span-2">This site does not store or send these details. They only go into the message you choose to send yourself, by WhatsApp or email, or are copied to your clipboard.</p>
             <div className="md:col-span-2" aria-live="assertive">
               {errors.name && <p id="name-error" className="text-sm text-signal-ink">{errors.name}</p>}
               {(errors.contact || errors.email) && <p id="contact-error" className="text-sm text-signal-ink">{errors.contact ?? errors.email}</p>}
@@ -225,7 +236,7 @@ export function RouteBuilder() {
                       a.id === "copy"
                         ? "Brief copied. Paste it into an email or WhatsApp to us."
                         : a.id === "email"
-                          ? "Opening your email app. If nothing opens, use Copy the brief and send it to socialxbrandpilot@gmail.com."
+                          ? `Opening your email app. If nothing opens, use Copy the brief and send it to ${site.email}.`
                           : "Opening WhatsApp in a new tab. Press send there to reach us.",
                     );
                   }}

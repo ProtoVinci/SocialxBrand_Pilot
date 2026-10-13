@@ -6,7 +6,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { lenisEnabled } from "@/lib/motion/tokens";
 
 /** Longest page-transition animation in globals.css, plus a little slack. */
-const ROUTE_SETTLE_MS = 700;
+const ROUTE_SETTLE_MS = 520;
 
 const LenisContext = createContext<RefObject<Lenis | null> | null>(null);
 /** The Lenis instance (null on touch devices and under reduced motion). Read in handlers only. */

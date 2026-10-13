@@ -4,7 +4,7 @@ import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ, dur, scrubSmoothing } from "@/lib/motion/tokens";
 import { observeOnce, REVEAL_MARGIN } from "@/lib/motion/observe";
 import { method } from "@/content/site";
-import { pad } from "@/content/divisions";
+import { pad } from "@/lib/pad";
 
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const STATUS = { next: "Next", now: "Boarding", done: "Cleared" } as const;
@@ -21,6 +21,9 @@ const STATUS = { next: "Next", now: "Boarding", done: "Cleared" } as const;
 export function MethodBoard({ index = "05" }: { index?: string }) {
   const root = useRef<HTMLElement>(null);
 
+  // Not useGSAPNear: scrambling the station names changes what the rows are made of, so it has to be
+  // done at load, long before the board is visible. Set up on arrival it shifted the layout (CLS) when
+  // the page was jumped to the board.
   useGSAP(() => {
     const q = gsap.utils.selector(root);
     const mm = gsap.matchMedia();

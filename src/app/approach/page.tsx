@@ -128,7 +128,7 @@ export default function ApproachPage() {
       <WhereNext links={[
         { href: "/route", label: "Plan your route", hint: "A minute of context, then a conversation.", primary: true },
         { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
-        { href: "/capabilities", label: "Capabilities", hint: "The 18 divisions behind the approach." },
+        { href: "/capabilities", label: "Services", hint: "The 18 divisions behind the approach." },
       ]} />
     </PageShell>
   );

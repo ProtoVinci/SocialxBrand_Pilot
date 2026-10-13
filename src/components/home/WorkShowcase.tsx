@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useGSAPNear } from "@/lib/motion/defer";
 import { MQ } from "@/lib/motion/tokens";
 
-export type ShowcaseFrame = { poster: string; video?: string };
+/** `lqip`: the pipeline's 16x28 placeholder, used as the tile's blurred backdrop (see Tile). */
+export type ShowcaseFrame = { poster: string; lqip: string; video?: string };
 export type ShowcaseTile = {
   slug: string; title: string; kicker: string; format: string;
   /** a landscape original fills the tile edge to edge */
@@ -29,7 +31,7 @@ export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit:
   const left = tiles.filter((_, i) => i % 2 === 0);
   const right = tiles.filter((_, i) => i % 2 === 1);
 
-  useGSAP(() => {
+  useGSAPNear(() => {
     const mm = gsap.matchMedia();
     mm.add(MQ.cinema, () => {
       const [trackL, trackR] = gsap.utils.toArray<HTMLElement>("[data-track]", panel.current);
@@ -40,6 +42,10 @@ export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit:
       ];
       const boost = { v: 1 };
       const apply = () => loops.forEach((l) => l.timeScale(boost.v));
+      // One tween, made once and restarted from wherever the boost currently is: the scroll callback
+      // runs every frame, and a new tween per call (the old gsap.to inside onUpdate) allocated and
+      // overwrote one each time.
+      const settle = gsap.to(boost, { v: 1, duration: 1.2, ease: "power2.out", paused: true, onUpdate: apply });
       const st = ScrollTrigger.create({
         trigger: panel.current,
         start: "top bottom",
@@ -50,11 +56,11 @@ export function WorkShowcase({ tiles, credit }: { tiles: ShowcaseTile[]; credit:
         onUpdate: (self) => {
           boost.v = 1 + Math.min(5, Math.abs(self.getVelocity()) / 350);
           apply();
-          gsap.to(boost, { v: 1, duration: 1.2, ease: "power2.out", overwrite: true, onUpdate: apply });
+          settle.invalidate().restart();
         },
       });
       if (!st.isActive) loops.forEach((l) => l.pause());
-      return () => st.kill();
+      return () => { st.kill(); settle.kill(); };
     });
     return () => mm.revert();
   }, { scope: root });
@@ -137,7 +143,7 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
       // video and re-ran its hover transitions inside the moving track, which repainted the whole
       // track on every pass. Only a real pointer movement over a tile wakes it now, and the hover
       // look keys off the same state (data-hot) instead of :hover, which also fires on a slide-by.
-      onPointerMove={() => { if (!hot) setHot(true); }}
+      onPointerMove={(e) => { if (e.pointerType !== "touch" && !hot) setHot(true); }}
       onPointerLeave={() => setHot(false)}
       onFocus={() => setHot(true)}
       onBlur={() => setHot(false)}
@@ -148,9 +154,11 @@ function Tile({ tile }: { tile: ShowcaseTile }) {
         <Frame frame={tile.wide} hot={hot || onScreen} className="absolute inset-0 h-full w-full object-cover" />
       ) : (
         <>
-          {/* the footage's own light, blurred into a backdrop */}
-          {/* eslint-disable-next-line @next/next/no-img-element -- pre-sized poster */}
-          <img src={back.poster} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full scale-125 object-cover blur-2xl saturate-150" />
+          {/* The footage's own light as a backdrop: the 16x28 placeholder stretched over the tile. It is
+              already a few colour blobs, so scaling it up gives the soft wash for free; the full poster
+              under a 40px blur filter (the old backdrop) made the browser blur a large layer on every
+              frame while the tracks move. */}
+          <span aria-hidden className="absolute inset-0 scale-125 bg-cover bg-center" style={{ backgroundImage: `url(${back.lqip})` }} />
           <span aria-hidden className="absolute inset-0 bg-[radial-gradient(80%_70%_at_50%_45%,transparent,rgb(20_18_17/0.55))]" />
           {/* the vertical work, standing upright and whole */}
           <span className="absolute inset-0 flex items-center justify-center gap-[3%] px-[6%]">

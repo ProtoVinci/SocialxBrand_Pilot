@@ -41,7 +41,8 @@ export function briefText(b: Brief): string {
     b.message ? `\n${b.message}` : null,
     "",
     [b.email && `Email: ${b.email}`, b.phone && `Phone: ${b.phone}`].filter(Boolean).join(" · "),
-    "(Sent from the route planner on sxbp.com)",
+    // the address this brief was actually built on (it was a fixed sxbp.com, wrong on any other domain)
+    `(Sent from the route planner on ${typeof window !== "undefined" ? window.location.host : new URL(site.url).host})`,
   ].filter((l) => l !== null).join("\n");
 }
 
