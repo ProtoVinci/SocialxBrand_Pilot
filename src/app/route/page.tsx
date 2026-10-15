@@ -46,7 +46,7 @@ export default function RoutePage() {
               <div><dt className="label text-blue">Email</dt><dd className="mt-1"><a className="link-underline" href={`mailto:${site.email}`}>{site.email}</a></dd></div>
               <div><dt className="label text-blue">Phone</dt><dd className="mt-1"><a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a></dd></div>
               <div><dt className="label text-blue">WhatsApp</dt><dd className="mt-1"><a className="link-underline" href={wa} target="_blank" rel="noopener">Message us ↗</a></dd></div>
-              <div><dt className="label text-blue">Web</dt><dd className="mt-1">www.sxbp.com</dd></div>
+              <div><dt className="label text-blue">Web</dt><dd className="mt-1">{site.urlDisplay}</dd></div>
             </dl>
           </div>
         </aside>

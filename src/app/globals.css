@@ -290,6 +290,11 @@ body {
 .orbit-b { animation: orbit-ccw 22s linear infinite; }
 .orbit-b-counter { animation: orbit-cw 22s linear infinite; }
 .group:hover :is(.orbit-a, .orbit-a-counter, .orbit-b, .orbit-b-counter) { animation-play-state: paused; }
+/* The hero's ambient motion holds still once its scroll scene is under way or the hero has scrolled
+   away (Opening sets data-still): both sit under the takeover by then, and the drift kept the
+   compositor redrawing the blurred, blended glare layers on every frame of the scroll. Paused, not
+   removed, so it resumes from the same place when the visitor returns to the top. */
+[data-still] :is(.glare-drift, .orbit-a, .orbit-a-counter, .orbit-b, .orbit-b-counter) { animation-play-state: paused; }
 
 @keyframes badge-pop { from { transform: scale(0.2); } 60% { transform: scale(1.2); } to { transform: scale(1); } }
 

@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
 import { MQ, dur } from "@/lib/motion/tokens";
-import { Mark } from "@/components/brand/Mark";
 import { useRoute } from "@/lib/route/store";
 import { Reel } from "@/components/media/Reel";
 import { useLenis } from "@/components/motion/SmoothScroll";
@@ -66,7 +65,10 @@ export function Nav({ previews }: { previews: VideoAsset[] }) {
       },
     });
     return () => st.kill();
-  }, { dependencies: [pathname] });
+    // revertOnUpdate: without it useGSAP only reverts on unmount, and the Nav never unmounts, so the
+    // cleanup above never ran: every page visited added one more scroll trigger (and one more
+    // onUpdate on every scroll frame, and one more to re-measure on each refresh)
+  }, { dependencies: [pathname], revertOnUpdate: true });
 
   // close on navigation (adjusting state during render, per React's "you might not need an effect")
   const [lastPath, setLastPath] = useState(pathname);
@@ -137,11 +139,15 @@ export function Nav({ previews }: { previews: VideoAsset[] }) {
         }`}
       >
         <nav aria-label="Primary" className="gutter flex h-[var(--nav-h)] items-center justify-between gap-6">
-          <Link href="/" className="group flex items-center gap-3" aria-label="SOCIALxBRAND PILOT — home" transitionTypes={["nav-back"]}>
-            <Mark className="h-8 w-auto text-signal transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:-translate-y-0.5" />
-            <span className="hidden whitespace-nowrap font-display text-[0.95rem] font-medium tracking-[-0.01em] sm:block md:max-lg:hidden">
-              <span className="text-blue">SOCIAL</span>x<span className="text-signal-ink">BRAND PILOT</span>
-            </span>
+          <Link href="/" className="group flex shrink-0 items-center" aria-label="SOCIALxBRAND PILOT — home" transitionTypes={["nav-back"]}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static, already-cropped brand asset */}
+            <img
+              src="/brand/logo-horizontal.png"
+              alt=""
+              width={849}
+              height={277}
+              className="h-9 w-auto transition-transform duration-500 ease-[var(--ease-pilot)] group-hover:-translate-y-0.5 md:h-10"
+            />
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">

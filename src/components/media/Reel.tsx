@@ -92,11 +92,27 @@ export const Reel = forwardRef<ReelHandle, Props>(function Reel(
     return () => { io.disconnect(); release(el); };
   }, [mode, priority]);
 
+  // Hover previews wake on a real mouse movement over the reel, not on pointerenter: that also fires
+  // when a page scrolls tiles under a resting cursor, and when a finger starts a scroll on a tile,
+  // and each time started a clip download that was abandoned a moment later. Touch shows the poster
+  // (a tap opens the work itself).
+  const hovering = useRef(false);
   const hoverHandlers =
     mode === "hover" && !reduced
       ? {
-          onPointerEnter: () => { const el = videoRef.current; if (el) requestPlay(el, 1, priority + 5); },
-          onPointerLeave: () => { const el = videoRef.current; if (el) { release(el); el.currentTime = 0; } },
+          onPointerMove: (e: React.PointerEvent) => {
+            const el = videoRef.current;
+            if (!el || e.pointerType === "touch" || hovering.current) return;
+            hovering.current = true;
+            requestPlay(el, 1, priority + 5);
+          },
+          onPointerLeave: () => {
+            const el = videoRef.current;
+            if (!el || !hovering.current) return;
+            hovering.current = false;
+            release(el);
+            el.currentTime = 0;
+          },
         }
       : {};
 

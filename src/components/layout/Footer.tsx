@@ -16,7 +16,7 @@ export function Footer() {
             {closing.lead} <span className="serif-accent ink-cobalt">{closing.turn}</span>
           </h2>
         </div>
-        <dl className="grid gap-8 text-sm sm:grid-cols-3 md:col-span-6">
+        <dl className="flex flex-wrap content-start gap-x-10 gap-y-8 text-sm md:col-span-6 [&_dd]:[overflow-wrap:anywhere]">
           <div>
             <dt className="label text-blue">Email us</dt>
             <dd className="mt-3"><a className="link-underline text-base" href={`mailto:${site.email}`}>{site.email}</a></dd>
@@ -30,7 +30,7 @@ export function Footer() {
           </div>
           <div>
             <dt className="label text-blue">Visit</dt>
-            <dd className="mt-3 text-base">www.sxbp.com</dd>
+            <dd className="mt-3 text-base"><a className="link-underline" href={site.url} target="_blank" rel="noopener">{site.urlDisplay}</a></dd>
           </div>
         </dl>
       </div>

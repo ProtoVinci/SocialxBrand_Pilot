@@ -51,7 +51,17 @@ export function MethodBoard({ index = "05" }: { index?: string }) {
         if (t.dataset.ch !== " ") t.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
       });
     });
-    const restore = (rows: Element[]) => rows.forEach((r) => r.querySelectorAll<HTMLElement>("[data-ch]").forEach((t) => { gsap.killTweensOf(t); t.textContent = t.dataset.ch ?? ""; gsap.set(t, { rotateX: 0 }); }));
+    // Only a tile caught mid-flip needs its transform reset (one at rest is already flat). Resetting
+    // every tile (a gsap.set per tile, each reading its computed style right after the previous
+    // tile's text changed) forced a style recalculation per tile, a few hundred of them, and made
+    // leaving the home page stall.
+    const restore = (rows: Element[]) => {
+      const tiles = rows.flatMap((r) => [...r.querySelectorAll<HTMLElement>("[data-ch]")]);
+      const flipping = tiles.filter((t) => gsap.isTweening(t));
+      gsap.killTweensOf(tiles);
+      tiles.forEach((t) => { t.textContent = t.dataset.ch ?? ""; });
+      if (flipping.length) gsap.set(flipping, { rotateX: 0 });
+    };
     const reveal = (r: HTMLElement, delay = 0) => { if (r.dataset.revealed) return; r.dataset.revealed = "1"; flap(r, delay); };
 
     const setState = (rows: HTMLElement[], i: number) =>

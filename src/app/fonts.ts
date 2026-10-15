@@ -15,3 +15,17 @@ export const inter = localFont({
   ],
   fallback: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
 });
+
+/** Ridge 5 Bold: the multi-line face of "BRAND PILOT" in the logo. Used only for that lettering. */
+export const ridge = localFont({
+  display: "swap",
+  src: [{ path: "../fonts/Ridge5-Bold.otf", weight: "700", style: "normal" }],
+  fallback: ["Impact", "sans-serif"],
+});
+
+/** Lilita One: the face of "SOCIAL" in the footer wordmark. Used only for that lettering. */
+export const lilita = localFont({
+  display: "swap",
+  src: [{ path: "../../node_modules/@fontsource/lilita-one/files/lilita-one-latin-400-normal.woff2", weight: "400", style: "normal" }],
+  fallback: ["Impact", "sans-serif"],
+});

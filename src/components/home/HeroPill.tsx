@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { MQ } from "@/lib/motion/tokens";
+import { useBudgetedVideo } from "@/components/media/video-budget";
 import type { MediaAsset } from "@/content/work";
 
 /**
@@ -8,19 +9,25 @@ import type { MediaAsset } from "@/content/work";
  * It never stops: real reels play continuously and roll over to the next clip on a beat.
  * The incoming clip rises from below with a slight zoom while the outgoing one lifts away,
  * and both keep playing through the handover, so the capsule never shows a still frame.
- * Only the current and the outgoing clip play, which keeps decoding to two videos.
+ * Only the current and the outgoing clip play, and they play through the shared video budget
+ * (current clip first, the outgoing one only if a slot is free), so the capsules never add decoders
+ * on top of the rest of the page.
  * Each slide's <video> is created once, half a beat before it is first needed, and is then only
  * played and paused: mounting a fresh element on every beat (as before) meant a fetch and a
  * decoder start-up exactly when the handover animated, a visible hitch every second or so.
  * Slides fill the capsule (cover, anchored high at 50% 28%: the work is portrait and faces sit
  * in its upper third, so a centred crop beheads people); nothing is ever letterboxed.
- * Reduced motion / no JS: the first clip's poster, still. Offscreen: paused.
+ * Loading: the current clip and the one after it (warmed, preload="auto", so its turn starts on a
+ * decoded frame) are the only fetches ahead of time; a clip that has played stays parked (paused,
+ * still buffered) because its turn comes round again within a few seconds.
+ * Reduced motion / no JS: the first clip's poster, still. Offscreen, hidden tab, or `hold` (the
+ * desktop scroll scene has taken over the hero): no cycling, nothing playing.
  */
 /** The slide transition below (duration-[700ms]) plus a frame or two of slack. */
 const HANDOVER_MS = 750;
 
-export function HeroPill({ slides, interval = 2200, tilt = 0, className = "" }: {
-  slides: MediaAsset[]; interval?: number; tilt?: number; className?: string;
+export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, className = "" }: {
+  slides: MediaAsset[]; interval?: number; tilt?: number; hold?: boolean; className?: string;
 }) {
   const [i, setI] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
@@ -40,25 +47,28 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, className = "" }: 
     return () => { mq.removeEventListener("change", sync); io.disconnect(); };
   }, []);
 
+  const cycling = !still && inView && !hold && slides.length > 1;
   useEffect(() => {
-    if (still || !inView || slides.length < 2) return;
+    if (!cycling) return;
     const t = setInterval(() => {
+      // a hidden tab still fires (throttled) intervals: no re-render for a capsule nobody sees
+      if (document.hidden) return;
       setI((n) => { setPrev(n); return (n + 1) % slides.length; });
     }, interval);
     return () => clearInterval(t);
-  }, [still, inView, slides.length, interval]);
+  }, [cycling, slides.length, interval]);
 
   // per beat, once the handover has played (one render for both): the outgoing clip, now fully
   // transparent, is parked and stops decoding, and the next clip is warmed, so it is decoded by
   // the time its turn comes but never competes with the page's first paint
   useEffect(() => {
-    if (still || !inView || slides.length < 2) return;
+    if (!cycling) return;
     const t = setTimeout(() => {
       setPrev(null);
       setReach((r) => Math.max(r, Math.min(slides.length - 1, i + 1)));
     }, HANDOVER_MS);
     return () => clearTimeout(t);
-  }, [i, still, inView, slides.length, interval]);
+  }, [i, cycling, slides.length]);
 
   return (
     <span
@@ -73,7 +83,7 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, className = "" }: 
         // created once reached and kept (offscreen it only pauses, so scrolling back to the hero
         // never re-creates all of them at once); plays while on screen as the current or outgoing clip
         const mounted = s.kind === "video" && !still && k <= reach;
-        const playing = inView && state !== "wait";
+        const playing = inView && !hold && state !== "wait";
         return (
           <span
             key={s.id}
@@ -82,7 +92,7 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, className = "" }: 
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- tiny pre-sized posters from the media pipeline */}
             <img src={poster} alt="" loading={k === 0 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover object-[50%_28%]" />
-            {mounted && <PillVideo src={s.src.preview} playing={playing} />}
+            {mounted && <PillVideo src={s.src.preview} playing={playing} current={state === "on"} />}
           </span>
         );
       })}
@@ -97,14 +107,10 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, className = "" }: 
 }
 
 /** A capsule clip that is told whether to play, instead of being mounted and unmounted. */
-function PillVideo({ src, playing }: { src: string; playing: boolean }) {
+function PillVideo({ src, playing, current }: { src: string; playing: boolean; current: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
-  useEffect(() => {
-    const v = ref.current;
-    if (!v) return;
-    if (playing) v.play().catch(() => {});
-    else v.pause();
-  }, [playing]);
+  // the current clip outranks the outgoing one when the budget is short of slots
+  useBudgetedVideo(ref, playing, 0, current ? 1 : 0.5);
   return (
     <video ref={ref} src={src} muted loop playsInline preload="auto" className="absolute inset-0 h-full w-full object-cover object-[50%_28%]" />
   );

@@ -187,7 +187,7 @@ test.describe("enquiry adapters (the documented contact architecture: WhatsApp, 
     await reachSendStep(page);
     await page.getByRole("button", { name: /send by email/i }).click();
     const [href] = await page.evaluate(() => (window as unknown as { __opened: string[] }).__opened);
-    expect(href).toMatch(/^mailto:socialxbrandpilot@gmail\.com\?subject=/);
+    expect(href).toMatch(/^mailto:workwith\.sxbp@gmail\.com\?subject=/);
     const body = decodeURIComponent(href.split("body=")[1]);
     expect(body).toContain("Test Visitor");
     expect(body).toContain(`on ${new URL(page.url()).host})`);
@@ -227,7 +227,7 @@ test("route page: phones get a direct contact row above the builder; desktop kee
     const links = row.locator("xpath=..").getByRole("link");
     await expect(links.nth(0)).toHaveAttribute("href", /^https:\/\/wa\.me\/918432935877$/);
     await expect(links.nth(1)).toHaveAttribute("href", "tel:+918432935877");
-    await expect(links.nth(2)).toHaveAttribute("href", "mailto:socialxbrandpilot@gmail.com");
+    await expect(links.nth(2)).toHaveAttribute("href", "mailto:workwith.sxbp@gmail.com");
   } else if (info.project.name === "desktop") {
     await expect(row).toBeHidden();
     await expect(page.getByRole("heading", { name: /or just talk to us/i })).toBeVisible();
@@ -266,4 +266,79 @@ test("#10 home AI pairs play once as they arrive and end struck-through with the
     expect(e.should === "none" || /matrix\(1, 0, 0, 1, 0, 0\)/.test(e.should), `replacement line not in place: ${e.should}`).toBe(true);
     expect(e.strike === "none" || /matrix\(1, 0, 0, 1, 0, 0\)/.test(e.strike), `strike not drawn: ${e.strike}`).toBe(true);
   }
+});
+
+// ── Performance fixes (SocialxBrand_Performance_Fixes_README.md); each names the issue it guards ──
+
+const playingVideos = (page: Page) => page.evaluate(() => [...document.querySelectorAll("video")].filter((v) => !v.paused).length);
+
+test("perf #1 takeover: the window is transformed, never resized: it sits on the capsule, then fills the screen", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(2500);
+  const at = async (y: number) => {
+    await page.evaluate((y) => window.scrollTo(0, y), y);
+    await page.waitForTimeout(700);
+    return page.evaluate(() => {
+      const card = document.querySelector<HTMLElement>("[data-takeover]")!;
+      const r = (el: Element) => { const b = el.getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map(Math.round); };
+      return { card: r(card), pill: r(document.querySelector("[data-pill=top] > span")!), layoutWidth: card.offsetWidth, viewport: [innerWidth, innerHeight] };
+    });
+  };
+  const start = await at(20);
+  start.card.forEach((v, i) => expect(Math.abs(v - start.pill[i]), `card ${start.card} vs capsule ${start.pill}`).toBeLessThanOrEqual(12));
+  expect(start.layoutWidth, "laid out at full size, only scaled").toBe(start.viewport[0]);
+  const open = await at(1500);
+  expect(open.card).toEqual([0, 0, ...open.viewport]);
+  const back = await at(20);
+  expect(back.card).toEqual(start.card);
+});
+
+test("perf #4/#5 home: the hero capsules play through the shared budget (at most 3 videos at once, 2 on a phone)", async ({ page }, info) => {
+  test.skip(info.project.name === "reduced", "nothing plays under reduced motion");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(1500);
+  let most = 0;
+  // long enough for both capsules to hand over (current + outgoing clip each) more than once
+  for (let i = 0; i < 45; i++) { most = Math.max(most, await playingVideos(page)); await page.waitForTimeout(100); }
+  expect(most).toBeGreaterThan(0);
+  expect(most).toBeLessThanOrEqual(info.project.name === "mobile" ? 2 : 3);
+});
+
+test("perf #10 work index: scrolling under a resting cursor fetches no previews; a real mouse movement plays one", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  const clips: string[] = [];
+  page.on("request", (r) => { if (/\/media\/v\/[^?]+\.(mp4|webm)(\?|$)/.test(r.url())) clips.push(r.url()); });
+  await page.goto("/work", { waitUntil: "networkidle" });
+  await page.mouse.move(720, 450);
+  for (let i = 0; i < 20; i++) { await page.mouse.wheel(0, 150); await page.waitForTimeout(80); }
+  await page.waitForTimeout(800);
+  expect(clips, "previews fetched by tiles sliding under the cursor").toEqual([]);
+  const reel = page.locator("[data-tile] video").first();
+  await reel.scrollIntoViewIfNeeded();
+  const box = (await reel.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 4 });
+  await expect.poll(() => clips.length, { timeout: 8000 }).toBeGreaterThan(0);
+});
+
+test("perf #7/#12 navigation: Home → Work → back → Work, each page arrives visible and the home media stops", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(1500);
+  const work = async () => {
+    await page.locator('header a[href="/work"]').first().click();
+    await page.waitForURL("**/work");
+    await expect(page.locator("[data-tile]").first()).toBeVisible();
+    await page.waitForTimeout(800);
+    expect(await page.locator("[data-takeover]").count(), "home page left behind").toBe(0);
+    expect(await playingVideos(page), "a video still plays after leaving home").toBe(0);
+  };
+  await work();
+  await page.goBack();
+  await page.waitForURL((u) => u.pathname === "/");
+  await expect(page.locator("#hero-title")).toBeVisible();
+  await work();
 });

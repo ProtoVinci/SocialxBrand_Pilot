@@ -26,9 +26,9 @@ test("all 18 divisions present, in order, with the PDF names", () => {
 });
 
 test("contact details match the company profile", () => {
-  expect(site.email).toBe("socialxbrandpilot@gmail.com");
+  expect(site.email).toBe("workwith.sxbp@gmail.com");
   expect(site.phoneDisplay).toBe("+91 8432935877");
-  expect(site.url).toBe("https://www.sxbp.com");
+  expect(site.url).toBe("https://www.socialxbrandpilot.com");
 });
 
 const walk = (dir: string): string[] =>

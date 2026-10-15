@@ -107,7 +107,8 @@ export function DivisionBoard({ previews }: Props) {
   useEffect(() => {
     if (calm || !inView) return;
     const t = setInterval(() => {
-      if (Date.now() < heldUntil.current) return;
+      // a hidden tab still fires (throttled) intervals: no re-render of a board nobody sees
+      if (document.hidden || Date.now() < heldUntil.current) return;
       setActive((n) => (n + 1) % divisions.length);
     }, TOUR_MS);
     return () => clearInterval(t);

@@ -1,4 +1,5 @@
 import { ViewTransition, type ReactNode } from "react";
+import { RouteExit } from "./RouteExit";
 
 /**
  * Per-page view-transition wrapper (layouts persist across navigations, so it lives here).
@@ -9,11 +10,15 @@ import { ViewTransition, type ReactNode } from "react";
  * Pages with a dynamic segment key this wrapper on the segment (`key={slug}`): /work/a → /work/b
  * renders the same page component, which React would otherwise update in place, with no
  * enter/exit to animate.
+ * RouteExit (first, on purpose) hides the outgoing page before its animations are reverted.
  */
 export function PageShell({ children }: { children: ReactNode }) {
   return (
     <ViewTransition enter="route-in" exit="route-out" default="none">
-      <div>{children}</div>
+      <div>
+        <RouteExit />
+        {children}
+      </div>
     </ViewTransition>
   );
 }
