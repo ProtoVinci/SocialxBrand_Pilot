@@ -68,12 +68,14 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
       if (!cinema) {
         // phones: no pin, but the manifesto still lands its argument once it is in view:
         // "activity" is struck through, then "impact" turns purple
-        return observeOnce(q("[data-manifesto] p"), REVEAL_MARGIN, () => {
+        // (the timeline is created later, from the observer: recorded in this context through
+        // ctx.add, so the revert on unmount or breakpoint change also reverts it)
+        return observeOnce(q("[data-manifesto] p"), REVEAL_MARGIN, () => ctx.add(() => {
           gsap.timeline({ defaults: { ease: "glide" } })
             .to(q("[data-strike]"), { scaleX: 1, duration: dur.base })
             .to(q("[data-activity]"), { opacity: 0.55, duration: dur.quick }, "<0.2")
             .to(q("[data-impact]"), { color: "#1f2c85", duration: dur.base }, "+=0.15");
-        });
+        }));
       }
 
       // ── scroll choreography (desktop only) ────────────────────────
@@ -136,7 +138,11 @@ export function Opening({ takeover, pillsTop, pillsBottom }: Props) {
       const tl = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: {
-          trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: scrubSmoothing(0.8), invalidateOnRefresh: true,
+          trigger: root.current, start: "top top", end: "+=230%", pin: true, scrub: scrubSmoothing(0.8),
+          // The whole timeline is invalidated on a refresh, manifesto characters included. Invalidating
+          // only the card's tweens was tried (2026-10-15) and measured wrong after a resize and after a
+          // reload mid-scene, so the full re-initialisation stays.
+          invalidateOnRefresh: true,
           onRefreshInit: () => { geo = null; },
           // a refresh (load or resize mid-scene) renders the timeline without its callbacks
           onRefresh: (self) => { fit(); settle(self); },

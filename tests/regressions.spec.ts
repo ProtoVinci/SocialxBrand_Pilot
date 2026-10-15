@@ -342,3 +342,106 @@ test("perf #7/#12 navigation: Home → Work → back → Work, each page arrives
   await expect(page.locator("#hero-title")).toBeVisible();
   await work();
 });
+
+// ── Post-phase audit (SocialxBrand_Pilot_PostPhase_Audit.md); each names the audit section ──
+
+type GsapHook = { gsap: typeof import("gsap").gsap; ScrollTrigger: { getAll(): { trigger?: Element }[] } };
+/** The development-only `window.__gsap` hook (src/lib/gsap.ts); absent from production builds. */
+const hasGsapHook = (page: Page) => page.evaluate(() => "__gsap" in window);
+
+test("audit §3 hero capsules: the media window stays bounded (≤3 clips per capsule) however long the carousel cycles", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  let most = 0;
+  let currentWithoutClip = 0;
+  // ~12s: the top capsule (1.4s beat) goes round its four clips twice
+  for (let i = 0; i < 48; i++) {
+    const s = await page.evaluate(() => [...document.querySelectorAll("[data-pill] > span")].map((pill) => ({
+      clips: pill.querySelectorAll("video").length,
+      // the slide on screen has its clip mounted (warmed during the previous beat)
+      onHasClip: Boolean(pill.querySelector("[data-state=on] video")),
+    })));
+    most = Math.max(most, ...s.map((p) => p.clips));
+    if (i > 12) currentWithoutClip += s.filter((p) => !p.onHasClip).length;
+    await page.waitForTimeout(250);
+  }
+  expect(most, "clips mounted in one capsule").toBeLessThanOrEqual(3);
+  expect(currentWithoutClip, "samples where the slide on screen had no clip").toBe(0);
+});
+
+test("audit §9 video budget: crossing the 768px breakpoint re-ranks at once (3 slots → 2 → 3)", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.goto("/work/restaurant-hospitality", { waitUntil: "load" });
+  const grid = page.locator("ul li video").first();
+  await grid.scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollBy(0, 200));
+  const playing = () => page.evaluate(() => [...document.querySelectorAll("video")].filter((v) => !v.paused).length);
+  await expect.poll(playing, { timeout: 10000 }).toBe(3);
+  await page.setViewportSize({ width: 700, height: 900 });
+  await expect.poll(playing, { timeout: 5000 }).toBeLessThanOrEqual(2);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(() => window.scrollBy(0, 1));
+  await expect.poll(playing, { timeout: 10000 }).toBe(3);
+});
+
+test("audit §5 method board: a fast scroll through the board leaves every station on its words and state", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(1000);
+  const board = page.locator("section[aria-labelledby=method-title]");
+  const top = await board.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const height = await board.evaluate((el) => el.getBoundingClientRect().height);
+  const rows = () => board.locator("[data-row]").evaluateAll((els) => els.map((r) => ({
+    words: [...r.querySelectorAll<HTMLElement>("[data-ch]")].map((t) => t.textContent).join(""),
+    name: (r.querySelector("h3")?.getAttribute("aria-label") ?? "").toUpperCase(),
+    status: r.querySelector("[data-status]")?.textContent,
+  })));
+  // jump into the middle (skipping stations), then past the end
+  await page.evaluate((y) => window.scrollTo(0, y), top + height * 0.55);
+  await page.waitForTimeout(1600);
+  const mid = await rows();
+  const boarding = mid.findIndex((r) => r.status === "Boarding");
+  expect(boarding, `statuses ${mid.map((r) => r.status)}`).toBeGreaterThan(1);
+  mid.slice(0, boarding + 1).forEach((r) => expect(r.words).toBe(r.name));
+  mid.slice(0, boarding).forEach((r) => expect(r.status).toBe("Cleared"));
+  await page.evaluate((y) => window.scrollTo(0, y), top + height - 900);
+  await page.waitForTimeout(1600);
+  for (const r of await rows()) { expect(r.words).toBe(r.name); expect(r.status).toBe("Cleared"); }
+});
+
+test("audit §6/§11 leaving mid-animation: no tween left on removed nodes, trigger count flat across Home ↔ Work", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  test.skip(!(await hasGsapHook(page)), "needs the development-only window.__gsap hook (run against `next dev`)");
+  await page.waitForTimeout(1000);
+  const counts: number[] = [];
+  for (let visit = 0; visit < 3; visit++) {
+    // start the method board's flaps and the ladder's word change, then leave at once
+    const board = page.locator("section[aria-labelledby=method-title]");
+    const top = await board.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+    await page.evaluate((y) => window.scrollTo(0, y), top + 900);
+    await page.waitForTimeout(120);
+    // the bar has slid away on the scroll down: a DOM click, as a keyboard user or the menu would
+    await page.locator('header a[href="/work"]').first().dispatchEvent("click");
+    await page.waitForURL("**/work");
+    await page.waitForTimeout(1200);
+    const orphans = await page.evaluate(() => {
+      const { gsap } = (window as unknown as { __gsap: GsapHook }).__gsap;
+      return gsap.globalTimeline.getChildren(true, true, false)
+        .flatMap((t) => (t as gsap.core.Tween).targets?.() ?? [])
+        .filter((el): el is Element => el instanceof Element && !el.isConnected).length;
+    });
+    expect(orphans, "tweens still animating nodes of the page that was left").toBe(0);
+    await page.goBack();
+    await page.waitForURL((u) => u.pathname === "/");
+    await page.waitForTimeout(2500);
+    counts.push(await page.evaluate(() => (window as unknown as { __gsap: GsapHook }).__gsap.ScrollTrigger.getAll().length));
+  }
+  expect(new Set(counts).size, `ScrollTriggers on each return to home: ${counts}`).toBe(1);
+  expect(errors).toEqual([]);
+});

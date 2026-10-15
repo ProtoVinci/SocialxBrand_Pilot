@@ -33,12 +33,14 @@ export function ApproachRoute({ steps }: { steps: string[] }) {
         tl.from(t, { x: () => dx(i), y: () => dy(i), rotate: (i % 2 ? 5 : -5) + i * 0.6, immediateRender: true }, i * 0.04);
       });
     });
-    mm.add(MQ.pocket, () => {
+    mm.add(MQ.pocket, (context) => {
       const tickets = q("[data-ticket]");
       gsap.set(tickets, { autoAlpha: 0, y: 28 });
-      return observeOnce([root.current!], REVEAL_MARGIN, () => {
+      // (created later, from the observer: recorded in this context through context.add, so the
+      // revert on unmount or breakpoint change also reverts it)
+      return observeOnce([root.current!], REVEAL_MARGIN, () => context.add(() => {
         gsap.to(tickets, { autoAlpha: 1, y: 0, duration: dur.base, ease: "pilot", stagger: cappedStagger(steps.length, stagger.cards) });
-      });
+      }));
     });
     return () => mm.revert();
   }, { scope: root, dependencies: [steps.length] });

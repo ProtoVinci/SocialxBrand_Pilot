@@ -12,14 +12,15 @@ import type { MediaAsset } from "@/content/work";
  * Only the current and the outgoing clip play, and they play through the shared video budget
  * (current clip first, the outgoing one only if a slot is free), so the capsules never add decoders
  * on top of the rest of the page.
- * Each slide's <video> is created once, half a beat before it is first needed, and is then only
- * played and paused: mounting a fresh element on every beat (as before) meant a fetch and a
- * decoder start-up exactly when the handover animated, a visible hitch every second or so.
+ * Media window: each capsule holds at most three <video> elements, the current clip, the outgoing
+ * one while the handover plays, and the next one, created about half a beat before its turn
+ * (preload="auto") so its turn starts on a decoded frame, never with a fetch and a decoder start-up
+ * in the middle of the handover. A clip is unmounted once its handover has played, so the window
+ * slides with the carousel instead of growing until every clip is buffered (a clip that comes round
+ * again is re-created from the HTTP cache: processed media is served immutable). The poster sits
+ * under every clip, so a clip that is not ready yet shows its still, never an empty frame.
  * Slides fill the capsule (cover, anchored high at 50% 28%: the work is portrait and faces sit
  * in its upper third, so a centred crop beheads people); nothing is ever letterboxed.
- * Loading: the current clip and the one after it (warmed, preload="auto", so its turn starts on a
- * decoded frame) are the only fetches ahead of time; a clip that has played stays parked (paused,
- * still buffered) because its turn comes round again within a few seconds.
  * Reduced motion / no JS: the first clip's poster, still. Offscreen, hidden tab, or `hold` (the
  * desktop scroll scene has taken over the hero): no cycling, nothing playing.
  */
@@ -31,8 +32,9 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
 }) {
   const [i, setI] = useState(0);
   const [prev, setPrev] = useState<number | null>(null);
-  // highest slide index whose video exists: the current one, plus the next once it is warmed
-  const [reach, setReach] = useState(0);
+  // the next clip is warmed only after the first handover delay, so it never competes with the
+  // page's first paint
+  const [warm, setWarm] = useState(false);
   const [still, setStill] = useState(true);
   const [inView, setInView] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
@@ -59,16 +61,17 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
   }, [cycling, slides.length, interval]);
 
   // per beat, once the handover has played (one render for both): the outgoing clip, now fully
-  // transparent, is parked and stops decoding, and the next clip is warmed, so it is decoded by
-  // the time its turn comes but never competes with the page's first paint
+  // transparent, leaves the window (unmounted, so it stops decoding and its buffer is freed) and
+  // the next clip enters it, so it is decoded by the time its turn comes
   useEffect(() => {
     if (!cycling) return;
     const t = setTimeout(() => {
       setPrev(null);
-      setReach((r) => Math.max(r, Math.min(slides.length - 1, i + 1)));
+      setWarm(true);
     }, HANDOVER_MS);
     return () => clearTimeout(t);
-  }, [i, cycling, slides.length]);
+  }, [i, cycling]);
+  const next = (i + 1) % slides.length;
 
   return (
     <span
@@ -80,9 +83,9 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
       {slides.map((s, k) => {
         const state = k === i ? "on" : k === prev ? "out" : "wait";
         const poster = s.kind === "video" ? s.poster.webp : s.srcset.webp[0]?.url;
-        // created once reached and kept (offscreen it only pauses, so scrolling back to the hero
-        // never re-creates all of them at once); plays while on screen as the current or outgoing clip
-        const mounted = s.kind === "video" && !still && k <= reach;
+        // the media window: current, outgoing (during the handover) and, once warm, the next clip.
+        // Offscreen or on hold the window only pauses (nothing is re-created on the way back).
+        const mounted = s.kind === "video" && !still && (k === i || k === prev || (warm && k === next));
         const playing = inView && !hold && state !== "wait";
         return (
           <span

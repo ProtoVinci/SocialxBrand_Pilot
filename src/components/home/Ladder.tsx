@@ -1,6 +1,7 @@
 "use client";
-import { useRef } from "react";
-import { gsap, useGSAP, ScrollTrigger } from "@/lib/gsap";
+import { useRef, useState } from "react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useGSAPNear } from "@/lib/motion/defer";
 import { MQ, dur } from "@/lib/motion/tokens";
 import { Reel, type ReelHandle } from "@/components/media/Reel";
 import type { VideoAsset } from "@/content/work";
@@ -12,6 +13,10 @@ import { useMinWidth } from "@/lib/use-min-width";
  * reel beside it scrolls to the next clip like a reel feed, on a single periwinkle act:
  * seen → remembered → trusted → chosen → moving forward.
  * CSS sticky (not a GSAP pin) keeps it cheap; the step is derived from scroll progress.
+ * Set up about a screen before it arrives (useGSAPNear: it is sticky, not pinned, and its height is
+ * CSS, so nothing moves when it sets up); until then the markup itself shows the first rung.
+ * Only the current rung's reel and its two neighbours are mounted (one of them is always the clip
+ * sliding in or out); the other layers stay as empty frames, so their posters are not fetched.
  * Reduced motion / no JS: the full ladder is shown as a static list.
  */
 export function Ladder({ reels }: { reels: VideoAsset[] }) {
@@ -21,8 +26,10 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
   // the framed reel is ~160px wide on a phone and up to ~650px tall from md up: the 360p clip is
   // enough below md (about a tenth of the bytes of five 720p clips)
   const md = useMinWidth(768);
+  // the rung on screen, for the media window only (the motion itself is driven by GSAP)
+  const [rung, setRung] = useState(0);
 
-  useGSAP(() => {
+  useGSAPNear(() => {
     const q = gsap.utils.selector(root);
     const mm = gsap.matchMedia();
     mm.add(MQ.motion, () => {
@@ -54,6 +61,7 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
         });
         ticks.forEach((t, k) => t.toggleAttribute("data-on", k <= i));
         current = i;
+        setRung(i);
         sync();
       };
       // first rung set directly (no tweens at load: each tween would read computed styles)
@@ -71,7 +79,9 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
       });
       const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }, { threshold: 0.15 });
       io.observe(root.current!.querySelector("[data-frame]")!);
-      return () => { st.kill(); io.disconnect(); players.current.forEach((p) => p?.pause()); };
+      // the word and layer tweens are made later, by show() from the scroll callback, so they are
+      // killed here explicitly (the context revert only covers what setup itself created)
+      return () => { st.kill(); io.disconnect(); gsap.killTweensOf([...words, ...layers]); players.current.forEach((p) => p?.pause()); };
     });
     return () => mm.revert();
   }, { scope: root });
@@ -87,7 +97,8 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
               {/* animated slot */}
               <span className="relative mt-1 hidden h-[1.12em] overflow-hidden [html.js-motion_&]:block" aria-hidden>
                 {steps.map((s) => (
-                  <span key={s} data-word className="serif-accent absolute inset-x-0 top-0 font-normal text-signal-ink">{s.toLowerCase()}.</span>
+                  // before setup only the first word shows (the rest wait below the slot)
+                <span key={s} data-word className={`serif-accent absolute inset-x-0 top-0 font-normal text-signal-ink ${s === steps[0] ? "" : "opacity-0"}`}>{s.toLowerCase()}.</span>
                 ))}
               </span>
               <span className="sr-only">{steps.join(", ").toLowerCase()}.</span>
@@ -112,9 +123,9 @@ export function Ladder({ reels }: { reels: VideoAsset[] }) {
             {steps.map((s, i) => {
               const reel = reels[i % Math.max(1, reels.length)];
               return (
-                // without JS motion the first rung stays visible as a still frame
-                <div key={s} data-layer className={`absolute inset-0 opacity-0 ${i === 0 ? "[html:not(.js-motion)_&]:opacity-100" : ""}`}>
-                  {reel && <Reel ref={(r) => { players.current[i] = r; }} asset={reel} mode="manual" variant={md ? "full" : "preview"} className="absolute inset-0 h-full w-full" />}
+                // the first rung shows as a still frame until setup (and without JS motion)
+                <div key={s} data-layer className={`absolute inset-0 ${i === 0 ? "" : "opacity-0"}`}>
+                  {reel && Math.abs(i - rung) <= 1 && <Reel ref={(r) => { players.current[i] = r; }} asset={reel} mode="manual" variant={md ? "full" : "preview"} className="absolute inset-0 h-full w-full" />}
                 </div>
               );
             })}

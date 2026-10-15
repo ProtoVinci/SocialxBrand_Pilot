@@ -17,4 +17,10 @@ CustomEase.create("glide", "M0,0 C0.65,0 0.35,1 1,1");
 gsap.defaults({ ease: "pilot", duration: 0.6 });
 ScrollTrigger.config({ ignoreMobileResize: true });
 
+// Development only (dropped from production builds): lets the Playwright regression tests count the
+// live ScrollTriggers and tweens, e.g. that leaving a page leaves none of its animations behind.
+if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+  (window as unknown as { __gsap: unknown }).__gsap = { gsap, ScrollTrigger };
+}
+
 export { gsap, useGSAP, ScrollTrigger, SplitText, CustomEase };

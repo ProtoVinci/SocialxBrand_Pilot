@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageShell } from "@/components/layout/PageShell";
+import { NoExitTransition } from "@/components/layout/NoExitTransition";
 import { Opening } from "@/components/home/Opening";
 import { Ladder } from "@/components/home/Ladder";
 import { WorkShowcase, type ShowcaseFrame, type ShowcaseTile } from "@/components/home/WorkShowcase";
@@ -39,6 +40,8 @@ export default function Home() {
 
   return (
     <PageShell>
+        {/* leaving home skips the page transition (see the component) */}
+        <NoExitTransition />
         <Opening takeover={takeover} pillsTop={pillsTop} pillsBottom={pillsBottom} />
         <Ladder reels={ladder} />
         <WorkShowcase tiles={tiles} credit={partnerCredit} />

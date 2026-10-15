@@ -23,7 +23,7 @@ export function ScreeningMedia({ title, videos, photos }: { title: string; video
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
-    mm.add(MQ.motion, () => {
+    mm.add(MQ.motion, (context) => {
       gsap.utils.toArray<HTMLElement>("[data-drift]").forEach((frame) => {
         const img = frame.querySelector("img");
         if (!img) return;
@@ -34,9 +34,11 @@ export function ScreeningMedia({ title, videos, photos }: { title: string; video
       // on each ScrollTrigger.refresh().
       const rises = gsap.utils.toArray<HTMLElement>("[data-rise]");
       gsap.set(rises, { autoAlpha: 0, y: 60 });
-      return observeOnce(rises, "0px 0px -12% 0px", (batch) => {
+      // (created later, from the observer: recorded in this context through context.add, so the
+      // revert on unmount also reverts them)
+      return observeOnce(rises, "0px 0px -12% 0px", (batch) => context.add(() => {
         batch.forEach((el, k) => gsap.to(el, { autoAlpha: 1, y: 0, duration: 0.9, delay: (k % 3) * 0.08 }));
-      });
+      }));
     });
     return () => mm.revert();
   }, { scope: root });

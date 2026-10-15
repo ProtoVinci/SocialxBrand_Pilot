@@ -23,14 +23,16 @@ export function Reveal({ as: Tag = "div", children, className, group = false, y 
     if (!el) return;
     const mm = gsap.matchMedia();
     mm.add(MQ.reduce, () => { gsap.set(el, { autoAlpha: 1 }); });
-    mm.add(MQ.motion, () => {
+    mm.add(MQ.motion, (context) => {
       gsap.set(el, { autoAlpha: 1 });
       const targets = group ? Array.from(el.children) : [el];
       if (group) {
         gsap.set(targets, { autoAlpha: 0, y });
-        return observeOnce(targets, REVEAL_MARGIN, (batch) =>
-          gsap.to(batch, { autoAlpha: 1, y: 0, duration: dur.base, delay, stagger: cappedStagger(batch.length, stagger.cards) }),
-        );
+        // created later, from the observer: recorded in this context (context.add) so a revert
+        // also reverts it; the single-block mode below only plays a tween made up front
+        return observeOnce(targets, REVEAL_MARGIN, (batch) => context.add(() => {
+          gsap.to(batch, { autoAlpha: 1, y: 0, duration: dur.base, delay, stagger: cappedStagger(batch.length, stagger.cards) });
+        }));
       }
       const tween = gsap.from(el, { autoAlpha: 0, y, duration: dur.base, delay, paused: true });
       return observeOnce([el], REVEAL_MARGIN, () => tween.play());
