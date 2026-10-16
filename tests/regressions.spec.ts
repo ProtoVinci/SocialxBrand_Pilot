@@ -3,56 +3,6 @@ import { test, expect, type Page } from "@playwright/test";
 // Regression guards for the audit fixes (SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md).
 // Each test names the plan item it protects.
 
-/** Records every addEventListener/removeEventListener so a test can count the listeners still live. */
-const trackListeners = () => {
-  const w = window as unknown as { __listeners: { t: EventTarget; type: string; fn: unknown; signal?: AbortSignal; removed: boolean }[] };
-  w.__listeners = [];
-  const add = EventTarget.prototype.addEventListener;
-  const remove = EventTarget.prototype.removeEventListener;
-  EventTarget.prototype.addEventListener = function (type: string, fn: unknown, opts?: boolean | AddEventListenerOptions) {
-    const signal = typeof opts === "object" ? opts?.signal : undefined;
-    w.__listeners.push({ t: this, type, fn, signal, removed: false });
-    return add.call(this, type, fn as EventListener, opts as AddEventListenerOptions);
-  };
-  EventTarget.prototype.removeEventListener = function (type: string, fn: unknown, opts?: boolean | EventListenerOptions) {
-    for (const l of w.__listeners) if (l.t === this && l.type === type && l.fn === fn) l.removed = true;
-    return remove.call(this, type, fn as EventListener, opts);
-  };
-};
-
-test("#9 DivisionTicker: its listeners are removed (not stacked) when reduced motion toggles", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "run once");
-  await page.addInitScript(trackListeners);
-  await page.goto("/capabilities", { waitUntil: "networkidle" });
-  const live = () =>
-    page.evaluate(() => {
-      const w = window as unknown as { __listeners: { t: Element; type: string; signal?: AbortSignal; removed: boolean }[] };
-      return w.__listeners.filter((l) => l.t instanceof Element && l.t.hasAttribute("data-ticker-row") && (l.type === "pointerenter" || l.type === "pointerleave") && !l.removed && !l.signal?.aborted).length;
-    });
-  const rows = await page.locator("[data-ticker-row]").count();
-  expect(await live()).toBe(rows * 2);
-  for (let i = 0; i < 3; i++) {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.waitForTimeout(150);
-    await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.waitForTimeout(150);
-  }
-  expect(await live(), "listeners after 3 reduced-motion toggles").toBe(rows * 2);
-});
-
-test("#5 work tiles: touch pointer moves do not trigger hover; a mouse does", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "run once");
-  await page.goto("/", { waitUntil: "networkidle" });
-  const tile = page.locator('#work a[href^="/work/"]').first();
-  await tile.scrollIntoViewIfNeeded();
-  const fire = (pointerType: string) => tile.evaluate((el, pointerType) => el.dispatchEvent(new PointerEvent("pointermove", { pointerType, bubbles: true, isPrimary: true })), pointerType);
-  await fire("touch");
-  await page.waitForTimeout(150);
-  await expect(tile).not.toHaveAttribute("data-hot", "");
-  await fire("mouse");
-  await expect(tile).toHaveAttribute("data-hot", "");
-});
-
 /** Records window.scrollBy calls, then walks the route builder to its second step on a short viewport (where it must scroll). */
 async function stepChangeScrollCalls(page: Page) {
   await page.addInitScript(() => {
@@ -92,57 +42,6 @@ test.describe("route builder without Lenis (touch)", () => {
   });
 });
 
-test("#2 home: the hero takeover reel is not fetched or played at load, only once the scroll scene starts", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "run once");
-  const clip = /wedding-films-05\.(mp4|webm)/;
-  const requested: string[] = [];
-  page.on("request", (r) => { if (clip.test(r.url())) requested.push(r.url()); });
-  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
-  await page.goto("/", { waitUntil: "networkidle" });
-  await page.waitForTimeout(2500);
-  expect(requested, "takeover clip requested before any scroll").toEqual([]);
-  await page.mouse.move(720, 450);
-  for (let i = 0; i < 6; i++) { await page.mouse.wheel(0, 150); await page.waitForTimeout(100); }
-  await expect.poll(() => requested.length, { timeout: 8000 }).toBeGreaterThan(0);
-});
-
-test("#7 home capabilities stage: at most two reels are mounted, however many divisions the tour visits", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "run once");
-  await page.goto("/", { waitUntil: "networkidle" });
-  const stage = page.locator("#board-stage");
-  await stage.scrollIntoViewIfNeeded();
-  const chips = page.locator("section[aria-labelledby^='board-'] a");
-  expect(await chips.count()).toBe(18);
-  let most = 0;
-  for (const i of [0, 5, 11, 17, 3, 9, 14]) {
-    await chips.nth(i).focus(); // keyboard focus selects a division
-    await page.waitForTimeout(250);
-    most = Math.max(most, await stage.locator("video").count());
-  }
-  expect(most).toBeLessThanOrEqual(2);
-  expect(most).toBeGreaterThan(0);
-});
-
-test("#6 capabilities index: the cursor preview mounts at most two reels while hovering many rows", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "run once");
-  await page.goto("/capabilities", { waitUntil: "networkidle" });
-  const rows = page.locator("section[aria-labelledby^='cluster-'] li");
-  const total = await rows.count();
-  expect(total).toBe(18);
-  const previews = page.locator("div.pointer-events-none.absolute.left-0.top-0.z-20");
-  expect(await previews.locator("video").count(), "before any hover").toBe(0);
-  let most = 0;
-  for (let i = 0; i < total; i += 3) {
-    await rows.nth(i).scrollIntoViewIfNeeded();
-    const box = (await rows.nth(i).boundingBox())!;
-    await page.mouse.move(box.x + 200, box.y + box.height / 2);
-    await page.mouse.move(box.x + 230, box.y + box.height / 2); // real movement, then rest for the intent delay
-    await page.waitForTimeout(260);
-    most = Math.max(most, await previews.locator("video").count());
-  }
-  expect(most).toBeLessThanOrEqual(2);
-});
-
 test("#23 a device that decodes AV1 in hardware: reels still fetch nothing until they play (no video.load() at mount)", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "run once");
   // pretend the decoder is power-efficient, which is what switches reels to their WebM source
@@ -152,13 +51,14 @@ test("#23 a device that decodes AV1 in hardware: reels still fetch nothing until
   });
   const clips: string[] = [];
   page.on("request", (r) => { if (/\/media\/v\/[^/]+\.(mp4|webm)(\?|$)/.test(r.url()) && !/-preview\.mp4/.test(r.url())) clips.push(r.url().split("/").pop()!); });
-  await page.goto("/", { waitUntil: "networkidle" });
+  // a project page: its featured reel is on screen at load, the grid of reels is below the fold
+  await page.goto("/work/restaurant-hospitality", { waitUntil: "networkidle" });
   await page.waitForTimeout(2500);
-  expect(clips, "full-size clips requested at load, before any scroll").toEqual([]);
+  expect(clips.length, `full-size clips requested at load, before any scroll: ${clips}`).toBeLessThanOrEqual(1);
   // and when a reel does play, it is the WebM that is fetched on such a device
   await page.mouse.move(720, 450);
   for (let i = 0; i < 40; i++) { await page.mouse.wheel(0, 200); await page.waitForTimeout(80); }
-  await expect.poll(() => clips.some((c) => c.endsWith(".webm")), { timeout: 8000 }).toBe(true);
+  await expect.poll(() => clips.filter((c) => c.endsWith(".webm")).length, { timeout: 8000 }).toBeGreaterThan(1);
 });
 
 /** Walks the route builder to its last step ("Review and send") with a valid brief. */
@@ -172,8 +72,8 @@ async function reachSendStep(page: Page) {
   await page.getByRole("button", { name: /continue/i }).click();
   await page.getByLabel(/your name/i).fill("Test Visitor");
   await page.getByLabel(/^email/i).fill("visitor@example.com");
-  await page.getByRole("button", { name: /review route/i }).click();
-  await expect(page.getByRole("heading", { name: /review and send your route/i })).toBeVisible();
+  await page.getByRole("button", { name: /review brief/i }).click();
+  await expect(page.getByRole("heading", { name: /review and send your brief/i })).toBeVisible();
 }
 
 test.describe("enquiry adapters (the documented contact architecture: WhatsApp, mailto, copy)", () => {
@@ -219,19 +119,30 @@ test.describe("enquiry adapters (the documented contact architecture: WhatsApp, 
   });
 });
 
-test("route page: phones get a direct contact row above the builder; desktop keeps the side panel", async ({ page }, info) => {
+test("contact page: WhatsApp, call and email come first, above the optional project brief, at every size", async ({ page }) => {
   await page.goto("/route", { waitUntil: "networkidle" });
-  const row = page.getByText("Prefer to talk?");
-  if (info.project.name === "mobile") {
-    await expect(row).toBeVisible();
-    const links = row.locator("xpath=..").getByRole("link");
-    await expect(links.nth(0)).toHaveAttribute("href", /^https:\/\/wa\.me\/918432935877$/);
-    await expect(links.nth(1)).toHaveAttribute("href", "tel:+918432935877");
-    await expect(links.nth(2)).toHaveAttribute("href", "mailto:workwith.sxbp@gmail.com");
-  } else if (info.project.name === "desktop") {
-    await expect(row).toBeHidden();
-    await expect(page.getByRole("heading", { name: /or just talk to us/i })).toBeVisible();
-  }
+  const direct = page.locator("section[aria-labelledby=direct-title] a");
+  await expect(direct).toHaveCount(3);
+  await expect(direct.nth(0)).toHaveAttribute("href", /^https:\/\/wa\.me\/918432935877$/);
+  await expect(direct.nth(1)).toHaveAttribute("href", "tel:+918432935877");
+  await expect(direct.nth(2)).toHaveAttribute("href", "mailto:workwith.sxbp@gmail.com");
+  await expect(direct.nth(0)).toBeInViewport();
+  const directTop = await direct.nth(0).evaluate((el) => el.getBoundingClientRect().top);
+  const briefTop = await page.locator("#brief").evaluate((el) => el.getBoundingClientRect().top);
+  expect(directTop).toBeLessThan(briefTop);
+  // the hand-off is described as it really is
+  await expect(page.getByText("The website does not submit the message automatically.")).toBeVisible();
+});
+
+test("project brief: services are optional, a visitor who is not sure can still reach the send step", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.goto("/route", { waitUntil: "networkidle" });
+  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: /continue/i }).click();
+  await page.getByLabel(/your name/i).fill("Test Visitor");
+  await page.getByLabel(/^email/i).fill("visitor@example.com");
+  await page.getByRole("button", { name: /review brief/i }).click();
+  await expect(page.getByRole("heading", { name: /review and send your brief/i })).toBeVisible();
+  await expect(page.getByText(/Services: not chosen yet/)).toBeVisible();
 });
 
 test("#10 one-shot reveals (now IntersectionObserver, not ScrollTrigger): the work-detail rises end fully visible", async ({ page }, info) => {
@@ -246,10 +157,10 @@ test("#10 one-shot reveals (now IntersectionObserver, not ScrollTrigger): the wo
   expect(states.filter((s) => s.opacity !== "1" || s.visibility !== "visible"), "rises left hidden").toEqual([]);
 });
 
-test("#10 home AI pairs play once as they arrive and end struck-through with the replacement in place", async ({ page }, info) => {
+test("#10 AI pairs (AI Marketing & Automation page) play once as they arrive and end struck-through with the replacement in place", async ({ page }, info) => {
   test.skip(info.project.name === "mobile", "desktop and reduced-motion cover it");
   await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
-  await page.goto("/", { waitUntil: "networkidle" });
+  await page.goto("/capabilities/ai-marketing-automation", { waitUntil: "networkidle" });
   const pairs = page.locator("[data-pair]");
   const n = await pairs.count();
   expect(n).toBe(3);
@@ -271,29 +182,6 @@ test("#10 home AI pairs play once as they arrive and end struck-through with the
 // ── Performance fixes (SocialxBrand_Performance_Fixes_README.md); each names the issue it guards ──
 
 const playingVideos = (page: Page) => page.evaluate(() => [...document.querySelectorAll("video")].filter((v) => !v.paused).length);
-
-test("perf #1 takeover: the window is transformed, never resized: it sits on the capsule, then fills the screen", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "run once");
-  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
-  await page.goto("/", { waitUntil: "load" });
-  await page.waitForTimeout(2500);
-  const at = async (y: number) => {
-    await page.evaluate((y) => window.scrollTo(0, y), y);
-    await page.waitForTimeout(700);
-    return page.evaluate(() => {
-      const card = document.querySelector<HTMLElement>("[data-takeover]")!;
-      const r = (el: Element) => { const b = el.getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map(Math.round); };
-      return { card: r(card), pill: r(document.querySelector("[data-pill=top] > span")!), layoutWidth: card.offsetWidth, viewport: [innerWidth, innerHeight] };
-    });
-  };
-  const start = await at(20);
-  start.card.forEach((v, i) => expect(Math.abs(v - start.pill[i]), `card ${start.card} vs capsule ${start.pill}`).toBeLessThanOrEqual(12));
-  expect(start.layoutWidth, "laid out at full size, only scaled").toBe(start.viewport[0]);
-  const open = await at(1500);
-  expect(open.card).toEqual([0, 0, ...open.viewport]);
-  const back = await at(20);
-  expect(back.card).toEqual(start.card);
-});
 
 test("perf #4/#5 home: the hero capsules play through the shared budget (at most 3 videos at once, 2 on a phone)", async ({ page }, info) => {
   test.skip(info.project.name === "reduced", "nothing plays under reduced motion");
@@ -333,7 +221,7 @@ test("perf #7/#12 navigation: Home → Work → back → Work, each page arrives
     await page.waitForURL("**/work");
     await expect(page.locator("[data-tile]").first()).toBeVisible();
     await page.waitForTimeout(800);
-    expect(await page.locator("[data-takeover]").count(), "home page left behind").toBe(0);
+    expect(await page.locator("#hero-title").count(), "home page left behind").toBe(0);
     expect(await playingVideos(page), "a video still plays after leaving home").toBe(0);
   };
   await work();
@@ -385,32 +273,6 @@ test("audit §9 video budget: crossing the 768px breakpoint re-ranks at once (3 
   await expect.poll(playing, { timeout: 10000 }).toBe(3);
 });
 
-test("audit §5 method board: a fast scroll through the board leaves every station on its words and state", async ({ page }, info) => {
-  test.skip(info.project.name !== "desktop", "run once");
-  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
-  await page.goto("/", { waitUntil: "load" });
-  await page.waitForTimeout(1000);
-  const board = page.locator("section[aria-labelledby=method-title]");
-  const top = await board.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-  const height = await board.evaluate((el) => el.getBoundingClientRect().height);
-  const rows = () => board.locator("[data-row]").evaluateAll((els) => els.map((r) => ({
-    words: [...r.querySelectorAll<HTMLElement>("[data-ch]")].map((t) => t.textContent).join(""),
-    name: (r.querySelector("h3")?.getAttribute("aria-label") ?? "").toUpperCase(),
-    status: r.querySelector("[data-status]")?.textContent,
-  })));
-  // jump into the middle (skipping stations), then past the end
-  await page.evaluate((y) => window.scrollTo(0, y), top + height * 0.55);
-  await page.waitForTimeout(1600);
-  const mid = await rows();
-  const boarding = mid.findIndex((r) => r.status === "Boarding");
-  expect(boarding, `statuses ${mid.map((r) => r.status)}`).toBeGreaterThan(1);
-  mid.slice(0, boarding + 1).forEach((r) => expect(r.words).toBe(r.name));
-  mid.slice(0, boarding).forEach((r) => expect(r.status).toBe("Cleared"));
-  await page.evaluate((y) => window.scrollTo(0, y), top + height - 900);
-  await page.waitForTimeout(1600);
-  for (const r of await rows()) { expect(r.words).toBe(r.name); expect(r.status).toBe("Cleared"); }
-});
-
 test("audit §6/§11 leaving mid-animation: no tween left on removed nodes, trigger count flat across Home ↔ Work", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "run once");
   const errors: string[] = [];
@@ -421,10 +283,10 @@ test("audit §6/§11 leaving mid-animation: no tween left on removed nodes, trig
   await page.waitForTimeout(1000);
   const counts: number[] = [];
   for (let visit = 0; visit < 3; visit++) {
-    // start the method board's flaps and the ladder's word change, then leave at once
-    const board = page.locator("section[aria-labelledby=method-title]");
-    const top = await board.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
-    await page.evaluate((y) => window.scrollTo(0, y), top + 900);
+    // start the services and steps reveals (observer-created tweens), then leave at once
+    const steps = page.locator("section[aria-labelledby=process-title]");
+    const top = await steps.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+    await page.evaluate((y) => window.scrollTo(0, y), top - 300);
     await page.waitForTimeout(120);
     // the bar has slid away on the scroll down: a DOM click, as a keyboard user or the menu would
     await page.locator('header a[href="/work"]').first().dispatchEvent("click");
@@ -444,4 +306,48 @@ test("audit §6/§11 leaving mid-animation: no tween left on removed nodes, trig
   }
   expect(new Set(counts).size, `ScrollTriggers on each return to home: ${counts}`).toBe(1);
   expect(errors).toEqual([]);
+});
+
+// ── Client-first layout (SocialxBrand_Client_First_Layout_Refactor_Plan.md) ──
+
+test("client-first home: the first screen says what the agency does and leads to Work and Services; five sections, then the footer", async ({ page }, info) => {
+  test.skip(info.project.name === "reduced", "desktop and phone cover it");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(1500);
+  await expect(page.getByRole("heading", { level: 1, name: "Every business has something worth showing." })).toBeVisible();
+  await expect(page.getByText(/18 marketing services/)).toBeInViewport();
+  for (const [name, href] of [["See our work", "/work"], ["Explore services", "/capabilities"]] as const) {
+    const link = page.locator("#main").getByRole("link", { name, exact: false }).first();
+    await expect(link).toHaveAttribute("href", href);
+    await expect(link).toBeInViewport();
+  }
+  const sections = await page.evaluate(() => [...document.querySelectorAll("#main > div > section, #main section")].filter((s) => !s.parentElement?.closest("section")).length);
+  expect(sections, "top-level home sections").toBeLessThanOrEqual(5);
+});
+
+test("client-first services: all 18 services listed under the four groups, each page in the same plain pattern", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  test.setTimeout(180_000);
+  await page.goto("/capabilities", { waitUntil: "load" });
+  for (const id of ["strategy-social", "content-creative", "reach-enquiries", "creators-community"]) await expect(page.locator(`#${id}`)).toHaveCount(1);
+  const hrefs = await page.locator("section[aria-labelledby=directory-title] a[href^='/capabilities/']").evaluateAll((as) => [...new Set(as.map((a) => a.getAttribute("href")))]);
+  expect(hrefs).toHaveLength(18);
+  for (const href of hrefs) {
+    await page.goto(href!, { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    for (const name of [/What this service helps with/, /What's included/, /How we work/, /Related services/]) {
+      await expect(page.getByRole("heading", { name }), `${href}: ${name}`).toHaveCount(1);
+    }
+    await expect(page.getByRole("link", { name: /Discuss this service/ }).first()).toBeVisible();
+  }
+});
+
+test("client-first language: no internal terms (Pilot Route, screening, station, division) in the visible pages", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  for (const route of ["/", "/work", "/work/restaurant-hospitality", "/capabilities", "/capabilities/social-media-management", "/approach", "/route"]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    const text = await page.evaluate(() => document.body.innerText);
+    expect(text.match(/pilot route|screenings?\b|stations?\b|divisions?\b/gi), route).toBeNull();
+  }
 });

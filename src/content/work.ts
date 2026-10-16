@@ -27,7 +27,11 @@ export type Screening = {
   divisions: string[];
 };
 
-export const partnerCredit = "Production partner: Vishay Creations";
+export const partner = { role: "Production partner", name: "Vishay Creations" } as const;
+export const partnerCredit = `${partner.role}: ${partner.name}`;
+
+/** The projects that lead (home page, top of /work): the owner's choice, 2026-10-16 (business-first). */
+export const featuredWork = ["restaurant-hospitality", "brand-films", "creator-content", "graphic-design"];
 
 export const screenings: Screening[] = [
   { slug: "creator-content", title: "Creator Content", kicker: "Commercial", line: "Presenter-led reels written for the feed: a face, a hook and a reason to keep watching.", format: "Vertical reels", divisions: ["content-creation", "creator-brand-growth", "video-editing-animation"] },

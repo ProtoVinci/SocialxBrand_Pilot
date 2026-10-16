@@ -37,15 +37,15 @@ for (const r of routes) {
   if (issues.length) problems.push(r);
 }
 
-// the journey from the report: home -> disc -> /work -> a screening -> home via breadcrumb
+// the journey: home -> "View all work" -> /work -> a project -> home via breadcrumb
 await page.goto(base + "/", { waitUntil: "networkidle" });
-await page.click('a[aria-label="See all recent work"]');
+await page.getByRole("link", { name: /view all work/i }).first().click();
 await page.waitForURL("**/work");
 await page.click('#main a[href^="/work/"]');
 await page.waitForURL("**/work/*");
 await page.click('nav[aria-label="Breadcrumb"] a[href="/"]');
 await page.waitForURL(base + "/");
-console.log("journey home -> disc -> /work -> screening -> home: ok");
+console.log("journey home -> View all work -> /work -> project -> home: ok");
 
 await browser.close();
 if (problems.length) { console.error("FAILED:", problems.join(", ")); process.exit(1); }

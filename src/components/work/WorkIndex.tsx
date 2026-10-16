@@ -7,13 +7,13 @@ import { MQ, dur } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import type { MediaAsset, Screening } from "@/content/work";
-import { pad } from "@/lib/pad";
+import { categoryLine } from "@/lib/category-line";
 
 export type Family = "all" | "motion" | "photo" | "design";
-export type IndexItem = { screening: Screening; cover: MediaAsset; family: Exclude<Family, "all">; count: number };
+export type IndexItem = { screening: Screening; cover: MediaAsset; family: Exclude<Family, "all"> };
 
 const FILTERS: { id: Family; label: string }[] = [
-  { id: "all", label: "Everything" },
+  { id: "all", label: "All work" },
   { id: "motion", label: "Reels & films" },
   { id: "photo", label: "Photography" },
   { id: "design", label: "Design & identity" },
@@ -80,11 +80,11 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
                     )}
                   </div>
                 </ViewTransition>
-                <div className="mt-4 flex items-baseline justify-between gap-4">
-                  <span className="font-display text-title font-medium transition-colors group-hover:text-signal">{screening.title}</span>
-                  <span className="label shrink-0 text-blue">{pad(item.count)}</span>
-                </div>
-                <span className="label mt-1 block text-blue">{screening.kicker} · {screening.format}</span>
+                {/* a plain title, what kind of work it is, and the way in (the piece count was not a
+                    reason to open a project, so it no longer leads the card) */}
+                <span className="mt-4 block font-display text-title font-medium transition-colors group-hover:text-signal">{screening.title}</span>
+                <span className="mt-1 block text-sm text-ink/65">{categoryLine(screening)}</span>
+                <span className="label mt-3 inline-block text-blue">View project <span aria-hidden>→</span></span>
               </Link>
             </li>
           );

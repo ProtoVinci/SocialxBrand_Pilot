@@ -26,8 +26,8 @@ export const whoWeAre = [
 
 export const pillars = ["Strategy", "Creativity", "Technology", "Execution"] as const;
 
-/** What the agency does, in one plain sentence: the four pillars, the 18 divisions and the business-first promise, as the site description already says it. */
-export const heroLede = "Strategy, creativity, technology and execution across 18 marketing divisions, built around what your business actually needs.";
+/** What the agency does, in one plain sentence: the four pillars, the 18 services and the business-first promise, as the site description already says it. */
+export const heroLede = "Strategy, creativity, technology and execution across 18 marketing services, built around what your business actually needs.";
 
 export const quote = {
   lead: "We are not here simply to make brands look good online.",
@@ -65,6 +65,18 @@ export const method = [
   { id: "measure", name: "Measure", body: "Track performance and understand what is happening.", detail: "Continuously monitor metrics and learn from performance data." },
   { id: "optimize", name: "Optimize", body: "Improve what is working and refine what is not.", detail: "Refine campaign execution based on what the data shows." },
   { id: "grow", name: "Grow", body: "Use insights, execution and continuous improvement to support sustainable business growth.", detail: "Sustainable growth, built step by step." },
+] as const;
+
+/**
+ * The way of working, in four plain steps for clients: the seven-stage method above, grouped
+ * (Understand · Strategize · Create + Execute · Measure + Optimize + Grow). Same meaning, fewer
+ * words; `stages` points back to the method stages each step stands for.
+ */
+export const steps = [
+  { id: "understand", title: "Understand your business", body: "Your goals, your audience and what you need right now.", stages: ["understand"] },
+  { id: "plan", title: "Plan the right approach", body: "Choose the services and channels that fit the objective.", stages: ["strategize"] },
+  { id: "create", title: "Create and execute", body: "Produce the agreed work and carry out the plan.", stages: ["create", "execute"] },
+  { id: "review", title: "Review and improve", body: "See what is working and refine the next steps.", stages: ["measure", "optimize", "grow"] },
 ] as const;
 
 export type AudienceId = "startups" | "growing" | "established" | "local";

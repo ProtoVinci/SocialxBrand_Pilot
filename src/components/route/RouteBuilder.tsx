@@ -4,18 +4,20 @@ import { useSearchParams } from "next/navigation";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ, dur } from "@/lib/motion/tokens";
 import { audiences, site, type AudienceId } from "@/content/site";
-import { clusters, divisions, divisionBySlug, pad } from "@/content/divisions";
+import { divisionBySlug } from "@/content/divisions";
+import { serviceGroups, servicesIn } from "@/content/service-groups";
 import { goals, suggestRoute, type GoalId } from "@/lib/route/suggest";
 import { routeStore, useRoute } from "@/lib/route/store";
 import { adapters, briefText, validate, type Brief, type BriefErrors } from "@/lib/route/enquiry";
 import { useLenis } from "@/components/motion/SmoothScroll";
 
-const STEPS = ["Business", "Goal", "Route", "Details", "Send"] as const;
+const STEPS = ["Business", "Goal", "Services", "Details", "Send"] as const;
 
 /**
- * The Pilot Route: a five-station brief builder. The progress line at the top is the same
- * signal line as everywhere else; it advances station by station, and the final step draws
- * the visitor's chosen divisions as their own route before handing the brief to an adapter.
+ * The optional project brief: five short steps. The progress line at the top is the same signal
+ * line as everywhere else; it advances step by step, and the final step draws the visitor's chosen
+ * services as a line before handing the brief to an adapter (WhatsApp, email or copy: the site
+ * itself sends and stores nothing). Picking services is optional: "not sure yet" is a fine answer.
  */
 export function RouteBuilder() {
   const params = useSearchParams();
@@ -85,7 +87,8 @@ export function RouteBuilder() {
     setStep(Math.max(0, Math.min(STEPS.length - 1, n)));
   };
 
-  const canContinue = [true, true, route.length > 0, true, true][step];
+  // nothing is required to move on except contact details (validated before the review step)
+  const canContinue = true;
 
   return (
     <div ref={root} className="rounded-[24px] border border-ink/10 bg-petal p-6 md:p-10">
@@ -96,21 +99,22 @@ export function RouteBuilder() {
         {STEPS.map((s, i) => (
           <li key={s} className="relative flex flex-col items-center gap-2" aria-current={i === step ? "step" : undefined}>
             <span className={`h-3.5 w-3.5 rounded-full border transition-colors duration-500 ${i <= step ? "border-signal bg-signal" : "border-ink/30 bg-petal"}`} />
-            <span className={`label ${i === step ? "text-ink" : "text-muted"}`}>{s}</span>
+            {/* phones: only the current step is named on screen (five labels collide at 360px); all stay readable to screen readers */}
+            <span className={`label ${i === step ? "text-ink" : "text-muted max-sm:sr-only"}`}>{s}</span>
           </li>
         ))}
       </ol>
 
       <div ref={stepRef}>
-        <h2 ref={headingRef} tabIndex={-1} className="font-display text-headline font-medium outline-none">
+        <h3 ref={headingRef} tabIndex={-1} className="font-display text-headline font-medium outline-none">
           {[
-            "Who is the route for?",
+            "Who is the brief for?",
             "What should marketing do for you right now?",
-            "Choose the divisions on your route.",
+            "Which services might help?",
             "Where should we reply?",
-            "Review and send your route.",
+            "Review and send your brief.",
           ][step]}
-        </h2>
+        </h3>
 
         {step === 0 && (
           <fieldset className="mt-8">
@@ -146,15 +150,15 @@ export function RouteBuilder() {
           <div className="mt-8">
             {merged && (
               <p className="text-sm text-ink/70">
-                {merged === "fresh" ? "We've started you with a suggested route." : "We've added our suggestions to the divisions you'd already collected."} Add or remove anything; it&apos;s a starting point, and the real plan comes after we understand your business.
+                {merged === "fresh" ? "We've started you with a few suggested services." : "We've added our suggestions to the services you'd already picked."} Add or remove anything; it&apos;s a starting point, and the real plan comes after we understand your business.
               </p>
             )}
             <div className="mt-6 flex flex-col gap-8">
-              {clusters.map((c) => (
-                <fieldset key={c.id}>
-                  <legend className="label text-blue">{c.name}</legend>
+              {serviceGroups.map((g) => (
+                <fieldset key={g.id}>
+                  <legend className="label text-blue">{g.name}</legend>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {divisions.filter((d) => d.cluster === c.id).map((d) => {
+                    {servicesIn(g).map((d) => {
                       const on = route.includes(d.slug);
                       return (
                         <button
@@ -164,7 +168,6 @@ export function RouteBuilder() {
                           onClick={() => routeStore.toggle(d.slug)}
                           className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm transition-colors duration-300 ${on ? "border-violet bg-violet text-shell" : "border-ink/15 hover:border-ink/50"}`}
                         >
-                          <span className="label opacity-80">{pad(d.number)}</span>
                           {d.shortName}
                           {suggested.includes(d.slug) && !on && <span className="label text-signal-ink">suggested</span>}
                         </button>
@@ -175,7 +178,7 @@ export function RouteBuilder() {
               ))}
             </div>
             <p className="label mt-8 text-blue" aria-live="polite">
-              {route.length ? `${route.length} on your route` : "Pick at least one division to continue. Not sure? Go back and choose a goal for a suggestion."}
+              {route.length ? `${route.length} selected` : "Not sure yet? That's fine: continue, and we'll work it out together."}
             </p>
           </div>
         )}
@@ -261,7 +264,7 @@ export function RouteBuilder() {
             disabled={!canContinue}
             className="inline-flex items-center gap-3 rounded-full bg-cta px-6 py-3.5 font-medium text-white transition-[opacity,background-color] disabled:opacity-40 hover:bg-cta-hover"
           >
-            {step === 3 ? "Review route" : "Continue"} <span aria-hidden>→</span>
+            {step === 3 ? "Review brief" : "Continue"} <span aria-hidden>→</span>
           </button>
         )}
       </div>
@@ -269,11 +272,10 @@ export function RouteBuilder() {
   );
 }
 
-/** The visitor's own route, drawn: stations are their chosen divisions, in order. */
+/** The chosen services, drawn as a line in service order (strategy first). */
 function RouteSummary({ slugs }: { slugs: string[] }) {
-  // drawn in division order (strategy first), the way the work would actually run
   const items = slugs.map(divisionBySlug).filter(Boolean).sort((a, b) => a!.number - b!.number);
-  if (!items.length) return null;
+  if (!items.length) return <p className="text-ink/70">Services: not chosen yet. We&apos;ll work out the right ones together.</p>;
   const pts = items.map((_, i) => ({ x: items.length === 1 ? 50 : 10 + (i * 80) / (items.length - 1), y: i % 2 === 0 ? 70 : 30 }));
   const d = pts.reduce((acc, p, i) => (i === 0 ? `M0 70 L${p.x} ${p.y}` : `${acc} C ${(pts[i - 1].x + p.x) / 2} ${pts[i - 1].y}, ${(pts[i - 1].x + p.x) / 2} ${p.y}, ${p.x} ${p.y}`), "") + " L100 50";
   return (

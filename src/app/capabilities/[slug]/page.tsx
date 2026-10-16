@@ -3,18 +3,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ViewTransition } from "react";
 import { PageShell } from "@/components/layout/PageShell";
-import { SplitReveal } from "@/components/motion/SplitReveal";
 import { Reveal } from "@/components/motion/Reveal";
-import { ApproachRoute } from "@/components/capabilities/ApproachRoute";
-import { RouteToggle } from "@/components/capabilities/RouteToggle";
 import { PlanRouteLink } from "@/components/capabilities/PlanRouteLink";
+import { AiAmplifies } from "@/components/home/AiAmplifies";
+import { ProcessSteps } from "@/components/sections/ProcessSteps";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd, serviceLd } from "@/lib/seo";
 import { Crumbs } from "@/components/layout/Crumbs";
 import { WhereNext } from "@/components/layout/WhereNext";
-import { clusters, divisionBySlug, divisions, pad } from "@/content/divisions";
+import { divisionBySlug, divisions, pad } from "@/content/divisions";
+import { groupOf, lookalikeOf } from "@/content/service-groups";
 import { mediaFor, screeningBySlug } from "@/content/work";
 
 export const dynamicParams = false;
@@ -32,11 +32,20 @@ export async function generateMetadata({ params }: PageProps<"/capabilities/[slu
   return { title: d.name, description, alternates: { canonical: `/capabilities/${slug}` } };
 }
 
+/** How many deliverables show before "See the full scope". */
+const INCLUDED = 6;
+
+/**
+ * One service, in the same order on all 18 pages (client-first refactor, 2026-10-16): what it is →
+ * what it helps with → what's included (the full scope one click away) → relevant work → how we
+ * work (the shared four steps) → related services → contact. All copy is the service's own (PDF).
+ */
 export default async function DivisionPage({ params }: PageProps<"/capabilities/[slug]">) {
   const { slug } = await params;
   const d = divisionBySlug(slug);
   if (!d) notFound();
-  const cluster = clusters.find((c) => c.id === d.cluster)!;
+  const group = groupOf(d.slug);
+  const lookalike = lookalikeOf(d.slug);
   const prev = divisions[(d.number - 2 + divisions.length) % divisions.length];
   const next = divisions[d.number % divisions.length];
   const work = d.relatedWork
@@ -50,87 +59,95 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
       <JsonLd data={serviceLd(d)} />
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Services", path: "/capabilities" }, { name: d.name, path: `/capabilities/${slug}` }])} />
 
-      {/* identity */}
-      <header className="gutter relative overflow-hidden pb-16 pt-[calc(var(--nav-h)+3rem)] md:pb-24">
-        <span aria-hidden className="lane pointer-events-none absolute -right-[2vw] top-[calc(var(--nav-h)+1rem)] select-none font-display text-[clamp(10rem,30vw,28rem)] font-medium leading-[0.8] text-blue/70">
+      {/* what it is */}
+      <header className="gutter relative overflow-hidden pb-16 pt-[calc(var(--nav-h)+3rem)] md:pb-20">
+        {/* the service number, as faint decoration only: the name leads */}
+        <span aria-hidden className="pointer-events-none absolute -right-[2vw] top-[calc(var(--nav-h)+1rem)] select-none font-display text-[clamp(10rem,30vw,28rem)] font-medium leading-[0.8] text-blue/[0.06]">
           {pad(d.number)}
         </span>
         <div className="relative">
           <Crumbs trail={[{ name: "Services", href: "/capabilities" }, { name: d.shortName }]} />
-          <p className="label mt-8 text-signal-ink">[ {pad(d.number)} / 18 ] {cluster.name}</p>
+          <p className="label mt-8 text-signal-ink">Service{group ? ` · ${group.name}` : ""}</p>
           <ViewTransition name={`division-${d.slug}`} share="morph" default="none">
-            <h1 className="mt-4 max-w-[16ch] font-display text-display font-medium">{d.name}</h1>
+            <h1 className="mt-4 max-w-[18ch] font-display text-display font-medium">{d.name}</h1>
           </ViewTransition>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <RouteToggle slug={d.slug} name={d.shortName} className="h-11 px-5 text-ink" />
-            <PlanRouteLink slug={d.slug} className="link-underline text-sm text-ink/80">Plan a route with this →</PlanRouteLink>
+          <p className="mt-8 max-w-3xl text-lede text-ink/80">{lead}</p>
+          <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <PlanRouteLink slug={d.slug} className="inline-flex items-center gap-3 rounded-full bg-cta px-6 py-3.5 font-medium text-white transition-colors hover:bg-cta-hover">
+              Discuss this service <span aria-hidden>→</span>
+            </PlanRouteLink>
+            {work.length > 0 && <a href="#work" className="link-underline text-sm text-ink/80">See relevant work</a>}
           </div>
         </div>
       </header>
 
-      {/* what it is */}
-      <section aria-labelledby="what-title" className="gutter grid gap-10 border-t border-ink/10 py-20 md:grid-cols-12">
-        <h2 id="what-title" className="label text-blue md:col-span-3">What it is</h2>
+      {/* what it helps with */}
+      <section aria-labelledby="helps-title" className="gutter grid gap-10 border-t border-ink/10 py-16 md:grid-cols-12 md:py-20">
+        <h2 id="helps-title" className="label text-blue md:col-span-3">What this service helps with</h2>
         <div className="md:col-span-9">
-          <SplitReveal as="p" variant="blur" className="max-w-[34ch] font-display text-[clamp(1.6rem,2.9vw,3rem)] font-medium leading-[1.08] tracking-[-0.02em]">{lead}</SplitReveal>
           {restIntro.map((p) => (
-            <Reveal key={p} as="p" className="mt-8 max-w-3xl text-lede text-ink/75">{p}</Reveal>
+            <Reveal key={p} as="p" className="mb-6 max-w-3xl text-lede text-ink/80">{p}</Reveal>
           ))}
-        </div>
-      </section>
-
-      {/* capability groups */}
-      <section aria-labelledby="groups-title" className="gutter border-t border-ink/10 py-20">
-        <div className="grid gap-10 md:grid-cols-12">
-          <h2 id="groups-title" className="label text-blue md:col-span-3">What it covers</h2>
-          <Reveal group className="grid gap-x-10 gap-y-14 md:col-span-9 md:grid-cols-2">
-            {d.groups.map((g, gi) => (
-              <div key={g.title}>
-                <h3 className="flex items-baseline gap-3 font-display text-title font-medium">
-                  <span className="label text-signal-ink">{pad(gi + 1)}</span>{g.title}
-                </h3>
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {g.items.map((item) => (
-                    <li key={item} className="rounded-full border border-ink/15 px-3 py-1.5 text-sm text-ink/85">{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </Reveal>
-        </div>
-      </section>
-
-      {/* deliverables */}
-      <section aria-labelledby="deliverables-title" className="act-iris py-20">
-        <div className="gutter grid gap-10 md:grid-cols-12">
-          <div className="md:col-span-3">
-            <h2 id="deliverables-title" className="label text-blue">Key deliverables</h2>
-            <p className="mt-4 font-display text-[clamp(4rem,8vw,7rem)] font-medium leading-none">{pad(d.deliverables.length)}</p>
-          </div>
-          <Reveal group as="ol" className="grid sm:grid-cols-2 md:col-span-9 md:grid-cols-3">
-            {d.deliverables.map((x, i) => (
-              <li key={x} className="flex items-baseline gap-3 border-t border-ink/15 py-4 pr-4">
-                <span className="label text-signal-ink">{pad(i + 1)}</span>
-                <span className="font-medium">{x}</span>
+          <ul className="grid max-w-3xl gap-x-8 sm:grid-cols-2">
+            {d.groups.map((g) => (
+              <li key={g.title} className="flex items-baseline gap-3 border-t border-ink/10 py-3.5">
+                <span aria-hidden className="h-1.5 w-1.5 shrink-0 translate-y-[-0.15em] rounded-full bg-signal" />
+                {g.title}
               </li>
             ))}
-          </Reveal>
+          </ul>
         </div>
       </section>
 
-      {/* approach */}
-      <section aria-labelledby="approach-title" className="gutter border-b border-ink/10 py-24">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <h2 id="approach-title" className="font-display text-headline font-medium">Our <span className="serif-accent font-normal ink-cobalt">approach</span></h2>
-          <p className="label text-blue">{d.approach.length} stations</p>
+      {/* what's included */}
+      <section aria-labelledby="included-title" className="act-iris py-16 md:py-20">
+        <div className="gutter grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-3">
+            <h2 id="included-title" className="label text-blue">What&apos;s included</h2>
+            <p className="mt-3 text-sm text-ink/75">What you can receive, depending on what your business needs.</p>
+          </div>
+          <div className="md:col-span-9">
+            <ul className="grid sm:grid-cols-2 md:grid-cols-3">
+              {d.deliverables.slice(0, INCLUDED).map((x) => (
+                <li key={x} className="border-t border-ink/15 py-4 pr-4 font-medium">{x}</li>
+              ))}
+            </ul>
+            {/* everything the service document lists, for whoever wants the detail */}
+            <details className="group mt-6 rounded-[18px] border border-ink/15 bg-white/40">
+              <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-medium">
+                See the full scope
+                <span aria-hidden className="text-blue transition-transform group-open:rotate-45">+</span>
+              </summary>
+              <div className="flex flex-col gap-8 px-5 pb-6 pt-2">
+                {d.groups.map((g) => (
+                  <div key={g.title}>
+                    <h3 className="font-medium">{g.title}</h3>
+                    <p className="mt-1 text-sm text-ink/75">{g.items.join(" · ")}</p>
+                  </div>
+                ))}
+                <div>
+                  <h3 className="font-medium">All deliverables</h3>
+                  <p className="mt-1 text-sm text-ink/75">{d.deliverables.join(" · ")}</p>
+                </div>
+                <div>
+                  <h3 className="font-medium">How this service usually runs</h3>
+                  <p className="mt-1 text-sm text-ink/75">{d.approach.join(" → ")}</p>
+                </div>
+              </div>
+            </details>
+          </div>
         </div>
-        <div className="mt-14"><ApproachRoute steps={d.approach} /></div>
       </section>
 
-      {/* real work */}
+      {d.slug === "ai-marketing-automation" && <AiAmplifies />}
+
+      {/* relevant work */}
       {work.length > 0 && (
-        <section aria-labelledby="work-title" className="gutter py-24">
-          <h2 id="work-title" className="label text-blue">Work that shows it</h2>
+        <section aria-labelledby="work-title" className="gutter scroll-mt-[calc(var(--nav-h)+1rem)] py-20" id="work">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 id="work-title" className="font-display text-title font-medium">Relevant work</h2>
+            <Link href="/work" transitionTypes={["nav-forward"]} className="label text-blue underline-offset-4 hover:text-ink hover:underline">All work →</Link>
+          </div>
           <ul className="mt-8 grid grid-cols-2 gap-5 md:grid-cols-4">
             {work.map(({ screening, cover }) => (
               <li key={screening.slug}>
@@ -139,6 +156,7 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
                     {cover.kind === "video" ? <Reel asset={cover} mode="hover" label={screening.title} className="h-full w-full" /> : <Photo asset={cover} alt={screening.title} sizes="25vw" className="h-full w-full" />}
                   </div>
                   <span className="mt-3 block font-display text-[1.1rem] font-medium group-hover:text-signal">{screening.title}</span>
+                  <span className="block text-sm text-ink/65">{screening.format}</span>
                 </Link>
               </li>
             ))}
@@ -146,37 +164,50 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
         </section>
       )}
 
-      {/* connections */}
-      <section aria-labelledby="related-title" className="gutter border-t border-ink/10 py-24">
-        <h2 id="related-title" className="label text-blue">Often combined with</h2>
+      {/* how we work */}
+      <section aria-labelledby="process-title" className="gutter border-t border-ink/10 py-20">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <h2 id="process-title" className="font-display text-title font-medium">How we work</h2>
+          <Link href="/approach" transitionTypes={["nav-forward"]} className="label text-blue underline-offset-4 hover:text-ink hover:underline">More on how we work →</Link>
+        </div>
+        <div className="mt-10"><ProcessSteps /></div>
+      </section>
+
+      {/* services that sound alike, told apart in their own words */}
+      {lookalike && (
+        <section aria-labelledby="lookalike-title" className="gutter pb-6">
+          <div className="rounded-[20px] border border-ink/10 bg-sand/50 p-6 md:p-8">
+            <h2 id="lookalike-title" className="label text-blue">Not the same as {lookalike.shortName}</h2>
+            <p className="mt-3 max-w-3xl text-ink/80">{lookalike.whatItIs[0]}</p>
+            <Link href={`/capabilities/${lookalike.slug}`} transitionTypes={["nav-forward"]} className="link-underline mt-4 inline-block text-sm">About {lookalike.shortName} →</Link>
+          </div>
+        </section>
+      )}
+
+      {/* related services */}
+      <section aria-labelledby="related-title" className="gutter py-20">
+        <h2 id="related-title" className="font-display text-title font-medium">Related services</h2>
         <ul className="mt-8 grid gap-5 md:grid-cols-3">
           {related.map((r) => (
-            <li key={r!.slug} className="relative rounded-[18px] border border-ink/10 p-6 transition-colors hover:border-ink/30">
-              <Link href={`/capabilities/${r!.slug}`} transitionTypes={["nav-forward"]} className="block after:absolute after:inset-0">
-                <span className="label text-signal-ink">[ {pad(r!.number)} ]</span>
-                <span className="mt-3 block font-display text-title font-medium">{r!.shortName}</span>
+            <li key={r!.slug}>
+              <Link href={`/capabilities/${r!.slug}`} transitionTypes={["nav-forward"]} className="brand-card block h-full rounded-[18px] p-6 transition-colors hover:border-ink/30">
+                <span className="block font-display text-title font-medium">{r!.shortName}</span>
                 <span className="mt-3 line-clamp-3 block text-sm text-ink/65">{r!.whatItIs[0]}</span>
               </Link>
-              <RouteToggle slug={r!.slug} name={r!.shortName} className="relative z-10 mt-6" />
             </li>
           ))}
         </ul>
+        {/* browsing the catalogue stays possible, quietly */}
+        <nav aria-label="Other services" className="mt-12 flex flex-wrap justify-between gap-4 border-t border-ink/10 pt-6 text-sm">
+          <Link href={`/capabilities/${prev.slug}`} transitionTypes={["nav-back"]} className="text-ink/65 hover:text-ink">← {prev.shortName}</Link>
+          <Link href={`/capabilities/${next.slug}`} transitionTypes={["nav-forward"]} className="text-ink/65 hover:text-ink">{next.shortName} →</Link>
+        </nav>
       </section>
 
-      <nav aria-label="Divisions" className="gutter grid grid-cols-2 border-t border-ink/10">
-        <Link href={`/capabilities/${prev.slug}`} transitionTypes={["nav-back"]} className="group py-10 pr-6">
-          <span className="label text-blue">← {pad(prev.number)}</span>
-          <span className="mt-2 block font-display text-title font-medium group-hover:text-signal">{prev.shortName}</span>
-        </Link>
-        <Link href={`/capabilities/${next.slug}`} transitionTypes={["nav-forward"]} className="group border-l border-ink/10 py-10 pl-6 text-right">
-          <span className="label text-blue">{pad(next.number)} →</span>
-          <span className="mt-2 block font-display text-title font-medium group-hover:text-signal">{next.shortName}</span>
-        </Link>
-      </nav>
       <WhereNext links={[
-        { href: "/route", label: "Plan your route", hint: "Combine this with what else your business needs.", primary: true },
-        { href: "/capabilities", label: "All services", hint: "The full set of 18 divisions." },
-        { href: "/work", label: "See the work", hint: "Real reels, films, photography and design." },
+        { href: "/route", label: "Discuss this service", hint: "WhatsApp, call or email, or build a project brief.", primary: true },
+        { href: "/capabilities", label: "All services", hint: "All 18, in four groups." },
+        { href: "/work", label: "See the work", hint: "Reels, films, photography and design." },
       ]} />
     </PageShell>
   );

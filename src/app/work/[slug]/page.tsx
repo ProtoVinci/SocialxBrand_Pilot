@@ -11,8 +11,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo";
 import { Crumbs } from "@/components/layout/Crumbs";
 import { WhereNext } from "@/components/layout/WhereNext";
-import { liveScreenings, mediaFor, partnerCredit, photosFor, screeningBySlug, videosFor } from "@/content/work";
-import { divisionBySlug, pad } from "@/content/divisions";
+import { liveScreenings, mediaFor, partner, photosFor, screeningBySlug, videosFor } from "@/content/work";
+import { divisionBySlug } from "@/content/divisions";
 
 export const dynamicParams = false;
 export function generateStaticParams() {
@@ -42,18 +42,21 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
 
   return (
     <PageShell key={slug}>
-      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Selected work", path: "/work" }, { name: s.title, path: `/work/${slug}` }])} />
+      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }, { name: s.title, path: `/work/${slug}` }])} />
       <header className="gutter grid gap-12 pb-20 pt-[calc(var(--nav-h)+3rem)] md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">
-          <Crumbs trail={[{ name: "Selected work", href: "/work" }, { name: s.title }]} />
-          <p className="label mt-8 text-signal-ink">[ {pad(idx + 1)} / {pad(all.length)} ] {s.kicker}</p>
+          <Crumbs trail={[{ name: "Work", href: "/work" }, { name: s.title }]} />
+          <p className="label mt-8 text-signal-ink">Project · {s.kicker}</p>
           <SplitReveal as="h1" trigger="mount" className="mt-4 font-display text-display font-medium">{s.title}</SplitReveal>
           <p className="mt-8 max-w-xl text-lede text-ink/80">{s.line}</p>
+          {/* Project overview: only what the project record supports. SxBP's own role, the client and
+              any objective or result are not in the record, so they are not shown (owner input). */}
+          <h2 className="sr-only">Project overview</h2>
           <dl className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-ink/10 pt-6 text-sm">
-            <div><dt className="label text-blue">Format</dt><dd className="mt-2">{s.format}</dd></div>
-            <div><dt className="label text-blue">Pieces shown</dt><dd className="mt-2">{assets.length}</dd></div>
+            <div><dt className="label text-blue">Type of work</dt><dd className="mt-2">{s.format}</dd></div>
+            <div><dt className="label text-blue">{partner.role}</dt><dd className="mt-2">{partner.name}</dd></div>
             <div className="col-span-2">
-              <dt className="label text-blue">Services shown</dt>
+              <dt className="label text-blue">Related services</dt>
               <dd className="mt-3 flex flex-wrap gap-2">
                 {s.divisions.map(divisionBySlug).filter(Boolean).map((d) => (
                   <Link key={d!.slug} href={`/capabilities/${d!.slug}`} transitionTypes={["nav-forward"]} className="rounded-full border border-ink/20 px-3 py-1.5 text-xs transition-colors hover:border-signal hover:text-signal">
@@ -63,7 +66,6 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
               </dd>
             </div>
           </dl>
-          <p className="label mt-8 text-blue">{partnerCredit}</p>
         </div>
         <div className="md:col-span-5">
           <ViewTransition name={`screening-${slug}`} share="morph" default="none">
@@ -83,7 +85,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
       <Link href={`/work/${next.slug}`} transitionTypes={["nav-forward"]} className="group block border-t border-ink/10">
         <div className="gutter flex items-center justify-between gap-8 py-20">
           <div>
-            <p className="label text-blue">Next screening</p>
+            <p className="label text-blue">Next project</p>
             <p className="mt-4 font-display text-display font-medium transition-colors group-hover:text-signal">{next.title} <span className="inline-block transition-transform duration-500 group-hover:translate-x-4">→</span></p>
           </div>
           {nextCover && (
@@ -94,9 +96,9 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
         </div>
       </Link>
       <WhereNext links={[
-        { href: "/route", label: "Plan your route", hint: "Want work like this? Start with a one-minute brief.", primary: true },
-        { href: "/work", label: "All work", hint: "Every screening, filtered by format." },
-        { href: "/capabilities", label: "Services", hint: "The divisions behind this screening." },
+        { href: "/route", label: "Discuss a project", hint: "Want work like this? Tell us what your business needs.", primary: true },
+        { href: "/work", label: "All work", hint: "Every project, filtered by format." },
+        { href: "/capabilities", label: "Services", hint: "The 18 services, in four groups." },
       ]} />
     </PageShell>
   );

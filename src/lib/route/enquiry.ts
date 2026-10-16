@@ -37,12 +37,12 @@ export function briefText(b: Brief): string {
     `I'm ${b.name}${b.business ? ` from ${b.business}` : ""}.`,
     aud ? `We are: ${aud}.` : null,
     goal ? `Right now we want to: ${goal}.` : null,
-    route.length ? `Our starting route: ${route.join(" → ")}.` : null,
+    route.length ? `Services we're interested in: ${route.join(", ")}.` : "Services: not sure yet, happy to talk it through.",
     b.message ? `\n${b.message}` : null,
     "",
     [b.email && `Email: ${b.email}`, b.phone && `Phone: ${b.phone}`].filter(Boolean).join(" · "),
     // the address this brief was actually built on (it was a fixed sxbp.com, wrong on any other domain)
-    `(Sent from the route planner on ${typeof window !== "undefined" ? window.location.host : new URL(site.url).host})`,
+    `(Sent from the project brief on ${typeof window !== "undefined" ? window.location.host : new URL(site.url).host})`,
   ].filter((l) => l !== null).join("\n");
 }
 
@@ -61,7 +61,7 @@ export const emailAdapter: EnquiryAdapter = {
   label: "Send by email",
   hint: "Opens your email app with the brief filled in.",
   async deliver(b) {
-    const subject = `New route — ${b.business || b.name}`;
+    const subject = `Project brief — ${b.business || b.name}`;
     const href = `mailto:${site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(briefText(b))}`;
     return { ok: true, href };
   },

@@ -39,7 +39,10 @@ test("reduced motion: content complete, nothing left hidden", async ({ page }, i
     [...document.querySelectorAll("[data-reveal]")].filter((el) => getComputedStyle(el).visibility === "hidden").length,
   );
   expect(hidden).toBe(0);
-  await expect(page.getByText("We aim to create digital impact.", { exact: true })).toBeVisible();
+  // every home section is there and readable without motion
+  for (const name of ["Selected work", "What we can help with", /Four steps/, "Have a project in mind?"]) {
+    await expect(page.getByRole("heading", { name, level: 2 })).toBeVisible();
+  }
   const pins = await page.evaluate(() => document.querySelectorAll(".pin-spacer").length);
   expect(pins).toBe(0);
 });
@@ -54,15 +57,15 @@ test("route builder: selection persists to the nav badge and produces a WhatsApp
   await page.getByText("Be chosen").click();
   await page.getByRole("button", { name: /continue/i }).click();
   await page.getByRole("button", { name: /SEO & Local SEO/ }).click();
-  await expect(page.getByRole("link", { name: /divisions? on your route/ })).toBeVisible(); // the nav badge (sr-only text names it)
+  await expect(page.getByRole("link", { name: /services? in your project brief/ })).toBeVisible(); // the nav badge (sr-only text names it)
   await page.getByRole("button", { name: /continue/i }).click();
   // validation: name + one contact method required
-  await page.getByRole("button", { name: /review route/i }).click();
+  await page.getByRole("button", { name: /review brief/i }).click();
   await expect(page.getByText("Tell us your name.")).toBeVisible();
   await page.getByLabel(/your name/i).fill("Test Visitor");
   await page.getByLabel(/^email/i).fill("visitor@example.com");
-  await page.getByRole("button", { name: /review route/i }).click();
-  await expect(page.getByRole("heading", { name: /review and send your route/i })).toBeVisible();
+  await page.getByRole("button", { name: /review brief/i }).click();
+  await expect(page.getByRole("heading", { name: /review and send your brief/i })).toBeVisible();
   const [popup] = await Promise.all([
     context.waitForEvent("page").catch(() => null),
     page.getByRole("button", { name: /send on whatsapp/i }).click(),

@@ -277,24 +277,10 @@ body {
 .glare-drift { animation: glare-drift 28s ease-in-out infinite alternate; will-change: transform; }
 @media (max-width: 767.98px) { .glare-drift { animation: none; } }
 
-/* Division board stage: the words rise gently into place on each change */
-@keyframes stage-in { from { opacity: 0; translate: 0 10px; } }
-/* A stage reel arriving: the slow dissolve with a slight settle (the leaving reel eases out by transition) */
-@keyframes layer-in { from { opacity: 0; scale: 1.04; filter: blur(3px); } }
-
-/* Tools orbit (hero): rings counter-rotate, tiles counter-spin so logos stay upright; hover pauses */
-@keyframes orbit-cw { to { rotate: 360deg; } }
-@keyframes orbit-ccw { to { rotate: -360deg; } }
-.orbit-a { animation: orbit-cw 32s linear infinite; }
-.orbit-a-counter { animation: orbit-ccw 32s linear infinite; }
-.orbit-b { animation: orbit-ccw 22s linear infinite; }
-.orbit-b-counter { animation: orbit-cw 22s linear infinite; }
-.group:hover :is(.orbit-a, .orbit-a-counter, .orbit-b, .orbit-b-counter) { animation-play-state: paused; }
-/* The hero's ambient motion holds still once its scroll scene is under way or the hero has scrolled
-   away (Opening sets data-still): both sit under the takeover by then, and the drift kept the
-   compositor redrawing the blurred, blended glare layers on every frame of the scroll. Paused, not
+/* The glare's drift holds still once the hero has scrolled away (Opening sets data-still): it kept
+   the compositor redrawing the blurred, blended glare layers for a hero nobody sees. Paused, not
    removed, so it resumes from the same place when the visitor returns to the top. */
-[data-still] :is(.glare-drift, .orbit-a, .orbit-a-counter, .orbit-b, .orbit-b-counter) { animation-play-state: paused; }
+[data-still] .glare-drift { animation-play-state: paused; }
 
 @keyframes badge-pop { from { transform: scale(0.2); } 60% { transform: scale(1.2); } to { transform: scale(1); } }
 

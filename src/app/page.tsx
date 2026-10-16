@@ -2,74 +2,65 @@ import Link from "next/link";
 import { PageShell } from "@/components/layout/PageShell";
 import { NoExitTransition } from "@/components/layout/NoExitTransition";
 import { Opening } from "@/components/home/Opening";
-import { Ladder } from "@/components/home/Ladder";
-import { WorkShowcase, type ShowcaseFrame, type ShowcaseTile } from "@/components/home/WorkShowcase";
-import { MethodBoard } from "@/components/home/MethodBoard";
-import { Audiences } from "@/components/home/Audiences";
-import { AiAmplifies } from "@/components/home/AiAmplifies";
-import { Finale } from "@/components/home/Finale";
-import { Marquee } from "@/components/home/Marquee";
-import { DivisionBoard } from "@/components/capabilities/DivisionBoard";
-import { SplitReveal } from "@/components/motion/SplitReveal";
-import { findMedia, liveScreenings, mediaFor, partnerCredit, type MediaAsset, type VideoAsset } from "@/content/work";
+import { SelectedWork } from "@/components/sections/SelectedWork";
+import { ServiceGroups } from "@/components/sections/ServiceGroups";
+import { ProcessSteps } from "@/components/sections/ProcessSteps";
+import { ClosingCta } from "@/components/sections/ClosingCta";
+import { findMedia, type VideoAsset } from "@/content/work";
 import { servicesIntro } from "@/content/site";
-import { divisionPreviews } from "@/lib/previews";
 
-const frame = (m: MediaAsset): ShowcaseFrame =>
-  m.kind === "video"
-    ? { poster: m.poster.webp, lqip: m.lqip, video: m.src.preview }
-    : { poster: (m.srcset.webp.find((s) => s.w >= 960) ?? m.srcset.webp.at(-1)!).url, lqip: m.lqip };
 const pick = (ids: string[]) => ids.map((id) => findMedia(id)).filter((m): m is VideoAsset => m?.kind === "video");
 
+/**
+ * The home page as a short front door (client-first refactor, 2026-10-16): what the agency does,
+ * real work, the services in four groups, the process in four steps, and one way to get in touch.
+ * Hero → selected work → services → how we work → contact, then the footer.
+ */
 export default function Home() {
   // hero capsules: real reels only, always playing (no graphics, no figures)
   const pillsTop = pick(["brand-films-01", "theatre-culture-01", "wedding-content-04", "creator-content-01"]);
   const pillsBottom = pick(["restaurant-hospitality-01", "automotive-moments-01", "restaurant-hospitality-02", "portrait-fashion-01"]);
-  const [takeover] = pick(["wedding-films-05"]);
-  // none of these reappear as rail covers (each screening's first portrait reel) two screens later
-  const ladder = pick(["wedding-content-03", "restaurant-hospitality-04", "creator-content-02", "brand-films-02", "automotive-moments-04"]);
-  const chips = pick(["wedding-content-04", "restaurant-hospitality-01", "creator-content-01", "portrait-fashion-01"]);
-  // recent work panel: one tile per screening; a landscape original fills its tile, vertical
-  // work is staged upright (up to three frames), never cropped to landscape
-  const tiles: ShowcaseTile[] = liveScreenings().slice(0, 10).map((s) => {
-    const all = mediaFor(s.slug);
-    const wide = all.find((m) => m.orientation === "landscape" && m.kind === "video") ?? all.find((m) => m.orientation === "landscape");
-    const tall = all.filter((m) => m.orientation === "portrait");
-    return { slug: s.slug, title: s.title, kicker: s.kicker, format: s.format, wide: wide && (wide.kind === "video" || tall.length < 2) ? frame(wide) : undefined, cards: tall.slice(0, 3).map(frame) };
-  });
 
   return (
     <PageShell>
-        {/* leaving home skips the page transition (see the component) */}
-        <NoExitTransition />
-        <Opening takeover={takeover} pillsTop={pillsTop} pillsBottom={pillsBottom} />
-        <Ladder reels={ladder} />
-        <WorkShowcase tiles={tiles} credit={partnerCredit} />
-        <Marquee chips={chips} />
+      {/* leaving home skips the page transition (see the component) */}
+      <NoExitTransition />
+      <Opening pillsTop={pillsTop} pillsBottom={pillsBottom} />
 
-        {/* one screen on desktop: header row (headline | intro + link), then the board */}
-        <section aria-labelledby="capabilities-title" className="relative bg-shell bg-[linear-gradient(to_right,rgb(232_226_216/0.75)_1px,transparent_1px)] bg-[size:clamp(8rem,12.5vw,12rem)_100%] py-16 md:py-20 lg:flex lg:min-h-svh lg:flex-col lg:justify-center lg:py-[clamp(1.5rem,4svh,3rem)] lg:pt-[calc(var(--nav-h)+1rem)] short:pt-[calc(var(--nav-h)+0.25rem)] short:pb-4">
-          <div className="gutter grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
-            <div>
-              <p className="label text-blue">[ 04 ] Services — 18 divisions</p>
-              <SplitReveal as="h2" id="capabilities-title" className="mt-3 max-w-[20ch] font-display text-headline font-medium short:text-[clamp(1.8rem,3.2vw,2.6rem)]">
-                Not every business needs <span className="serif-accent font-normal text-signal">every</span> service.
-              </SplitReveal>
-            </div>
-            <div>
-              <p className="max-w-xl text-ink/75 lg:text-[1.05rem] short:line-clamp-3 short:text-[0.95rem]">{servicesIntro.body}</p>
-              <Link href="/capabilities" transitionTypes={["nav-forward"]} className="link-underline mt-3 inline-block text-sm">Explore every service →</Link>
-            </div>
-          </div>
-          <div className="gutter mt-8 lg:mt-[clamp(1.25rem,4svh,2.75rem)] short:mt-4">
-            <DivisionBoard previews={divisionPreviews()} />
-          </div>
-        </section>
+      <SelectedWork index="01" />
 
-        <MethodBoard />
-        <Audiences />
-        <AiAmplifies />
-        <Finale />
-      </PageShell>
+      <section aria-labelledby="services-title" className="border-t border-line bg-sand/40 py-20 md:py-28">
+        <div className="gutter">
+          <div className="grid gap-6 md:grid-cols-12 md:items-end">
+            <div className="md:col-span-7">
+              <p className="label text-blue">[ 02 ] Services</p>
+              <h2 id="services-title" className="mt-4 font-display text-headline font-medium">What we can help with</h2>
+            </div>
+            <p className="max-w-xl text-ink/75 md:col-span-5">
+              <strong className="font-semibold text-ink">{servicesIntro.lead}</strong> Eighteen services in four groups: start with the kind of help you need.
+            </p>
+          </div>
+          <div className="mt-10 md:mt-14"><ServiceGroups /></div>
+          <Link href="/capabilities" transitionTypes={["nav-forward"]} className="mt-10 inline-flex items-center gap-3 rounded-full border border-line bg-white px-6 py-3 font-medium shadow-sm transition-colors hover:border-line-strong">
+            Explore all services <span aria-hidden>→</span>
+          </Link>
+        </div>
+      </section>
+
+      <section aria-labelledby="process-title" className="gutter py-20 md:py-28">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p className="label text-blue">[ 03 ] How we work</p>
+            <h2 id="process-title" className="mt-4 font-display text-headline font-medium">Four steps, from first conversation to ongoing improvement</h2>
+          </div>
+          <Link href="/approach" transitionTypes={["nav-forward"]} className="label text-blue underline-offset-4 hover:text-ink hover:underline">
+            More on how we work <span aria-hidden>→</span>
+          </Link>
+        </div>
+        <div className="mt-10 md:mt-14"><ProcessSteps /></div>
+      </section>
+
+      <ClosingCta />
+    </PageShell>
   );
 }

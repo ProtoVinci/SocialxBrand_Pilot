@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { site, closing } from "@/content/site";
+import { site } from "@/content/site";
 import { Mark } from "@/components/brand/Mark";
 import { FooterWordmark } from "./FooterWordmark";
 
@@ -10,10 +10,11 @@ export function Footer() {
     <footer className="relative isolate overflow-hidden border-t border-ink/10 bg-shell pt-20" aria-labelledby="footer-title">
       <div aria-hidden className="grid-paper pointer-events-none absolute inset-0 -z-10" />
       <div className="gutter grid gap-14 md:grid-cols-12">
+        {/* a contact strip, not another manifesto: the pages above have already made the case */}
         <div className="md:col-span-6">
-          <p className="label text-blue">Let&apos;s grow together</p>
+          <p className="label text-blue">Contact us</p>
           <h2 id="footer-title" className="mt-5 max-w-xl font-display text-headline font-medium">
-            {closing.lead} <span className="serif-accent ink-cobalt">{closing.turn}</span>
+            Talk to us about <span className="serif-accent ink-cobalt">your business.</span>
           </h2>
         </div>
         <dl className="flex flex-wrap content-start gap-x-10 gap-y-8 text-sm md:col-span-6 [&_dd]:[overflow-wrap:anywhere]">
@@ -38,7 +39,7 @@ export function Footer() {
       <div className="gutter mt-16 flex flex-wrap items-center justify-between gap-6 border-t border-ink/10 py-6">
         {/* every page ends here, so this row is the way out: home first, generous tap targets */}
         <nav aria-label="Footer" className="-mx-2 flex flex-wrap gap-x-2 text-sm text-muted">
-          {[["/", "Home"], ["/work", "Selected work"], ["/capabilities", "Services"], ["/approach", "Approach"], ["/route", "Start your route"]].map(([href, label]) => (
+          {[["/", "Home"], ["/work", "Work"], ["/capabilities", "Services"], ["/approach", "How we work"], ["/route", "Contact us"]].map(([href, label]) => (
             <Link key={href} href={href} className="rounded-full px-2 py-2.5 hover:text-ink">{label}</Link>
           ))}
         </nav>
@@ -51,7 +52,7 @@ export function Footer() {
 
       <div className="gutter flex flex-wrap items-center justify-between gap-4 pb-6 text-xs text-muted">
         <span className="flex items-center gap-2"><Mark className="h-4 w-auto text-signal" /> © {new Date().getFullYear()} {site.name} · {site.category}</span>
-        <span>{site.market}</span>
+        <span>{site.promise} · {site.market}</span>
       </div>
     </footer>
   );

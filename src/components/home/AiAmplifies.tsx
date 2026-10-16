@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { MQ, dur } from "@/lib/motion/tokens";
@@ -7,8 +6,9 @@ import { observeOnce } from "@/lib/motion/observe";
 import { aiPhilosophy } from "@/content/site";
 
 /**
- * ACT 8 — AI amplifies. Each "should not replace" line is struck through by the signal
- * line, then its replacement rises beneath it. AI is framed as division 18, not the brand.
+ * The AI philosophy, on the AI Marketing & Automation service page (it left the home page in the
+ * client-first refactor). Each "should not replace" line is struck through by the signal line,
+ * then its replacement rises beneath it.
  */
 export function AiAmplifies() {
   const root = useRef<HTMLElement>(null);
@@ -37,16 +37,13 @@ export function AiAmplifies() {
     <section ref={root} aria-labelledby="ai-title" className="relative bg-shell py-28 md:py-40">
       <div className="gutter grid gap-14 md:grid-cols-12">
         <div className="md:col-span-4">
-          <p className="label text-blue">[ 07 ] Division 18 — AI Marketing &amp; Automation</p>
+          <p className="label text-blue">How we use AI</p>
           <h2 id="ai-title" className="mt-4 font-display text-headline font-medium">
             Our <span className="serif-accent font-normal ink-cobalt">AI</span> philosophy.
           </h2>
           <p className="mt-6 max-w-sm text-ink/70">
             AI is treated as a marketing and productivity layer supporting human strategy, creativity and execution.
           </p>
-          <Link href="/capabilities/ai-marketing-automation" transitionTypes={["nav-forward"]} className="link-underline mt-8 inline-block text-ink">
-            Explore AI Marketing &amp; Automation →
-          </Link>
         </div>
         <ul className="flex flex-col gap-14 md:col-span-8">
           {aiPhilosophy.map((p) => (

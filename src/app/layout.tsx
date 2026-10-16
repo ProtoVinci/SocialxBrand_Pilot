@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: `%s · ${site.name}`,
   },
   description:
-    "SOCIALxBRAND PILOT is an Indian digital marketing agency. Strategy, creativity, technology and execution across 18 marketing divisions — built around what your business actually needs. We will show, you will grow.",
+    "SOCIALxBRAND PILOT is an Indian digital marketing agency. Strategy, creativity, technology and execution across 18 marketing services — built around what your business actually needs. We will show, you will grow.",
   applicationName: site.name,
   alternates: { canonical: "/" },
   // no og:url here: child routes inherit it, and "/" would mislabel every inner page

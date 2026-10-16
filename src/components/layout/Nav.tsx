@@ -9,12 +9,13 @@ import { Reel } from "@/components/media/Reel";
 import { useLenis } from "@/components/motion/SmoothScroll";
 import type { VideoAsset } from "@/content/work";
 
+// Plain labels, the same everywhere (nav, menu, footer, breadcrumbs): the URLs stay as they were.
 const links = [
   { href: "/", label: "Home", hint: "Back to the start" },
-  { href: "/work", label: "Selected work", hint: "Real reels, films, photography and design" },
-  { href: "/capabilities", label: "Services", hint: "18 divisions, combined around the business" },
-  { href: "/approach", label: "Approach", hint: "Understand → Grow, and what we stand for" },
-  { href: "/route", label: "Start your route", hint: "Plan the right mix, then talk to us" },
+  { href: "/work", label: "Work", hint: "Reels, films, photography and design" },
+  { href: "/capabilities", label: "Services", hint: "18 services in four groups" },
+  { href: "/approach", label: "How we work", hint: "Four steps, from your goals to what we improve next" },
+  { href: "/route", label: "Contact us", hint: "WhatsApp, call or email, or build a project brief" },
 ];
 
 /** How the menu last closed: by the visitor (Close, Escape, same-page link) or by a route change. */
@@ -175,9 +176,7 @@ export function Nav({ previews }: { previews: VideoAsset[] }) {
               transitionTypes={["nav-forward"]}
               className="magnetic group relative inline-flex items-center gap-2 rounded-full bg-cta px-4 py-2.5 text-sm font-medium text-white transition-colors duration-300 hover:bg-cta-hover"
             >
-              <span className="whitespace-nowrap">
-                Start<span className="max-sm:hidden md:max-lg:hidden"> your route</span>
-              </span>
+              <span className="whitespace-nowrap">Contact us</span>
               {route.length > 0 && (
                 <>
                   <span
@@ -187,7 +186,7 @@ export function Nav({ previews }: { previews: VideoAsset[] }) {
                   >
                     {route.length}
                   </span>
-                  <span className="sr-only">({route.length} {route.length === 1 ? "division" : "divisions"} on your route)</span>
+                  <span className="sr-only">({route.length} {route.length === 1 ? "service" : "services"} in your project brief)</span>
                 </>
               )}
             </Link>

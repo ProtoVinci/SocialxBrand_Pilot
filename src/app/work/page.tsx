@@ -5,11 +5,11 @@ import { WhereNext } from "@/components/layout/WhereNext";
 import { WorkIndex, type IndexItem } from "@/components/work/WorkIndex";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbLd } from "@/lib/seo";
-import { liveScreenings, mediaFor, partnerCredit } from "@/content/work";
+import { featuredWork, liveScreenings, mediaFor, partnerCredit } from "@/content/work";
 
 export const metadata: Metadata = {
-  title: "Selected work",
-  description: "Real work from SOCIALxBRAND PILOT: creator reels, restaurant and hospitality content, brand films, wedding films and photography, menus, posters and logo identities.",
+  title: "Work",
+  description: "Selected work from SOCIALxBRAND PILOT: video, photography and design for businesses, brands and events, from restaurant and creator content to brand films, menus, posters and logo identities.",
   alternates: { canonical: "/work" },
 };
 
@@ -17,23 +17,28 @@ const familyOf = (format: string): IndexItem["family"] =>
   /design/i.test(format) ? "design" : /^photography$/i.test(format) ? "photo" : "motion";
 
 export default function WorkPage() {
-  const items: IndexItem[] = liveScreenings().map((s) => {
-    const assets = mediaFor(s.slug);
-    const cover = assets.find((a) => a.kind === "video" && a.orientation === "portrait") ?? assets[0];
-    return { screening: s, cover, family: familyOf(s.format), count: assets.length };
-  });
+  // the owner's lead projects first (the same ones the home page shows), then the rest in order
+  const rank = (slug: string) => { const i = featuredWork.indexOf(slug); return i < 0 ? featuredWork.length : i; };
+  const items: IndexItem[] = liveScreenings()
+    .map((s, order) => ({ s, order }))
+    .sort((a, b) => rank(a.s.slug) - rank(b.s.slug) || a.order - b.order)
+    .map(({ s }) => {
+      const assets = mediaFor(s.slug);
+      const cover = assets.find((a) => a.kind === "video" && a.orientation === "portrait") ?? assets[0];
+      return { screening: s, cover, family: familyOf(s.format) };
+    });
 
   return (
     <PageShell>
-      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Selected work", path: "/work" }])} />
+      <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Work", path: "/work" }])} />
       <PageHeader
         index="W"
-        label="Selected work — screenings"
-        crumbs={[{ name: "Selected work" }]}
-        title={<>The work, <span className="serif-accent font-normal text-signal">as it was made.</span></>}
+        label="Work"
+        crumbs={[{ name: "Work" }]}
+        title={<>Selected <span className="serif-accent font-normal text-signal">work.</span></>}
         lede={
           <>
-            <p>Reels, films, photography and design, presented in the formats they were made for. We show categories, not invented case studies: what you see is the work.</p>
+            <p>Explore video, photography and design created for businesses, brands and events.</p>
             <p className="label mt-6 text-blue">{partnerCredit}</p>
           </>
         }
@@ -42,9 +47,9 @@ export default function WorkPage() {
         <WorkIndex items={items} />
       </div>
       <WhereNext links={[
-        { href: "/route", label: "Plan your route", hint: "Seen something you want for your business? Start here.", primary: true },
-        { href: "/capabilities", label: "Services", hint: "The 18 divisions behind this work." },
-        { href: "/approach", label: "How we work", hint: "From understanding the business to growing it." },
+        { href: "/route", label: "Contact us", hint: "Seen something you want for your business? Tell us about it.", primary: true },
+        { href: "/capabilities", label: "Services", hint: "The 18 services behind this work, in four groups." },
+        { href: "/approach", label: "How we work", hint: "Four steps, from your goals to what we improve next." },
       ]} />
     </PageShell>
   );
