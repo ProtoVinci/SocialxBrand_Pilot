@@ -20,8 +20,14 @@ export function NoExitTransition() {
   useEffect(() => {
     if (typeof document.startViewTransition !== "function") return;
     const skip = () => { throw new DOMException("Page left without a view transition", "InvalidStateError"); };
+    // whatever own property was there before (normally none: the method lives on Document.prototype)
+    // is put back exactly on cleanup, rather than deleted unconditionally
+    const before = Object.getOwnPropertyDescriptor(document, "startViewTransition");
     Object.defineProperty(document, "startViewTransition", { value: skip, configurable: true, writable: true });
-    return () => { delete (document as { startViewTransition?: unknown }).startViewTransition; };
+    return () => {
+      if (before) Object.defineProperty(document, "startViewTransition", before);
+      else delete (document as { startViewTransition?: unknown }).startViewTransition;
+    };
   }, []);
   return null;
 }

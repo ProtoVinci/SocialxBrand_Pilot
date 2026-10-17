@@ -323,7 +323,8 @@ test("client-first home: the first screen says what the agency does and leads to
     await expect(link).toBeInViewport();
   }
   const sections = await page.evaluate(() => [...document.querySelectorAll("#main > div > section, #main section")].filter((s) => !s.parentElement?.closest("section")).length);
-  expect(sections, "top-level home sections").toBeLessThanOrEqual(5);
+  // hero, selected work, services, steps, contact; plus client feedback once approved quotes exist
+  expect(sections, "top-level home sections").toBeLessThanOrEqual(6);
 });
 
 test("client-first services: all 18 services listed under the four groups, each page in the same plain pattern", async ({ page }, info) => {
@@ -336,7 +337,7 @@ test("client-first services: all 18 services listed under the four groups, each 
   for (const href of hrefs) {
     await page.goto(href!, { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-    for (const name of [/What this service helps with/, /What's included/, /How we work/, /Related services/]) {
+    for (const name of [/What this service helps with/, /Typical deliverables/, /How we work/, /Related services/]) {
       await expect(page.getByRole("heading", { name }), `${href}: ${name}`).toHaveCount(1);
     }
     await expect(page.getByRole("link", { name: /Discuss this service/ }).first()).toBeVisible();
@@ -351,3 +352,153 @@ test("client-first language: no internal terms (Pilot Route, screening, station,
     expect(text.match(/pilot route|screenings?\b|stations?\b|divisions?\b/gi), route).toBeNull();
   }
 });
+
+// ── Deep audit, 2026-10-17 (SocialxBrand_Pilot5_Deep_Audit_Client_Performance.md) ──
+
+test("audit5 P1 hero capsules: posters follow the media window (≤3 per capsule), not all eight", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  let most = 0;
+  for (let i = 0; i < 24; i++) {
+    most = Math.max(most, ...(await page.evaluate(() => [...document.querySelectorAll("[data-pill] > span")].map((p) => p.querySelectorAll("img").length))));
+    await page.waitForTimeout(250);
+  }
+  expect(most).toBeGreaterThan(0);
+  expect(most, "poster images in one capsule").toBeLessThanOrEqual(3);
+});
+
+test("audit5 A11Y-2 reduced motion: the hero capsules hold their first still, with no video", async ({ page }, info) => {
+  test.skip(info.project.name !== "reduced", "reduced-motion project only");
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(3500);
+  const pills = await page.evaluate(() => [...document.querySelectorAll("[data-pill] > span")].map((p) => ({
+    videos: p.querySelectorAll("video").length,
+    on: [...p.querySelectorAll("[data-state]")].findIndex((s) => s.getAttribute("data-state") === "on"),
+    poster: Boolean(p.querySelector("[data-state=on] img")),
+  })));
+  expect(pills.length).toBe(2);
+  for (const p of pills) expect(p).toEqual({ videos: 0, on: 0, poster: true });
+});
+
+test("audit5 A11Y-1 menu: Tab and Shift+Tab stay inside the open menu; Escape closes it and returns focus", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.goto("/work", { waitUntil: "load" });
+  const button = page.getByRole("button", { name: /menu/i });
+  await button.click();
+  await expect(page.locator("#site-menu")).toBeVisible();
+  const inside = () => page.evaluate(() => {
+    const a = document.activeElement;
+    return Boolean(a && (document.getElementById("site-menu")?.contains(a) || a.getAttribute("aria-controls") === "site-menu"));
+  });
+  for (let i = 0; i < 9; i++) { await page.keyboard.press("Tab"); expect(await inside(), `Tab ${i + 1} left the menu`).toBe(true); }
+  for (let i = 0; i < 9; i++) { await page.keyboard.press("Shift+Tab"); expect(await inside(), `Shift+Tab ${i + 1} left the menu`).toBe(true); }
+  await page.keyboard.press("Escape");
+  await expect(page.locator("#site-menu")).toBeHidden();
+  await expect(button).toBeFocused();
+});
+
+test("audit5 C6 work filters: mixed collections count under every format they hold; counts match what shows", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.goto("/work", { waitUntil: "load" });
+  const filters = page.getByRole("group", { name: /filter work/i }).getByRole("button");
+  const expected: Record<string, number> = {};
+  for (const name of ["All work", "Reels & films", "Photography", "Design & identity"]) {
+    const btn = filters.filter({ hasText: name });
+    expected[name] = Number((await btn.locator(".label").textContent())?.trim());
+    await btn.click();
+    await page.waitForTimeout(1200);
+    await expect(page.locator("[data-tile]"), name).toHaveCount(expected[name]);
+    if (name === "Photography") {
+      for (const slug of ["portrait-fashion", "family-celebrations", "wedding-photography"]) await expect(page.locator(`[data-tile] a[href="/work/${slug}"]`)).toHaveCount(1);
+    }
+  }
+  expect(expected["All work"]).toBe(14);
+});
+
+test("audit5 C3/C8 labels: work pages are collections, the 404 page says what happened", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.goto("/work/brand-films", { waitUntil: "load" });
+  await expect(page.getByText(/^Work collection · /)).toBeVisible();
+  const res = await page.goto("/no-such-page", { waitUntil: "load" });
+  expect(res?.status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 1, name: /page not found/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Go to Home" })).toHaveAttribute("href", "/");
+  await expect(page.getByRole("link", { name: "See our work" }).last()).toHaveAttribute("href", "/work");
+});
+
+test("audit5 C1 client feedback: one card per approved entry at the end of home, no ratings, looping on its own with a Pause", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  const { publishableFeedback } = await import("../src/content/feedback");
+  const approved = publishableFeedback();
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  const section = page.locator("#client-feedback");
+  if (!approved.length) { await expect(section).toHaveCount(0); return; }
+  await expect(section.locator("li")).toHaveCount(approved.length);
+  for (const f of approved) await expect(section.getByText(f.quote, { exact: true })).toHaveCount(1);
+  await expect(section.getByText(/★|stars?|\/\s*5/i)).toHaveCount(0);
+  // it sits after "How we work" and before the closing call to action
+  const order = await page.evaluate(() => [...document.querySelectorAll("#main section[aria-labelledby]")].filter((s) => !s.parentElement?.closest("section")).map((s) => s.getAttribute("aria-labelledby")));
+  expect(order.slice(-3)).toEqual(["process-title", "feedback-title", "closing-title"]);
+  // it moves on by itself, card by card, and loops; it holds still on hover and after Pause
+  const list = section.locator("ul");
+  await section.scrollIntoViewIfNeeded();
+  await page.mouse.move(5, 5);
+  await expect.poll(() => list.evaluate((el) => el.scrollLeft), { timeout: 9000 }).toBeGreaterThan(0);
+  const next = section.getByRole("button", { name: "Next feedback" });
+  for (let i = 0; i < approved.length; i++) {
+    if (await list.evaluate((el) => el.scrollLeft + el.clientWidth > el.scrollWidth - 4)) break;
+    await next.click(); await page.waitForTimeout(450);
+  }
+  await next.click();
+  await expect.poll(() => list.evaluate((el) => el.scrollLeft), { timeout: 3000 }).toBeLessThan(4);
+  await section.getByRole("button", { name: "Pause feedback" }).click();
+  await expect(section.getByRole("button", { name: "Play feedback" })).toHaveAttribute("aria-pressed", "true");
+  const at = await list.evaluate((el) => el.scrollLeft);
+  await page.waitForTimeout(6000);
+  expect(await list.evaluate((el) => el.scrollLeft), "moved while paused").toBe(at);
+});
+
+test("audit5 client feedback under reduced motion: the row never moves on its own and offers no Pause", async ({ page }, info) => {
+  test.skip(info.project.name !== "reduced", "reduced-motion project only");
+  await page.goto("/", { waitUntil: "load" });
+  const section = page.locator("#client-feedback");
+  test.skip(!(await section.count()), "no approved feedback");
+  await section.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(6000);
+  expect(await section.locator("ul").evaluate((el) => el.scrollLeft)).toBe(0);
+  await expect(section.getByRole("button", { name: /pause feedback/i })).toHaveCount(0);
+});
+
+for (const vt of ["native", "absent"] as const) {
+  test(`audit5 P2 leaving home with View Transitions ${vt}: Work and Services open cleanly, back works, no errors`, async ({ page }, info) => {
+    test.skip(info.project.name !== "desktop", "run once");
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+    await page.addInitScript((vt) => {
+      sessionStorage.setItem("sxbp.intro", "1");
+      if (vt === "absent") delete (Document.prototype as unknown as { startViewTransition?: unknown }).startViewTransition;
+    }, vt);
+    await page.goto("/", { waitUntil: "load" });
+    for (const [href, check] of [["/work", "[data-tile]"], ["/capabilities", "#directory-title"]] as const) {
+      await page.locator(`header a[href="${href}"]`).first().click();
+      await page.waitForURL(`**${href}`);
+      await expect(page.locator(check).first()).toBeVisible();
+      await page.goBack();
+      await page.waitForURL((u) => u.pathname === "/");
+      await expect(page.locator("#hero-title")).toBeVisible();
+    }
+    // through the open menu too
+    await page.getByRole("button", { name: /menu/i }).click();
+    await page.locator('#site-menu a[href="/work"]').click();
+    await page.waitForURL("**/work");
+    await expect(page.locator("[data-tile]").first()).toBeVisible();
+    await expect(page.locator("#site-menu")).toBeHidden();
+    // the override is gone once home is: an inner route keeps the real API (when the browser has it)
+    const own = await page.evaluate(() => Object.prototype.hasOwnProperty.call(document, "startViewTransition"));
+    expect(own).toBe(false);
+    expect(errors).toEqual([]);
+  });
+}

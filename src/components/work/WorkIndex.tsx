@@ -6,15 +6,18 @@ import { Flip } from "@/lib/gsap-flip";
 import { MQ, dur } from "@/lib/motion/tokens";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
-import type { MediaAsset, Screening } from "@/content/work";
+import type { MediaAsset, Screening, WorkFormat } from "@/content/work";
 import { categoryLine } from "@/lib/category-line";
 
-export type Family = "all" | "motion" | "photo" | "design";
-export type IndexItem = { screening: Screening; cover: MediaAsset; family: Exclude<Family, "all"> };
+// Filters read each collection's explicit `formats` (content/work.ts): a mixed collection, such as
+// Portrait & Fashion (photographs and films), appears under both Photography and Reels & films.
+export type Family = "all" | WorkFormat;
+export type IndexItem = { screening: Screening; cover: MediaAsset };
+const inFamily = (item: IndexItem, f: Family) => f === "all" || item.screening.formats.includes(f);
 
 const FILTERS: { id: Family; label: string }[] = [
   { id: "all", label: "All work" },
-  { id: "motion", label: "Reels & films" },
+  { id: "video", label: "Reels & films" },
   { id: "photo", label: "Photography" },
   { id: "design", label: "Design & identity" },
 ];
@@ -43,7 +46,7 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
     });
   });
 
-  const visible = items.filter((i) => filter === "all" || i.family === filter);
+  const visible = items.filter((i) => inFamily(i, filter));
 
   return (
     <div ref={root}>
@@ -57,7 +60,7 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
             className={`rounded-full border px-5 py-2.5 text-sm transition-colors duration-300 ${filter === f.id ? "border-blue bg-blue text-white" : "border-ink/20 hover:border-ink"}`}
           >
             {f.label}
-            <span className="label ml-2 opacity-85">{f.id === "all" ? items.length : items.filter((i) => i.family === f.id).length}</span>
+            <span className="label ml-2 opacity-85">{items.filter((i) => inFamily(i, f.id)).length}</span>
           </button>
         ))}
       </div>
@@ -81,10 +84,10 @@ export function WorkIndex({ items }: { items: IndexItem[] }) {
                   </div>
                 </ViewTransition>
                 {/* a plain title, what kind of work it is, and the way in (the piece count was not a
-                    reason to open a project, so it no longer leads the card) */}
+                    reason to open a collection, so it no longer leads the card) */}
                 <span className="mt-4 block font-display text-title font-medium transition-colors group-hover:text-signal">{screening.title}</span>
                 <span className="mt-1 block text-sm text-ink/65">{categoryLine(screening)}</span>
-                <span className="label mt-3 inline-block text-blue">View project <span aria-hidden>→</span></span>
+                <span className="label mt-3 inline-block text-blue">View collection <span aria-hidden>→</span></span>
               </Link>
             </li>
           );

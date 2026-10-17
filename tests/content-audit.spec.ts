@@ -4,6 +4,7 @@ import { test, expect } from "@playwright/test";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { divisions } from "../src/content/divisions";
+import { feedback, publishableFeedback } from "../src/content/feedback";
 import { site } from "../src/content/site";
 
 // The 18 names exactly as listed in the Services & Divisions master document (contents page).
@@ -52,4 +53,12 @@ test("no invented-proof patterns in site source", () => {
     for (const re of banned) if (re.test(text)) offenders.push(`${file}: ${re}`);
   }
   expect(offenders).toEqual([]);
+});
+
+test("client feedback: only approved, dated, attributed entries can be published", () => {
+  for (const f of feedback) {
+    expect(f.sourceRef.trim(), `${f.id}: no source recorded`).not.toBe("");
+    if (f.approved) expect(f.approvedAt, `${f.id}: approved without a sign-off date`).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  }
+  expect(publishableFeedback().every((f) => f.approved && f.approvedAt)).toBe(true);
 });

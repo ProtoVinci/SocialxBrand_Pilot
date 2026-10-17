@@ -37,7 +37,8 @@ const INCLUDED = 6;
 
 /**
  * One service, in the same order on all 18 pages (client-first refactor, 2026-10-16): what it is →
- * what it helps with → what's included (the full scope one click away) → relevant work → how we
+ * what it helps with → typical deliverables (the full scope one click away; "typical", not
+ * "included", until the owner confirms fixed scopes, 2026-10-17) → relevant work → how we
  * work (the shared four steps) → related services → contact. All copy is the service's own (PDF).
  */
 export default async function DivisionPage({ params }: PageProps<"/capabilities/[slug]">) {
@@ -99,12 +100,12 @@ export default async function DivisionPage({ params }: PageProps<"/capabilities/
         </div>
       </section>
 
-      {/* what's included */}
+      {/* typical deliverables */}
       <section aria-labelledby="included-title" className="act-iris py-16 md:py-20">
         <div className="gutter grid gap-10 md:grid-cols-12">
           <div className="md:col-span-3">
-            <h2 id="included-title" className="label text-blue">What&apos;s included</h2>
-            <p className="mt-3 text-sm text-ink/75">What you can receive, depending on what your business needs.</p>
+            <h2 id="included-title" className="label text-blue">Typical deliverables</h2>
+            <p className="mt-3 text-sm text-ink/75">Examples of what this service can produce. The exact deliverables depend on the brief we agree with you.</p>
           </div>
           <div className="md:col-span-9">
             <ul className="grid sm:grid-cols-2 md:grid-cols-3">

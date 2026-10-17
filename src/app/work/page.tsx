@@ -13,8 +13,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/work" },
 };
 
-const familyOf = (format: string): IndexItem["family"] =>
-  /design/i.test(format) ? "design" : /^photography$/i.test(format) ? "photo" : "motion";
 
 export default function WorkPage() {
   // the owner's lead projects first (the same ones the home page shows), then the rest in order
@@ -25,7 +23,7 @@ export default function WorkPage() {
     .map(({ s }) => {
       const assets = mediaFor(s.slug);
       const cover = assets.find((a) => a.kind === "video" && a.orientation === "portrait") ?? assets[0];
-      return { screening: s, cover, family: familyOf(s.format) };
+      return { screening: s, cover };
     });
 
   return (

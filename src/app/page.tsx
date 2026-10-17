@@ -3,6 +3,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { NoExitTransition } from "@/components/layout/NoExitTransition";
 import { Opening } from "@/components/home/Opening";
 import { SelectedWork } from "@/components/sections/SelectedWork";
+import { ClientFeedback } from "@/components/sections/ClientFeedback";
 import { ServiceGroups } from "@/components/sections/ServiceGroups";
 import { ProcessSteps } from "@/components/sections/ProcessSteps";
 import { ClosingCta } from "@/components/sections/ClosingCta";
@@ -14,7 +15,8 @@ const pick = (ids: string[]) => ids.map((id) => findMedia(id)).filter((m): m is 
 /**
  * The home page as a short front door (client-first refactor, 2026-10-16): what the agency does,
  * real work, the services in four groups, the process in four steps, and one way to get in touch.
- * Hero → selected work → services → how we work → contact, then the footer.
+ * Hero → selected work → services → how we work → client feedback (once approved) → contact, then
+ * the footer.
  */
 export default function Home() {
   // hero capsules: real reels only, always playing (no graphics, no figures)
@@ -59,6 +61,10 @@ export default function Home() {
         </div>
         <div className="mt-10 md:mt-14"><ProcessSteps /></div>
       </section>
+
+      {/* near the end, before the closing call to action: renders only once approved client
+          feedback exists (content/feedback.ts); nothing at all until then */}
+      <ClientFeedback />
 
       <ClosingCta />
     </PageShell>

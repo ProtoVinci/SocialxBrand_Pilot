@@ -46,12 +46,13 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
       <header className="gutter grid gap-12 pb-20 pt-[calc(var(--nav-h)+3rem)] md:grid-cols-12 md:items-end">
         <div className="md:col-span-7">
           <Crumbs trail={[{ name: "Work", href: "/work" }, { name: s.title }]} />
-          <p className="label mt-8 text-signal-ink">Project · {s.kicker}</p>
+          {/* a collection of examples, not a single client project (the records carry no client or brief) */}
+          <p className="label mt-8 text-signal-ink">Work collection · {s.kicker}</p>
           <SplitReveal as="h1" trigger="mount" className="mt-4 font-display text-display font-medium">{s.title}</SplitReveal>
           <p className="mt-8 max-w-xl text-lede text-ink/80">{s.line}</p>
-          {/* Project overview: only what the project record supports. SxBP's own role, the client and
-              any objective or result are not in the record, so they are not shown (owner input). */}
-          <h2 className="sr-only">Project overview</h2>
+          {/* Only what the record supports. SxBP's own role, the client and any objective or result
+              are not in the record, so they are not shown (owner input). */}
+          <h2 className="sr-only">About this collection</h2>
           <dl className="mt-10 grid max-w-xl grid-cols-2 gap-6 border-t border-ink/10 pt-6 text-sm">
             <div><dt className="label text-blue">Type of work</dt><dd className="mt-2">{s.format}</dd></div>
             <div><dt className="label text-blue">{partner.role}</dt><dd className="mt-2">{partner.name}</dd></div>
@@ -85,7 +86,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
       <Link href={`/work/${next.slug}`} transitionTypes={["nav-forward"]} className="group block border-t border-ink/10">
         <div className="gutter flex items-center justify-between gap-8 py-20">
           <div>
-            <p className="label text-blue">Next project</p>
+            <p className="label text-blue">Next collection</p>
             <p className="mt-4 font-display text-display font-medium transition-colors group-hover:text-signal">{next.title} <span className="inline-block transition-transform duration-500 group-hover:translate-x-4">→</span></p>
           </div>
           {nextCover && (
@@ -97,7 +98,7 @@ export default async function ScreeningPage({ params }: PageProps<"/work/[slug]"
       </Link>
       <WhereNext links={[
         { href: "/route", label: "Discuss a project", hint: "Want work like this? Tell us what your business needs.", primary: true },
-        { href: "/work", label: "All work", hint: "Every project, filtered by format." },
+        { href: "/work", label: "All work", hint: "Every collection, filtered by format." },
         { href: "/capabilities", label: "Services", hint: "The 18 services, in four groups." },
       ]} />
     </PageShell>

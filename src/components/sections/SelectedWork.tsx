@@ -6,8 +6,8 @@ import { featuredWork, mediaFor, partnerCredit, screeningBySlug } from "@/conten
 import { categoryLine } from "@/lib/category-line";
 
 /**
- * The home page's (and How we work's) proof: a few real projects as plain cards (still poster,
- * title, category, format) and one way into the full work. Which projects lead is the owner's
+ * The home page's (and How we work's) proof: a few real work collections as plain cards (title,
+ * category, format) and one way into the full work. Which collections lead is the owner's
  * choice (`featuredWork` in content/work.ts), not the site's. Each card's real clip plays, muted
  * and looping, while it is on screen (CardReel: shared video budget, poster until then).
  */
@@ -45,7 +45,7 @@ export function SelectedWork({ slugs = featuredWork, index, title = "Selected wo
               </div>
               <span className="mt-4 block font-display text-[1.25rem] font-medium leading-tight transition-colors group-hover:text-signal md:text-title">{screening.title}</span>
               <span className="mt-1 block text-sm text-ink/65">{categoryLine(screening)}</span>
-              <span className="label mt-3 inline-block text-blue">View project <span aria-hidden>→</span></span>
+              <span className="label mt-3 inline-block text-blue">View collection <span aria-hidden>→</span></span>
             </Link>
           </li>
         ))}

@@ -110,7 +110,18 @@ export function Nav({ previews }: { previews: VideoAsset[] }) {
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") { close("user"); menuButton.current?.focus(); } };
+    // A real modal: Escape closes it (focus back on the Close/Menu button), and Tab / Shift+Tab loop
+    // through the Close button and the menu's own links only, never out to the bar or the skip link.
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { close("user"); menuButton.current?.focus(); return; }
+      if (e.key !== "Tab") return;
+      const loop = [menuButton.current, ...(panel.current?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])") ?? [])].filter((el): el is HTMLElement => Boolean(el));
+      if (!loop.length) return;
+      const at = loop.indexOf(document.activeElement as HTMLElement);
+      const next = at === -1 ? 0 : (at + (e.shiftKey ? -1 : 1) + loop.length) % loop.length;
+      e.preventDefault();
+      loop[next].focus();
+    };
     document.addEventListener("keydown", onKey);
     // overflow alone does not stop Lenis (it scrolls with window.scrollTo, which ignores it):
     // stop it too, or the page behind the menu keeps moving under the wheel

@@ -83,6 +83,10 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
       {slides.map((s, k) => {
         const state = k === i ? "on" : k === prev ? "out" : "wait";
         const poster = s.kind === "video" ? s.poster.webp : s.srcset.webp[0]?.url;
+        // Posters follow the same window (on screen, outgoing, next): a slide waiting further ahead
+        // is an empty frame, so each capsule fetches two posters at load instead of all of them
+        // (eight, ~466KB, measured 2026-10-17). The next slide's poster is there a full beat ahead.
+        const framed = k === i || k === prev || (!still && k === next);
         // the media window: current, outgoing (during the handover) and, once warm, the next clip.
         // Offscreen or on hold the window only pauses (nothing is re-created on the way back).
         const mounted = s.kind === "video" && !still && (k === i || k === prev || (warm && k === next));
@@ -93,8 +97,12 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
             data-state={state}
             className="absolute inset-0 transition-[translate,scale,opacity,filter] duration-[700ms] ease-[var(--ease-pilot)] data-[state=on]:z-10 data-[state=on]:translate-y-0 data-[state=on]:scale-100 data-[state=on]:opacity-100 data-[state=out]:z-0 data-[state=out]:-translate-y-[55%] data-[state=out]:scale-90 data-[state=out]:opacity-0 data-[state=out]:blur-[2px] data-[state=wait]:translate-y-full data-[state=wait]:scale-[1.18] data-[state=wait]:opacity-0 data-[state=wait]:duration-0"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element -- tiny pre-sized posters from the media pipeline */}
-            <img src={poster} alt="" loading={k === 0 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover object-[50%_28%]" />
+            {framed && (
+              <picture>
+                {s.kind === "video" && <source srcSet={s.poster.avif} type="image/avif" />}
+                <img src={poster} alt="" loading={k === 0 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover object-[50%_28%]" />
+              </picture>
+            )}
             {mounted && <PillVideo src={s.src.preview} playing={playing} current={state === "on"} />}
           </span>
         );
