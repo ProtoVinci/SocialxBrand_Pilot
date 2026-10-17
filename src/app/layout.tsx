@@ -9,7 +9,7 @@ import { NavProgress } from "@/components/layout/NavProgress";
 import { DevWarmup } from "@/components/layout/DevWarmup";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { site } from "@/content/site";
-import { organizationLd } from "@/lib/seo";
+import { homeDescription, openGraphBase, siteLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site-url";
 import { allVideos } from "@/content/work";
 import { Analytics } from "@vercel/analytics/next";
@@ -25,14 +25,15 @@ export const metadata: Metadata = {
     default: `${site.name} — Digital Marketing Agency · India & Global`,
     template: `%s · ${site.name}`,
   },
-  description:
-    "SOCIALxBRAND PILOT is an Indian digital marketing agency. Strategy, creativity, technology and execution across 18 marketing services — built around what your business actually needs. We will show, you will grow.",
+  description: homeDescription,
   applicationName: site.name,
-  alternates: { canonical: "/" },
-  // no og:url here: child routes inherit it, and "/" would mislabel every inner page
-  openGraph: { type: "website", siteName: site.name, locale: "en_IN" },
+  // no canonical here either: the home page sets "/" itself, so the 404 page carries none
+  // no og:url here: child routes inherit it, and "/" would mislabel every inner page (each page
+  // sets its own through pageMetadata in lib/seo)
+  openGraph: openGraphBase,
   twitter: { card: "summary_large_image" },
-  robots: { index: true, follow: true },
+  // no robots here: index/follow is the default, and setting it put a second, contradicting
+  // robots tag on the 404 page beside the noindex Next.js adds there
 };
 
 export const viewport: Viewport = { themeColor: "#faf8f5", colorScheme: "light" };
@@ -57,7 +58,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body>
         <a href="#main" className="skip-link">Skip to content</a>
-        <JsonLd data={organizationLd()} />
+        <JsonLd data={siteLd()} />
         <SmoothScroll>
           <Nav previews={menuPreviews} />
           <main id="main">{children}</main>

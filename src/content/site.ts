@@ -26,8 +26,12 @@ export const whoWeAre = [
 
 export const pillars = ["Strategy", "Creativity", "Technology", "Execution"] as const;
 
-/** What the agency does, in one plain sentence: the four pillars, the 18 services and the business-first promise, as the site description already says it. */
-export const heroLede = "Strategy, creativity, technology and execution across 18 marketing services, built around what your business actually needs.";
+/**
+ * What the agency is and does, in one plain sentence: the category and country (the profile's own
+ * opening line), the four pillars, the 18 services and the business-first promise, as the site
+ * description already says it. The hero's heading is the slogan, so this line names the agency.
+ */
+export const heroLede = "An Indian digital marketing agency: strategy, creativity, technology and execution across 18 marketing services, built around what your business actually needs.";
 
 export const quote = {
   lead: "We are not here simply to make brands look good online.",

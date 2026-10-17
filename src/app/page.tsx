@@ -9,6 +9,10 @@ import { ProcessSteps } from "@/components/sections/ProcessSteps";
 import { ClosingCta } from "@/components/sections/ClosingCta";
 import { findMedia, type VideoAsset } from "@/content/work";
 import { servicesIntro } from "@/content/site";
+import { homeDescription, pageMetadata } from "@/lib/seo";
+
+// the title is the layout's default (agency name and category)
+export const metadata = pageMetadata({ description: homeDescription, path: "/" });
 
 const pick = (ids: string[]) => ids.map((id) => findMedia(id)).filter((m): m is VideoAsset => m?.kind === "video");
 

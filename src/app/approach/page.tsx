@@ -6,15 +6,15 @@ import { Reveal } from "@/components/motion/Reveal";
 import { ProcessSteps } from "@/components/sections/ProcessSteps";
 import { SelectedWork } from "@/components/sections/SelectedWork";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { differentiators, impact, servicesIntro } from "@/content/site";
 
-export const metadata: Metadata = {
-  title: "How we work",
+export const metadata: Metadata = pageMetadata({
+  title: "How We Work: Our Four-Step Process",
   description:
     "How SOCIALxBRAND PILOT works with a business, in four steps: understand the business, plan the right approach, create and execute, then review and improve.",
-  alternates: { canonical: "/approach" },
-};
+  path: "/approach",
+});
 
 /** The three statements that say most plainly how the agency works (from the company profile). */
 const STANCE = ["Business-First Marketing", "Tailored Strategy", "Strategy + Creativity + Execution"];

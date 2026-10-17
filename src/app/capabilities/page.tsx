@@ -5,15 +5,15 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { WhereNext } from "@/components/layout/WhereNext";
 import { ServiceGroups } from "@/components/sections/ServiceGroups";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { serviceGroups, servicesIn } from "@/content/service-groups";
 
-export const metadata: Metadata = {
-  title: "Services",
+export const metadata: Metadata = pageMetadata({
+  title: "Digital Marketing Services",
   description:
     "The 18 marketing services of SOCIALxBRAND PILOT in four groups: strategy and social media; content and creative production; reach and enquiries; creators, community and digital tools.",
-  alternates: { canonical: "/capabilities" },
-};
+  path: "/capabilities",
+});
 
 /**
  * Services, client-first: the four groups first (what kind of help each is), then every one of the

@@ -5,14 +5,14 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { WhereNext } from "@/components/layout/WhereNext";
 import { RouteBuilder } from "@/components/route/RouteBuilder";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { site } from "@/content/site";
 
-export const metadata: Metadata = {
-  title: "Contact us",
+export const metadata: Metadata = pageMetadata({
+  title: "Contact Us: WhatsApp, Call or Email",
   description: "Contact SOCIALxBRAND PILOT by WhatsApp, phone or email, or build a short project brief and send it by WhatsApp or email.",
-  alternates: { canonical: "/route" },
-};
+  path: "/route",
+});
 
 /**
  * Contact, client-first: the direct ways in come first, for everyone; the project brief is an

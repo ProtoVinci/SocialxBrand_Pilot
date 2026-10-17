@@ -8,7 +8,7 @@ import { ScreeningMedia } from "@/components/work/ScreeningMedia";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { Crumbs } from "@/components/layout/Crumbs";
 import { WhereNext } from "@/components/layout/WhereNext";
 import { liveScreenings, mediaFor, partner, photosFor, screeningBySlug, videosFor } from "@/content/work";
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: PageProps<"/work/[slug]">): P
   const { slug } = await params;
   const s = screeningBySlug(slug);
   if (!s) return {};
-  return { title: `${s.title} — Work`, description: `${s.line} ${s.format} by SOCIALxBRAND PILOT.`, alternates: { canonical: `/work/${slug}` } };
+  return pageMetadata({ title: `${s.title} — Selected Work`, description: `${s.line} ${s.format} by SOCIALxBRAND PILOT.`, path: `/work/${slug}` });
 }
 
 export default async function ScreeningPage({ params }: PageProps<"/work/[slug]">) {

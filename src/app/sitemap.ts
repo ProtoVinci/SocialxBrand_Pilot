@@ -3,16 +3,21 @@ import { siteUrl } from "@/lib/site-url";
 import { divisions } from "@/content/divisions";
 import { liveScreenings } from "@/content/work";
 
+/**
+ * Every public, indexable page, on the canonical host. No `priority` or `changefreq` (Google
+ * ignores both) and no `lastModified`: the content carries no maintained update dates, and a
+ * build-time date would claim every page changed on every deploy.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const url = (p: string) => new URL(p, siteUrl).toString();
-  return [
-    { url: url("/"), changeFrequency: "monthly", priority: 1 },
-    { url: url("/work"), changeFrequency: "monthly", priority: 0.9 },
-    { url: url("/capabilities"), changeFrequency: "monthly", priority: 0.9 },
-    { url: url("/approach"), changeFrequency: "yearly", priority: 0.7 },
-    { url: url("/about"), changeFrequency: "yearly", priority: 0.6 },
-    { url: url("/route"), changeFrequency: "yearly", priority: 0.8 },
-    ...divisions.map((d) => ({ url: url(`/capabilities/${d.slug}`), changeFrequency: "yearly" as const, priority: 0.7 })),
-    ...liveScreenings().map((s) => ({ url: url(`/work/${s.slug}`), changeFrequency: "monthly" as const, priority: 0.6 })),
+  const paths = [
+    "/",
+    "/work",
+    "/capabilities",
+    "/approach",
+    "/about",
+    "/route",
+    ...divisions.map((d) => `/capabilities/${d.slug}`),
+    ...liveScreenings().map((s) => `/work/${s.slug}`),
   ];
+  return paths.map((p) => ({ url: new URL(p, siteUrl).toString() }));
 }

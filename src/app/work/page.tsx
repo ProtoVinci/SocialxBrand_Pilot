@@ -4,14 +4,14 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { WhereNext } from "@/components/layout/WhereNext";
 import { WorkIndex, type IndexItem } from "@/components/work/WorkIndex";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { featuredWork, liveScreenings, mediaFor, partnerCredit } from "@/content/work";
 
-export const metadata: Metadata = {
-  title: "Work",
+export const metadata: Metadata = pageMetadata({
+  title: "Selected Work: Video, Photography & Design",
   description: "Selected work from SOCIALxBRAND PILOT: video, photography and design for businesses, brands and events, from restaurant and creator content to brand films, menus, posters and logo identities.",
-  alternates: { canonical: "/work" },
-};
+  path: "/work",
+});
 
 
 export default function WorkPage() {

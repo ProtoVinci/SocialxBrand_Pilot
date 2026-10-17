@@ -10,7 +10,7 @@ import { ProcessSteps } from "@/components/sections/ProcessSteps";
 import { Reel } from "@/components/media/Reel";
 import { Photo } from "@/components/media/Photo";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd, serviceLd } from "@/lib/seo";
+import { breadcrumbLd, pageMetadata, serviceLd } from "@/lib/seo";
 import { Crumbs } from "@/components/layout/Crumbs";
 import { WhereNext } from "@/components/layout/WhereNext";
 import { divisionBySlug, divisions, pad } from "@/content/divisions";
@@ -26,10 +26,9 @@ export async function generateMetadata({ params }: PageProps<"/capabilities/[slu
   const { slug } = await params;
   const d = divisionBySlug(slug);
   if (!d) return {};
-  // trim to ~160 chars on a word boundary (search snippets cut there anyway)
-  const full = d.whatItIs.join(" ");
-  const description = full.length <= 160 ? full : `${full.slice(0, 157).replace(/\s+\S*$/, "")}…`;
-  return { title: d.name, description, alternates: { canonical: `/capabilities/${slug}` } };
+  // the service's own opening sentence, whole (the page's lead and its Service schema say the same):
+  // a sentence cut at 160 characters ended mid-word in an ellipsis, and Google trims by width anyway
+  return pageMetadata({ title: d.name, description: d.whatItIs[0], path: `/capabilities/${slug}` });
 }
 
 /** How many deliverables show before "See the full scope". */

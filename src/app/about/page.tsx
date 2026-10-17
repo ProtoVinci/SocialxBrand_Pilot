@@ -4,15 +4,15 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { WhereNext } from "@/components/layout/WhereNext";
 import { Reveal } from "@/components/motion/Reveal";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbLd, founderLd } from "@/lib/seo";
+import { breadcrumbLd, founderLd, pageMetadata } from "@/lib/seo";
 import { founders, foundersTogether, portrait } from "@/content/founders";
 
-export const metadata: Metadata = {
-  title: "About",
+export const metadata: Metadata = pageMetadata({
+  title: "About Us: The Founders",
   description:
     "The founders of SOCIALxBRAND PILOT: Sanket Shedge, Founder & Director, who leads the agency's direction and client experience, and Sujal Pisal, Co-Founder, who leads its operations.",
-  alternates: { canonical: "/about" },
-};
+  path: "/about",
+});
 
 /**
  * Who is behind the agency (owner-supplied, 2026-10-17): the two founders, each with a portrait,
