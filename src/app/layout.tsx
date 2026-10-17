@@ -66,7 +66,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <PointerFx />
         <NavProgress />
         <DevWarmup />
-        <Analytics />
+        {/* Vercel Web Analytics (cookieless page views). Its script is served by Vercel's platform at
+            /_vercel/insights, so only builds made on Vercel (VERCEL=1) include it: anywhere else the
+            script 404s and fills the console with an error on every page */}
+        {process.env.VERCEL && <Analytics />}
       </body>
     </html>
   );
