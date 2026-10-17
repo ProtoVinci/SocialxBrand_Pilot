@@ -12,6 +12,7 @@ import { site } from "@/content/site";
 import { organizationLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site-url";
 import { allVideos } from "@/content/work";
+import { Analytics } from "@vercel/analytics/next";
 
 // The menu's hover previews, picked here on the server: importing the media list into the
 // (client) Nav shipped the whole ~100KB media manifest to every page.
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <PointerFx />
         <NavProgress />
         <DevWarmup />
+        <Analytics />
       </body>
     </html>
   );
