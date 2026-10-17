@@ -21,11 +21,14 @@ import type { MediaAsset } from "@/content/work";
  * under every clip, so a clip that is not ready yet shows its still, never an empty frame.
  * Slides fill the capsule (cover, anchored high at 50% 28%: the work is portrait and faces sit
  * in its upper third, so a centred crop beheads people); nothing is ever letterboxed.
- * Reduced motion / no JS: the first clip's poster, still. Offscreen, hidden tab, or `hold` (the
+ * Reduced motion / no JS: the first clip's poster, still. Partly scrolled away (under 75% on screen):
+ * the current clip plays on, no new handover. Offscreen, hidden tab, or `hold` (the
  * desktop scroll scene has taken over the hero): no cycling, nothing playing.
  */
 /** The slide transition below (duration-[700ms]) plus a frame or two of slack. */
 const HANDOVER_MS = 750;
+/** Share of the capsule that must be on screen for it to change clip (it plays while any of it is). */
+const SETTLED_RATIO = 0.75;
 
 export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, className = "" }: {
   slides: MediaAsset[]; interval?: number; tilt?: number; hold?: boolean; className?: string;
@@ -37,6 +40,11 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
   const [warm, setWarm] = useState(false);
   const [still, setStill] = useState(true);
   const [inView, setInView] = useState(false);
+  // mostly on screen: the capsule changes clip only then. Once a visitor scrolls it partly away
+  // (toward Selected Work) it keeps playing its current clip but starts no handover and warms no
+  // new clip, so the hero's media work has settled before the work cards begin theirs (Pilot6
+  // audit P0.1, 2026-10-17).
+  const [settled, setSettled] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
@@ -44,12 +52,15 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
     const sync = () => setStill(mq.matches);
     sync();
     mq.addEventListener("change", sync);
-    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting));
+    const io = new IntersectionObserver(([e]) => {
+      setInView(e.isIntersecting);
+      setSettled(e.intersectionRatio >= SETTLED_RATIO);
+    }, { threshold: [0, SETTLED_RATIO] });
     io.observe(root.current!);
     return () => { mq.removeEventListener("change", sync); io.disconnect(); };
   }, []);
 
-  const cycling = !still && inView && !hold && slides.length > 1;
+  const cycling = !still && settled && !hold && slides.length > 1;
   useEffect(() => {
     if (!cycling) return;
     const t = setInterval(() => {
@@ -62,15 +73,17 @@ export function HeroPill({ slides, interval = 2200, tilt = 0, hold = false, clas
 
   // per beat, once the handover has played (one render for both): the outgoing clip, now fully
   // transparent, leaves the window (unmounted, so it stops decoding and its buffer is freed) and
-  // the next clip enters it, so it is decoded by the time its turn comes
+  // the next clip enters it, so it is decoded by the time its turn comes. A handover that is under
+  // way when cycling stops still finishes (the outgoing clip must not stay mounted and playing
+  // unseen); only the warming of a next clip waits for cycling.
   useEffect(() => {
-    if (!cycling) return;
+    if (prev === null && (warm || !cycling)) return;
     const t = setTimeout(() => {
       setPrev(null);
-      setWarm(true);
+      if (cycling) setWarm(true);
     }, HANDOVER_MS);
     return () => clearTimeout(t);
-  }, [i, cycling]);
+  }, [i, prev, warm, cycling]);
   const next = (i + 1) % slides.length;
 
   return (

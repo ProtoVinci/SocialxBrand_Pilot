@@ -2,7 +2,7 @@
 
 > **New session told only "continue"?** Read this whole file, then `AGENTS.md`. Pick up at **§7 Next steps**, in order. Keep this file current and commit it with your changes.
 
-Last updated: 2026-10-09 (local session: audit-plan implementation, see §5 and `docs/reviews/audit-implementation-2026-10-09.md`). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot. **Work directly on `main`.** The client asked for one branch only. A leftover remote branch `claude/epic-einstein-dj8x13` points at an old commit of `main`; delete it if it still exists (the cloud session's git proxy refuses branch deletions).
+Last updated: 2026-10-17 (Pilot6 full audit, see §5 and `docs/reviews/pilot6-audit-2026-10-17.md`). Repo: https://github.com/ProtoVinci/SocialxBrand_Pilot. **Work directly on `main`.** The client asked for one branch only. A leftover remote branch `claude/epic-einstein-dj8x13` points at an old commit of `main`; delete it if it still exists (the cloud session's git proxy refuses branch deletions).
 
 ---
 
@@ -15,8 +15,8 @@ Build the complete, motion-led website for **SOCIALxBRAND PILOT** (SxBP), an Ind
 
 ### Hard rules
 
-- **Never invent** clients, metrics, ROI, testimonials, awards, follower counts, years in business, a team, certifications, partnerships, prices or a city. The location is "India · IST" only. `tests/content-audit.spec.ts` guards this.
-- Every claim comes from `src/content/*`, transcribed from `docs/source/*.pdf`.
+- **Never invent** metrics, ROI, ratings, awards, follower counts, years in business, certifications, partnerships, prices or a city. The location is "India · IST" only. `tests/content-audit.spec.ts` guards this.
+- Every claim comes from `src/content/*`: the company PDFs in `docs/source/`, plus what the owner supplied directly: the founders (`founders.ts`) and the client feedback (`feedback.ts`: drafted on the clients' behalf with their permission and published on the owner's decision; see that file's header). Never add to either without the owner.
 - Real work only (the client's Drive). Keep "Production partner: Vishay Creations". Never letterbox 9:16 reels.
 - Reduced motion and no-JS must show all content.
 
@@ -33,17 +33,16 @@ Build the complete, motion-led website for **SOCIALxBRAND PILOT** (SxBP), an Ind
 
 | Area | State |
 |---|---|
-| Stack | Next.js **16.3.8** (Turbopack), React 19.2, TS 5, Tailwind **4**, ESLint 9, gsap 3.15 (ScrollTrigger, SplitText, Flip, CustomEase, DrawSVG), @gsap/react, Lenis 1.3 |
-| Pages | `/`, `/work`, `/work/[slug]` (14), `/capabilities`, `/capabilities/[slug]` (18), `/approach`, `/route`; `/contact` → `/route`; 404. **43 static pages build.** |
-| Content | All 18 divisions verbatim (`divisions.ts`), the company profile (`site.ts`), 14 screenings (`work.ts`), 95 curated media assets (43 videos, 52 photos) in `public/media/` |
-| SEO | metadataBase = `siteUrl` (`src/lib/site-url.ts`: `NEXT_PUBLIC_SITE_URL`, else the Vercel production domain, else `site.url` = `https://www.sxbp.com`), canonicals, sitemap, robots, JSON-LD. The share image is the owner's static `src/app/opengraph-image.jpg` (1200×630). |
-| Tests | `npm test` (run it with `--workers=1`) → **59 passed, 0 failed, 46 skipped by design** (2026-10-15 second pass, against a production build with `PORT=3102`; the one test that needs the development-only `window.__gsap` hook skips there and passes against `next dev`) (each run-once test is skipped on the other two projects): smoke + overflow at 3 viewports, axe, reduced motion, route builder → WhatsApp / mailto / copy, content audit, and one regression guard per fixed audit item, plus `perf #…` and `audit §…` guards for the two 2026-10-15 passes (`tests/regressions.spec.ts`). With more than one worker a random page can time out on `networkidle` on the loaded dev laptop (this also happened before the audit work); it passes singly. |
-| Checks | `npx tsc --noEmit`, `npx eslint src tests` and `npm run build` are clean (2026-10-09). The axe colour-contrast audit is clean apart from elements caught mid-animation. |
-| Launcher | `startup.bat` (Windows), tested under Wine with Windows Node 22 across 12 scenarios |
-| Audit 2026-10-17 | `docs/reviews/deep-audit-2026-10-17.md`: capsule posters windowed (Home images 728 → 449KB), work pages labelled "Work collection" with explicit `formats` filter tags, plain 404, "Typical deliverables" on services, menu focus loop, a client-feedback section that stays hidden until `content/feedback.ts` has approved entries. `/about` waits for founder facts. Owner-input list in that report. |
-| Layout | **Client-first refactor, 2026-10-16** (`docs/reviews/client-first-refactor-2026-10-16.md`): Home is hero → selected work → four service groups → four steps → contact; plain labels everywhere (Work, Services, How we work, Contact us); every service page in one pattern; Contact puts WhatsApp/call/email first with an optional brief. Ladder, Marquee, MethodBoard, Audiences, Finale, WorkShowcase, the Division board/index/ticker and the takeover scene were removed (in git history). Owner-input checklist in that report. |
-| Performance | **2026-10-15 second pass** (`docs/reviews/post-phase-audit-2026-10-15.md`): on a quiet machine Home scrolls at 45–52 fps, ≤1% jank at 4× CPU (the 18–19 fps figure below was a loaded-machine run); hero capsules keep ≤3 clips each (was all 8); Home load TBT 1092 → 885ms with Ladder deferred; Home → Work's view transition measured at ~300ms of a ~1.1s click → content at 4× CPU (owner's call). **First 2026-10-15 pass** (`docs/reviews/performance-fixes-2026-10-15.md`, interleaved A/B on production builds, 4× CPU): home hero scroll raster −70% and compositor draw −37% (the scene's textured dim field was repainted every frame; the takeover is now transform-only; the glare drift pauses during the scene), long tasks while scrolling home 89–97 → 49–58, Home → Work view-transition update task 1457 → 646ms (and 662 → 496 in a quieter run), every video through the shared budget (home: ≤3 playing desktop, ≤2 phone), `/work` no longer downloads previews when tiles scroll under a resting cursor (8.5MB → 0), the Nav ScrollTrigger leak (one more trigger per page visited) fixed. Earlier figures (2026-10-09, `docs/reviews/audit-implementation-2026-10-09.md`): load blocking time `/` 1158ms, `/work` 294, `/capabilities` 253, `/approach` 353, `/route` 284. This laptop's background load swings totals up to 2× from minute to minute: compare builds **interleaved**, and compare compositor work, not fps (see the motion-system notes). |
-| Docs | `docs/design-brief.md` (the **current** colour and texture system), `docs/motion-system.md` (current), `design-research.md`, `site-architecture.md`, `content-map.md`, `plan.md` (the original approved plan, kept as a record), `docs/reviews/audit-implementation-2026-10-09.md` (the 37 + 12 audit items, status and evidence) |
+| Stack | Next.js **16.3.8** (Turbopack), React 19.2, TS 5, Tailwind **4**, ESLint 9, gsap 3.15 (ScrollTrigger, SplitText, Flip, CustomEase), @gsap/react, Lenis 1.3 |
+| Pages | `/`, `/work`, `/work/[slug]` (14 collections), `/capabilities`, `/capabilities/[slug]` (18), `/approach`, `/about`, `/route`; `/contact` → `/route`; 404. **44 static pages build.** |
+| Content | 18 services verbatim (`divisions.ts`) in four groups (`service-groups.ts`), the company profile (`site.ts`), 14 work collections (`work.ts`), 95 curated media assets (43 videos, 52 photos) in `public/media/`, two founders (`founders.ts`, portraits in `public/founders/`), nine client feedback entries with logos (`feedback.ts`, `public/clients/`) |
+| SEO | metadataBase = `siteUrl` (`src/lib/site-url.ts`: `NEXT_PUBLIC_SITE_URL`, else the Vercel production domain, else `site.url` = `https://www.socialxbrandpilot.com`), canonicals, sitemap, robots, JSON-LD (organisation, services, breadcrumbs, the founders as Person). Share image: `src/app/opengraph-image.jpg`. |
+| Tests | `npm test -- --workers=1` against a production build (`PORT=3102`) → **85 passed, 0 failed, 62 skipped by design** (2026-10-17). Run-once tests skip on the other two projects. Smoke and overflow at three viewports, axe, reduced motion, the contact flow, the content audit, and one regression guard per fixed audit item (`tests/regressions.spec.ts`, grouped by brief). |
+| Checks | `npx tsc --noEmit`, `npx eslint src tests scripts` and `npm run build` are clean (2026-10-17). `check-flow` and `check-shift` pass on every route. |
+| Launcher | `startup.bat` (Windows) |
+| Layout | **Client-first, 2026-10-16** (`docs/reviews/client-first-refactor-2026-10-16.md`): Home is hero → selected work → four service groups → four steps → client feedback → contact; plain labels (Work, Services, How we work, About, Contact us); every service page in one pattern; Contact puts WhatsApp, call and email first, with an optional brief. |
+| Performance | Latest: `docs/reviews/pilot6-audit-2026-10-17.md` (hero → work boundary: one cold video start at a time; capsules stop changing clip when partly scrolled away). Earlier passes: `performance-fixes-2026-10-15.md`, `post-phase-audit-2026-10-15.md`, `deep-audit-2026-10-17.md`. This laptop's background load swings totals up to 2×: compare builds **interleaved**, and compare trace work, not fps. Real phones and laptop GPUs have not been measured. |
+| Docs | `README.md` (setup, architecture, QA), this file (current state), `docs/reviews/` (one dated report per brief), `docs/briefs/` (the current brief; finished ones in `archive/`), `docs/design-brief.md`, `docs/motion-system.md`, `docs/content-map.md` |
 
 ---
 
@@ -66,7 +65,7 @@ npm test                            # Playwright; starts/reuses a server on :310
 **QA scripts** (they expect a server on :3100; pass `--base=` otherwise; output goes to `qa-shots/`, which is gitignored):
 
 ```bash
-node scripts/qa/shoot.mjs --url=/ --vp=1440x900 --at="0,25%,#method-title+200" --wait=1400 --repeat
+node scripts/qa/shoot.mjs --url=/ --vp=1440x900 --at="0,25%,#services-title+200" --wait=1400 --repeat
 node scripts/qa/debug.mjs --url=/ --scroll=4000                # page errors + probes
 node scripts/qa/perf.mjs --url=/ --cpu=4 --scroll=7000         # load metrics + scroll fps/jank (prod build only)
 node scripts/qa/media-audit.mjs [--vp=390x844 --touch] [--detail]   # <video> elements mounted/playing, video requests and bytes per route (prod build only)
@@ -83,12 +82,12 @@ node scripts/qa/media-audit.mjs [--vp=390x844 --touch] [--detail]   # <video> el
 ### Media pipeline (only to re-curate)
 
 The raw originals (`media-source/`, 1.5 GB) are gitignored and not in the repo; the processed `public/media/` is committed.
-1. Run `scripts/media/inventory.mjs` then `contact-sheet.mjs`, or copy `docs/source/drive-contact-keys.json` / `download-plan.json` into `media-source/`.
+1. Run `scripts/media/inventory.mjs` then `contact-sheet.mjs`, with `SXBP_DRIVE_ROOT` set. The Drive lists they write (`inventory.json`, `contact-keys.json`, `download-plan.json`) stay in the git-ignored `media-source/`, never in the repository.
 2. Run `mosaic.mjs` and curate `selection.json`.
 3. Run `download.mjs --probe`, then `download.mjs`.
 4. Run `transcode.mjs` (needs ffmpeg with libsvtav1 + libx264).
 
-The Drive root is `1aW_4Cg8rG6wv5QpH_2RvEjvzOkT59yWR`. Every video there is named "Vishay Creations.mov", so the Drive id is the only key.
+The Drive root folder id is passed as `SXBP_DRIVE_ROOT` (it is not kept in the repository). Every video there is named "Vishay Creations.mov", so the Drive id is the only key.
 
 ---
 
@@ -113,27 +112,32 @@ negative tracking. The `serif-accent` utility name is kept, but it is now Inter 
 Acts: `act-iris` (cobalt mid-tones), `act-rouge` (vermilion mid-tones), `act-periwinkle`, `act-rose` (tints), all with ink text.
 
 ### Home, top to bottom
-1. **Hero** (`Opening.tsx`): Hanzo layout. Centred three-line headline with always-playing media capsules
-   (`HeroPill`), window-light glare drifting (`fx/HeroGlare`), tools orbit (`fx/ToolsOrbit`, simple-icons). On
-   scroll, the top capsule morphs into a full-screen reel, then the manifesto plays.
-2. **Ladder**: "Marketing is more than being…". The reel swipes like a feed.
-3. **Recent work** (`WorkShowcase`): Hanzo panel. Two endlessly looping columns (left up, right down), folder disc
-   fixed at the panel centre. Vertical reels are staged upright in landscape tiles, never cropped.
-4. **Marquee**.
-5. **Capabilities** (`capabilities/DivisionBoard`): Elevix-style bento. Four cluster tiles plus a stage. Fits one
-   screen at every desktop size (`short:` variant for short laptops). The stage changes only on pointermove or
-   focus, after an intent delay; it runs an idle tour.
-6. **Method board** (CSS sticky, scrambled names that resolve), then Audiences, AI, Finale.
+1. **Hero** (`Opening.tsx`): the brand line "Every business has something worth showing." with two media capsules
+   (`HeroPill`) that play the client's reels and roll to the next clip, the window-light glare (`fx/HeroGlare`),
+   a plain-language line (`heroLede`) and two CTAs: See our work, Explore services.
+2. **Selected work** (`sections/SelectedWork`): four featured collections; card clips play through the budget.
+3. **Services** (`sections/ServiceGroups`): the 18 services in four groups.
+4. **How we work** (`sections/ProcessSteps`): four steps.
+5. **Client feedback** (`sections/ClientFeedback` + `FeedbackCarousel`): one card per published entry, moving on by
+   itself with a Pause button; still under reduced motion.
+6. **Closing call to action** (`sections/ClosingCta`).
 
 ### Wayfinding
-`Crumbs` on every inner page, `WhereNext` at every inner page end, nav Home link, and the nav reappears near the
-page end. Footer has Home and Back to top. Labels (2026-10-09): nav, footer, crumbs and page labels say **Services** (route `/capabilities`) and **Selected work** (route `/work`); the hero CTAs are "Build your marketing brief" and "See selected work".
+`Crumbs` on every inner page, `WhereNext` at every inner page end, and the footer row (Home, Work, Services, How we
+work, About, Contact us, Back to top). The nav bar hides "Home" between 768 and 1023px (the logo is the way home).
 
 ---
 
 ## 5. Changes history (newest first, condensed)
 
-00. **Audit-plan implementation (2026-10-09, local session).** Source: `docs/briefs/SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md`; every item, with status and evidence, is in `docs/reviews/audit-implementation-2026-10-09.md`. In short:
+000. **2026-10-15 to 10-17: five briefs** (each in `docs/briefs/`, each with a report in `docs/reviews/`):
+   - **Pilot6 full audit** (`pilot6-audit-2026-10-17.md`): Drive ids out of the repository and the pages; one cold video start at a time; hero capsules stop changing clip when partly scrolled away; footer "Visit" link removed; README and this file brought up to date; finished briefs archived.
+   - **Founders, client feedback, cleanup** (owner requests, 2026-10-17): `/about`; feedback cards with client logos, moving on by themselves with a Pause; repository tidied (briefs to `docs/briefs/`, client originals to `docs/source/`, unused media intermediates and the unused `simple-icons` dependency removed).
+   - **Deep audit** (`deep-audit-2026-10-17.md`): capsule posters windowed, "Work collection" labels and format filters, plain 404, "Typical deliverables", menu focus loop.
+   - **Client-first refactor** (`client-first-refactor-2026-10-16.md`): the home page rebuilt around what a client needs; the scroll scenes, boards and tickers were removed (in git history).
+   - **Performance passes** (`performance-fixes-2026-10-15.md`, `post-phase-audit-2026-10-15.md`): the shared video budget everywhere, Home → Work without the exit transition, hero cost cuts.
+
+00. **Audit-plan implementation (2026-10-09, local session).** Source: `docs/briefs/archive/SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md`; every item, with status and evidence, is in `docs/reviews/audit-implementation-2026-10-09.md`. In short:
    - **Fixed a real download bug:** calling `video.load()` on a `preload="none"` video fetches the whole file in Chromium; the earlier AV1 switch called it on mount, so hardware-AV1 machines downloaded every reel on a page at once. `Reel` now picks its clip through the `src` attribute (see §6).
    - Media: the hero takeover reel (2.5MB) is started by the pinned scene, not at load; the capabilities stage and cursor preview mount at most two reels (were 18); small thumbnails and phone layouts use the 360p clip (`Reel variant="preview"`); Nav menu previews are poster-only (`still`).
    - Runtime: no tween/delayedCall per scroll update (WorkShowcase, Marquee); PointerFx on one rAF per frame; touch ignored by pointer effects; DivisionTicker listeners cleaned up with an AbortController; one-shot reveals via `observeOnce`; RouteBuilder scrolls through Lenis when it runs; below-the-fold sections set up when about a screen away (`useGSAPNear`).
@@ -172,8 +176,7 @@ page end. Footer has Home and Back to top. Labels (2026-10-09): nav, footer, cru
 " can silently miss. In Git Bash, `--routes=/` becomes a Windows path; run
   the QA scripts from PowerShell.
 - **QA scripts** (dev server on :3100): `sweep.mjs` (stills), `record.mjs` (video plus console),
-  `check-shift.mjs` (CLS and height stability), `check-flow.mjs` (a way home from every page end),
-  `check-motion.mjs` (loops, disc, board).
+  `check-shift.mjs` (CLS and height stability), and `check-flow.mjs` (a way home from every page end).
 
 1. **`clearProps: undefined` crashes GSAP.** Add optional keys conditionally (see `SplitReveal`).
 2. **A base `relative` beats a caller's `absolute`** in Tailwind's order. `Reel`, `Photo`, `RouteToggle` and `SpinBadge` add `relative` only when the caller didn't pass `absolute`/`fixed`.
@@ -202,29 +205,19 @@ page end. Footer has Home and Back to top. Labels (2026-10-09): nav, footer, cru
 25. **Don't scrub the opacity of a large painted layer without its own compositor layer** (`will-change: opacity`): the hero's textured dim field was re-rasterised on every scroll frame.
 26. **Animations started later (observer / scroll callbacks) must be owned**: record them with the matchMedia handler's `context.add(() => …)` (as `SplitReveal` does) or keep handles and kill them in cleanup. In development `window.__gsap` exposes `{ gsap, ScrollTrigger }` for tests.
 27. **Don't narrow the hero timeline's `invalidateOnRefresh` to the card tweens**: tried, and the card lands wrong after a resize and after a reload mid-scene.
+29. **Portrait "preview" clips are 202px wide** (360p means the short side). They suit thumbnails and phone cards only: on a 1440px laptop the work cards (314px) looked visibly soft with them, so cards use the 720p clip from md up.
+30. **The budget starts one cold video at a time** (no decoded frame yet); the next starts on the previous one's `canplay`. A test that logs starts must judge "in flight" by element state, not event order: the budget starts the next video from inside the previous one's `canplay` handler.
 28. **Compare performance only interleaved.** Background load on this laptop turned a 50 fps Home scroll into an "18 fps" reading once; a single before/after pair is not evidence.
 
 ---
 
 ## 7. Next steps (in order)
 
-0. **Prototype-1 merge: styling, hero and work panel are done.** Still open from `docs/merge-sujal-site.md`: the Pilot Check quiz, the FAQ, the problem-vs-solution section. Ask the user before adding them.
-   Optional: make the hero takeover reel continue the clip the top capsule is showing.
-1. **Reviewer round 1 is done** (`docs/reviews/round-1.json`), and batches 1 and 2 are fixed (`ea11be2`). Still open:
-   - Footer: contact-grid and wordmark collisions; WhatsApp prominence; tap targets (RouteToggle h-9, footer links).
-   - AI struck-line contrast: raise to about 0.55.
-   - (Done 2026-10-09: the dead-end CTA bands (every inner page ends in `WhereNext` with a primary "Plan your route"), the ScreeningMedia/AiAmplifies one-shots, the DivisionTicker cleanup, the DivisionIndex lazy previews, the hero CTA copy.)
-   - Code: WorkIndex `aria-live` → count element.
-   - Media: logo tile in 9:16 → contain; re-extract the blurred Celebrations poster.
-   - Creative: manifesto→ladder seam; inner-page hero objects; a `/route` redesign.
-
-   After that, run reviewer round 2. The Workflow runner script has CRLF line endings, so pass it **inline**, not by `scriptPath`, and pin `model: "claude-opus-5-5"`.
-2. **Re-sweep** after the fixes: `node scripts/qa/sweep.mjs`, and again with `--reduce`. The last full sweep was clean at all 6 viewports.
-3. **Home hero cost: largely done (2026-10-15).** See `docs/reviews/performance-fixes-2026-10-15.md`. Still open, owner's call: the 230% pin length and the per-character manifesto (pacing, kept); a glare texture (rejected on fidelity: the live shadows multiply-blend with the grid); narrowing `invalidateOnRefresh` on the hero timeline (~70ms at 4× CPU per return to home). Profile on a real laptop and phone (headless here uses a software renderer).
-4. **Owner decisions and evidence the audit plan could not supply** (nothing was invented; see the client table in `docs/reviews/audit-implementation-2026-10-09.md`): what SxBP did versus the production partner on each piece; which work to lead with; real case-study context and permitted outcomes; deliverable exclusions, quantities, revisions, reporting cadence; timelines and client responsibilities; team and testimonials with permission; verified social URLs and a domain-branded mailbox; a privacy statement; analytics choice.
-5. **The domain.** The Route page, the footer and `site.url` still print/assume `www.sxbp.com` (from the company profile), but the site is deployed at `socialxbrand-pilot.vercel.app` and the owner bought `socialxbrandpilot.com`. Confirm the public address, then update `site.ts` (`url`, and the printed web address) and the content-audit test that pins it. On Vercel set `NEXT_PUBLIC_SITE_URL` to the primary domain (e.g. `https://www.socialxbrandpilot.com`).
-6. **A mid-resolution video tier** (~480p) for the 3–4-column tiles: needs ffmpeg with libsvtav1 + libx264 and the raw originals (not in the repo).
-7. **Optional: a `/lab` bench for hero variants; a scroll-scrubbed short-GOP hero clip.
+1. **Owner input** (nothing was invented; full list in `docs/reviews/pilot6-audit-2026-10-17.md`): each client's confirmation of their feedback line; each founder's approval of their bio and portrait; real service scopes, inclusions and exclusions; official social profile URLs; accurate alt text for the 52 work photographs; per-collection attribution (SxBP's role and the production partner's).
+2. **Drive access:** the portfolio folder is shared by link, and its ids are in old commits of this public repository. Decide whether the folder should stay link-shared; if not, restrict it in Drive (that also makes the old ids useless). Rewriting git history is possible but needs a force-push.
+3. **Cross-browser:** Home → Work, the menu and the capsules have been tested in Chromium only. Run the Playwright suite with Firefox and WebKit installed (`npx playwright install firefox webkit`, a few hundred MB) and check Safari on a real iPhone.
+4. **Real devices:** profile the hero → work boundary on an ordinary laptop and a mid-range phone (headless Chromium here uses a software renderer and has no AV1 hardware decode).
+5. **A mid-resolution video tier** (~480p) would let the work cards use lighter clips without softness: needs ffmpeg (libsvtav1 + libx264) and the raw originals (not in the repository).
 
 ---
 
@@ -232,22 +225,22 @@ page end. Footer has Home and Back to top. Labels (2026-10-09): nav, footer, cru
 
 ```
 startup.bat              Windows launcher (+ scripts/tooling/{deps-fresh,free-port,open-when-ready}.mjs)
-src/app/                 layout.tsx (fonts, head motion script, Nav/Footer/SmoothScroll/PointerFx/NavProgress/DevWarmup, JSON-LD), page.tsx (home acts),
-                         work/, capabilities/, approach/, route/, sitemap.ts, robots.ts, opengraph-image.jpg (+ .alt.txt), not-found.tsx,
-                         globals.css (tokens, acts + textures, utilities incl. grid-paper/lane, view-transition CSS)
-src/content/             divisions.ts, site.ts, work.ts, media.generated.json
-src/lib/                 gsap.ts (+ gsap-flip.ts, gsap-drawsvg.ts: plugins kept out of the shared bundle), motion/{tokens,observe,defer}.ts, route/{store,suggest,enquiry}.ts,
-                         seo.ts, site-url.ts, pad.ts, use-min-width.ts, previews.ts
-src/components/home/     Opening, HeroPill, Ladder, WorkShowcase, Marquee, MethodBoard, Audiences, AiAmplifies, Finale
-src/components/fx/       PointerFx (cursor + magnetic), SpinBadge, HeroGlare, ToolsOrbit
-src/components/          capabilities/{DivisionIndex,DivisionTicker,RouteToggle,ApproachRoute (tickets)}, work/{WorkIndex,ScreeningMedia},
-                         route/RouteBuilder, approach/PrincipleStack, media/{Reel,Photo,video-budget,codec}, motion/{SplitReveal,Reveal,SmoothScroll},
-                         layout/{Nav,NavProgress,DevWarmup,Footer,FooterWordmark,PageShell,PageHeader,WhereNext,Crumbs}, brand/{Mark,mark-paths}, seo/JsonLd
-tests/                   site.spec.ts, regressions.spec.ts (audit-plan guards, one per fixed item), content-audit.spec.ts (playwright.config.ts honours PW_CHROMIUM_PATH)
-scripts/qa/              shoot.mjs, debug.mjs, perf.mjs, media-audit.mjs, check-flow/check-shift/check-motion.mjs, sweep.mjs, record.mjs
-scripts/media/           inventory, contact-sheet, mosaic, selection.json, download, transcode
+src/app/                 layout.tsx, page.tsx (home), work/, capabilities/, approach/, about/, route/, not-found.tsx,
+                         sitemap.ts, robots.ts, opengraph-image.jpg, globals.css
+src/content/             divisions.ts, service-groups.ts, site.ts, work.ts, founders.ts, feedback.ts, media.generated.json
+src/lib/                 gsap.ts (+ gsap-flip.ts), motion/{tokens,observe,defer}.ts, route/{store,suggest,enquiry}.ts,
+                         seo.ts, site-url.ts, category-line.ts, pad.ts, use-min-width.ts
+src/components/          home/{Opening,HeroPill,AiAmplifies}, sections/{SelectedWork,CardReel,ServiceGroups,ProcessSteps,
+                         ClientFeedback,FeedbackCarousel,ClosingCta}, work/{WorkIndex,ScreeningMedia}, route/RouteBuilder,
+                         media/{Reel,Photo,video-budget,codec}, motion/{SplitReveal,Reveal,SmoothScroll}, fx/{HeroGlare,PointerFx},
+                         layout/{Nav,NavProgress,NoExitTransition,RouteExit,DevWarmup,Footer,FooterWordmark,PageShell,PageHeader,
+                         WhereNext,Crumbs}, capabilities/PlanRouteLink, brand/{Mark,mark-paths}, seo/JsonLd
+tests/                   site.spec.ts, regressions.spec.ts (one guard per fixed audit item), content-audit.spec.ts
+scripts/qa/              shoot, debug, perf, media-audit, check-flow, check-shift, sweep, record
+scripts/media/           inventory, contact-sheet, mosaic, selection.json, download, transcode, feedback-logos, founders
+scripts/readme/          capture.mjs (README images)
 scripts/tooling/         agents.mjs (regenerates reviewer agents), review-workflow.js
-docs/                    design-brief (current colour/texture), motion-system (current), design-research, site-architecture,
-                         content-map, plan (original plan, kept as record), source/ (PDFs + Drive inventory)
+docs/                    briefs/ (+ archive/), reviews/, source/ (PDFs, client logos and photos), assets/readme/,
+                         design-brief, motion-system, design-research, site-architecture, content-map, plan (original, kept as record)
 .claude/agents + .opencode/agents   5 reviewers     .opencode/skills   6 project skills     .claude/skills   optional specialists
 ```

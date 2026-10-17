@@ -6,7 +6,7 @@ import { mkdir, rename } from "node:fs/promises";
 
 const arg = (k, d) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split("=")[1] ?? d;
 const base = process.env.QA_BASE ?? "http://localhost:3100";
-const routes = arg("routes", "/,/work,/work/creator-content,/capabilities,/capabilities/social-media-marketing,/approach,/route").split(",");
+const routes = arg("routes", "/,/work,/work/creator-content,/capabilities,/capabilities/social-media-marketing,/approach,/about,/route").split(",");
 const [w, h] = arg("vp", "1440x900").split("x").map(Number);
 await mkdir("qa-shots/rec", { recursive: true });
 

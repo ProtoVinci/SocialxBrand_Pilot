@@ -13,7 +13,7 @@ const touch = process.argv.includes("--touch");
 const reduce = process.argv.includes("--reduce");
 const asJson = process.argv.includes("--json");
 const detail = process.argv.includes("--detail");
-const routes = arg("routes", "/,/work,/work/restaurant-hospitality,/capabilities,/capabilities/performance-marketing,/approach,/route").split(",");
+const routes = arg("routes", "/,/work,/work/restaurant-hospitality,/capabilities,/capabilities/performance-marketing,/approach,/about,/route").split(",");
 
 const browser = await chromium.launch(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {});
 const results = [];

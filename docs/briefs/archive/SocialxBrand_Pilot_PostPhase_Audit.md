@@ -1,3 +1,5 @@
+> **Historical reference.** Completed; what was done is in [docs/reviews/post-phase-audit-2026-10-15.md](../../reviews/post-phase-audit-2026-10-15.md). For current decisions use [HANDOVER.md](../../../HANDOVER.md) and the latest brief in [docs/briefs/](../).
+
 # SOCIALxBRAND PILOT — Post-Phase Performance & Bug Regression Audit
 
 **Repository reviewed:** `SocialxBrand_Pilot(3).zip`  

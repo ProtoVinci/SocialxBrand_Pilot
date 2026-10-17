@@ -1,9 +1,14 @@
-// Client feedback, quoted exactly as the client gave it. Never write, edit, paraphrase, translate
-// or "improve" a quote here without the client's approval; never add ratings, review counts or
-// results that the client did not state and the owner cannot evidence.
+// Client feedback. Never add ratings, review counts or results that the client did not state and
+// the owner cannot evidence.
 //
-// To change or add one: put the client's words in `quote`, record where they came from in
-// `sourceRef`, set `approved: true` and the sign-off date in `approvedAt`. Logos: the
+// Where the words came from is recorded per entry in `sourceRef`, and it is not always the client:
+// the nine entries below were drafted by the agency with each client's permission (see the note
+// above `onBehalf`). The owner chose to publish them on that permission (2026-10-17, after the
+// Pilot6 audit recommended waiting for each client to confirm the exact wording). When a client
+// confirms or changes their line, put their final words in `quote` and update `sourceRef`.
+//
+// To add one: put the client's words in `quote`, record where they came from in `sourceRef`, set
+// `approved: true` and the sign-off date in `approvedAt`. Logos: the
 // client's original goes in docs/source/feedback-logos/, `node scripts/media/feedback-logos.mjs`
 // writes the small WebP to public/clients/<id>.webp, and `logo` points at that.
 //

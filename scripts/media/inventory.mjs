@@ -3,7 +3,13 @@
 // Drive gives every video the same filename, so the Drive id is the only stable key.
 import { mkdir, writeFile } from "node:fs/promises";
 
-const ROOT_ID = "1aW_4Cg8rG6wv5QpH_2RvEjvzOkT59yWR";
+// The Drive folder id is not kept in the repository: pass it in the environment, e.g.
+//   SXBP_DRIVE_ROOT=<folder id> node scripts/media/inventory.mjs
+const ROOT_ID = process.env.SXBP_DRIVE_ROOT;
+if (!ROOT_ID) {
+  console.error("Set SXBP_DRIVE_ROOT to the portfolio's Drive folder id (from the folder's share link).");
+  process.exit(1);
+}
 const OUT = new URL("../../media-source/inventory.json", import.meta.url);
 
 const decode = (s) =>

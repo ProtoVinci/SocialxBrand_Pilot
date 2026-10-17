@@ -1,3 +1,5 @@
+> **Historical reference.** Completed; what was done is in [docs/reviews/client-first-refactor-2026-10-16.md](../../reviews/client-first-refactor-2026-10-16.md). For current decisions use [HANDOVER.md](../../../HANDOVER.md) and the latest brief in [docs/briefs/](../).
+
 # SOCIALxBRAND PILOT — Client-First Website Layout Refactor
 
 **Purpose:** simplify the whole website so a first-time, non-technical prospective client can quickly understand what SOCIALxBRAND PILOT does, see relevant work, understand the services and what they include, and know how to make contact — without needing the agency owner to explain the site.

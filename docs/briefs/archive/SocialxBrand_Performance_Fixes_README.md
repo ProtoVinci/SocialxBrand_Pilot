@@ -1,3 +1,5 @@
+> **Historical reference.** Completed; what was done is in [docs/reviews/performance-fixes-2026-10-15.md](../../reviews/performance-fixes-2026-10-15.md). For current decisions use [HANDOVER.md](../../../HANDOVER.md) and the latest brief in [docs/briefs/](../).
+
 # SOCIALxBRAND PILOT — Remaining Performance Issues, Root Causes, Fixes, and Verification Plan
 
 > **Purpose:** This document is the implementation brief for the unresolved lag, jank, and navigation problems identified in the latest SOCIALxBRAND PILOT repository audit. It is intended to be used by Claude Code Desktop or a developer working inside the repository.

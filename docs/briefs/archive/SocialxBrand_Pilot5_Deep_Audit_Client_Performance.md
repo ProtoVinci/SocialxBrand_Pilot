@@ -1,3 +1,5 @@
+> **Historical reference.** Completed; what was done is in [docs/reviews/deep-audit-2026-10-17.md](../../reviews/deep-audit-2026-10-17.md). For current decisions use [HANDOVER.md](../../../HANDOVER.md) and the latest brief in [docs/briefs/](../).
+
 # SOCIALxBRAND PILOT — Deep Website Audit (Client Clarity, Trust, Functionality & Performance)
 
 **Audited archive:** `SocialxBrand_Pilot(5).zip`  

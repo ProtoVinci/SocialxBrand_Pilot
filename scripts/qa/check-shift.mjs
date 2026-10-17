@@ -5,7 +5,7 @@
 import { chromium } from "playwright";
 const base = process.env.QA_BASE ?? "http://localhost:3100";
 const arg = (k, d) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split("=")[1] ?? d;
-const routes = arg("routes", "/,/work,/work/creator-content,/capabilities,/capabilities/social-media-marketing,/approach,/route").split(",");
+const routes = arg("routes", "/,/work,/work/creator-content,/capabilities,/capabilities/social-media-marketing,/approach,/about,/route").split(",");
 const vps = arg("vps", "1440x900,768x1024,390x844").split(",").map((v) => v.split("x").map(Number));
 const browser = await chromium.launch(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {});
 let bad = 0;

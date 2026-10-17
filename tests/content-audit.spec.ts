@@ -62,3 +62,17 @@ test("client feedback: only approved, dated, attributed entries can be published
   }
   expect(publishableFeedback().every((f) => f.approved && f.approvedAt)).toBe(true);
 });
+
+test("no Google Drive ids or Drive file lists in the repository's site and scripts", () => {
+  // Drive file ids are 33 characters starting with "1"; the portfolio folder is shared by link, so
+  // its ids open it. They belong in the git-ignored media-source/ only (Pilot6 audit P0.20).
+  const driveId = /["'`]1[A-Za-z0-9_-]{32}["'`]/;
+  const scripts = (dir: string): string[] => readdirSync(dir).flatMap((f) => {
+    const p = join(dir, f);
+    return statSync(p).isDirectory() ? scripts(p) : /.(m?js|json)$/.test(f) ? [p] : [];
+  });
+  const files = [...walk("src"), ...scripts("scripts")];
+  expect(files.filter((f) => driveId.test(readFileSync(f, "utf8")))).toEqual([]);
+  expect(readFileSync("src/content/media.generated.json", "utf8")).not.toContain("driveId");
+  expect(readdirSync("docs/source").filter((f) => /drive|download-plan/i.test(f))).toEqual([]);
+});

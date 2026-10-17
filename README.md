@@ -9,15 +9,15 @@
   <img alt="React 19" src="https://img.shields.io/badge/react-19-2a3ba4?style=flat-square&labelColor=f3efe8&logo=react&logoColor=2a3ba4">
   <img alt="GSAP 3.15" src="https://img.shields.io/badge/gsap-3.15-2a3ba4?style=flat-square&labelColor=f3efe8&logo=greensock&logoColor=2a3ba4">
   <img alt="Tailwind CSS 4" src="https://img.shields.io/badge/tailwind-4-2a3ba4?style=flat-square&labelColor=f3efe8&logo=tailwindcss&logoColor=2a3ba4">
-  <img alt="33 tests passing" src="https://img.shields.io/badge/tests-33%20passing-c4351f?style=flat-square&labelColor=f3efe8">
+  <img alt="85 tests passing" src="https://img.shields.io/badge/tests-85%20passing-c4351f?style=flat-square&labelColor=f3efe8">
   <img alt="Reduced motion: complete" src="https://img.shields.io/badge/reduced%20motion-complete-c4351f?style=flat-square&labelColor=f3efe8">
   <img alt="Real work only" src="https://img.shields.io/badge/real%20work-only-c4351f?style=flat-square&labelColor=f3efe8">
 </p>
 
 <p align="center">
   <b>The motion-led website for SOCIALxBRAND PILOT, an Indian digital marketing agency.</b><br>
-  The work is the hero: real reels play inside the headline, open out to fill the screen,<br>
-  and run through every section, all from the client's own footage. No stock, no invented proof.
+  The work is the hero: real reels play inside the headline and through the work,<br>
+  all from the client's own footage. No stock footage, no invented figures.
 </p>
 
 <p align="center">
@@ -31,10 +31,10 @@
 <br>
 
 <p align="center">
-  <img alt="The hero: real reels cycling inside the headline, then the top capsule opening out to fill the screen" src="docs/assets/readme/hero.webp" width="100%">
+  <img alt="The hero: real reels playing inside the headline capsules and rolling to the next clip" src="docs/assets/readme/hero.webp" width="100%">
 </p>
 <p align="center">
-  <sub>The hero. Capsules in the headline play the client's reels and roll to the next clip; on scroll, the top capsule morphs into the full-screen reel behind the manifesto.</sub>
+  <sub>The hero. Capsules in the headline play the client's reels and roll to the next clip, above a plain line on what the agency does and the two ways in: the work and the services.</sub>
 </p>
 
 <details>
@@ -58,9 +58,9 @@
 ## Why it is built this way
 
 An agency that promises *"We will show, you will grow"* has to show first. Most agency sites tell:
-logos, numbers, testimonials. This one shows the work itself, moving, from the first frame, and
-explains the 18 divisions and the method around it. Motion carries the story: the site reads like
-a short film you scroll through, and it still works completely for anyone who switches motion off.
+logos and numbers. This one shows the work itself, moving, from the first frame, then says plainly
+what the agency does (18 services in four groups), how it works (four steps), who runs it and what
+clients say. Motion carries the story, and the site still works completely with motion switched off.
 
 ## House rules
 
@@ -68,7 +68,7 @@ These are enforced in review and, where possible, by tests.
 
 | Rule | How it holds |
 |---|---|
-| No invented content | No clients, metrics, ROI, testimonials, awards, team, prices or city. Every claim traces to `src/content/*`, transcribed from the client's PDFs. A content audit test fails on proof-shaped text. |
+| No invented content | No metrics, ROI, ratings, awards, prices or city. Every claim traces to `src/content/*`: the client's PDFs, plus the founder details and client feedback the owner supplied ([docs/content-map.md](docs/content-map.md)). A content audit test fails on proof-shaped text. |
 | Real work only | All 95 media assets (43 reels) come from the client's Drive through `scripts/media/*`, credited *Production partner: Vishay Creations*. |
 | Vertical stays vertical | 9:16 reels are never letterboxed. In landscape layouts they stand upright over their own blurred light. |
 | Reduced motion and no-JS are complete | Every animated reveal has a static fallback and a CSS failsafe, so nothing stays hidden. |
@@ -80,35 +80,28 @@ These are enforced in review and, where possible, by tests.
 
 <table>
   <tr>
-    <td width="50%"><img alt="Hero with media capsules in the headline, window light and the tools orbit" src="docs/assets/readme/hero.jpg"></td>
-    <td width="50%"><img alt="Marketing is more than being seen: the word and the reel change together" src="docs/assets/readme/ladder.jpg"></td>
+    <td width="50%"><img alt="Hero: the headline with two media capsules, a plain line on what the agency does, and two buttons" src="docs/assets/readme/hero.jpg"></td>
+    <td width="50%"><img alt="Selected work: four featured collections with their clips playing" src="docs/assets/readme/selected-work.jpg"></td>
   </tr>
   <tr>
-    <td><sub><b>1 · Hero.</b> Media capsules inside the words, diagonal window light that drifts slowly, and an orbit of the platforms and tools the agency works in.</sub></td>
-    <td><sub><b>2 · Philosophy.</b> <i>Seen → remembered → trusted → chosen → moving forward.</i> The word changes in place and the reel swipes to the next clip like a feed.</sub></td>
+    <td><sub><b>1 · Hero.</b> The brand line with the client's reels playing inside it, one sentence on what the agency does, and two ways in: the work and the services.</sub></td>
+    <td><sub><b>2 · Selected work.</b> Four featured collections. Each card plays its clip while it is on screen and rests on its poster otherwise.</sub></td>
   </tr>
   <tr>
-    <td><img alt="Recent work panel with two looping columns and the See Recent Work disc" src="docs/assets/readme/work.jpg"></td>
-    <td><img alt="The 18 divisions as a bento board with a stage presenting one division" src="docs/assets/readme/capabilities.jpg"></td>
+    <td><img alt="Services: the 18 services in four groups" src="docs/assets/readme/services.jpg"></td>
+    <td><img alt="How we work: four steps" src="docs/assets/readme/process.jpg"></td>
   </tr>
   <tr>
-    <td><sub><b>3 · Recent work.</b> A dark screen set into the page. Two columns loop forever in opposite directions; the disc opens the full archive.</sub></td>
-    <td><sub><b>4 · Capabilities.</b> All 18 divisions on one screen, as four cluster tiles beside a stage that plays the selected division's work.</sub></td>
+    <td><sub><b>3 · Services.</b> The 18 services, grouped into four plain categories, each linking to its own page.</sub></td>
+    <td><sub><b>4 · How we work.</b> Four steps, from understanding the business to reviewing and improving.</sub></td>
   </tr>
   <tr>
-    <td colspan="2"><img alt="The Pilot Route as a departures board" src="docs/assets/readme/method.jpg"></td>
+    <td colspan="2"><img alt="Client feedback: a row of quote cards with each client's logo, business and name" src="docs/assets/readme/feedback.jpg"></td>
   </tr>
   <tr>
-    <td colspan="2"><sub><b>5 · The Pilot Route.</b> The seven-station method as a split-flap departures board. Station names start scrambled and flap into place as you reach them, while the status runs <i>Next → Boarding → Cleared</i>.</sub></td>
+    <td colspan="2"><sub><b>5 · Client feedback.</b> One card per client, with their logo. The row moves on by itself and can be paused; with reduced motion it holds still. Then a closing call to action.</sub></td>
   </tr>
 </table>
-
-<p align="center">
-  <img alt="The recent work panel, looping with no input" src="docs/assets/readme/work.webp" width="100%">
-</p>
-<p align="center">
-  <sub>The recent work panel keeps moving when you stop scrolling. Scrolling flicks it faster, then it eases back.</sub>
-</p>
 
 <p align="right"><a href="#top">Back to top ↑</a></p>
 
@@ -116,32 +109,38 @@ These are enforced in review and, where possible, by tests.
 
 <table>
   <tr>
-    <td width="33%"><img alt="Work archive" src="docs/assets/readme/work-index.jpg"></td>
-    <td width="33%"><img alt="A division page" src="docs/assets/readme/division.jpg"></td>
-    <td width="33%"><img alt="The route planner" src="docs/assets/readme/route.jpg"></td>
+    <td width="50%"><img alt="The work index with format filters" src="docs/assets/readme/work-index.jpg"></td>
+    <td width="50%"><img alt="A service page" src="docs/assets/readme/service.jpg"></td>
   </tr>
   <tr>
-    <td><sub><b>/work.</b> 14 screenings, filterable by format, each with its own page.</sub></td>
-    <td><sub><b>/capabilities/…</b> One page per division: what it is, deliverables, approach and related work.</sub></td>
-    <td><sub><b>/route.</b> Plan a starting mix of divisions, then send it by WhatsApp or email.</sub></td>
+    <td><sub><b>/work.</b> 14 work collections, filterable by format, each with its own page.</sub></td>
+    <td><sub><b>/capabilities/…</b> One page per service: what it helps with, typical deliverables, how we work and related services.</sub></td>
+  </tr>
+  <tr>
+    <td><img alt="The About page with the two founders" src="docs/assets/readme/about.jpg"></td>
+    <td><img alt="The Contact page" src="docs/assets/readme/contact.jpg"></td>
+  </tr>
+  <tr>
+    <td><sub><b>/about.</b> The two founders: portrait, role, what each of them leads.</sub></td>
+    <td><sub><b>/route.</b> Contact: WhatsApp, call or email first, then an optional project brief the visitor sends from their own WhatsApp or email.</sub></td>
   </tr>
 </table>
 
-Every inner page opens with a breadcrumb trail and ends with a *Where to next?* band. The nav comes
-back for the last stretch of every page, so a visitor never has to scroll back to find the way on.
+Every inner page opens with a breadcrumb trail and ends with a *Where to next?* band, so a visitor
+who has finished reading never has to scroll back to find the way on.
 
 ## On a phone
 
 <table>
   <tr>
     <td width="33%"><img alt="Hero on a phone" src="docs/assets/readme/phone-hero.jpg"></td>
-    <td width="33%"><img alt="Capabilities on a phone" src="docs/assets/readme/phone-capabilities.jpg"></td>
-    <td width="33%"><img alt="Recent work on a phone" src="docs/assets/readme/phone-work.jpg"></td>
+    <td width="33%"><img alt="Services on a phone" src="docs/assets/readme/phone-services.jpg"></td>
+    <td width="33%"><img alt="Selected work on a phone" src="docs/assets/readme/phone-work.jpg"></td>
   </tr>
 </table>
 
-Small screens get their own choreography, not a shrunk desktop: nothing pins, scenes play once as
-they enter, and swipe rails replace scroll-driven tracks.
+Small screens get their own layout, not a shrunk desktop: the work cards use the lighter 360p clips,
+at most two videos play at once, and the feedback row is swiped.
 
 <p align="right"><a href="#top">Back to top ↑</a></p>
 
@@ -149,22 +148,22 @@ they enter, and swipe rails replace scroll-driven tracks.
 
 - **Next.js 16 App Router** with React 19 `<ViewTransition>` page transitions. Every route is
   statically generated.
-- **GSAP 3.15** (ScrollTrigger, Flip, DrawSVG, CustomEase) driven through `gsap.matchMedia`, so desktop,
-  phone and reduced motion each get their own timeline. Long scenes hold with CSS `sticky`, not
-  GSAP pins, so landing mid-page never jumps.
+- **GSAP 3.15** (ScrollTrigger, SplitText, Flip, CustomEase) driven through `gsap.matchMedia`, so desktop,
+  phone and reduced motion each get their own timeline. One-shot reveals use IntersectionObserver,
+  not a ScrollTrigger each.
 - **Lenis** smooth scrolling on the GSAP ticker.
 - **Tailwind CSS 4** with design tokens in `@theme`, plus custom variants: `cinema:` for desktop with
   motion, and `short:` for short laptop screens.
-- **A video budget.** A shared cap on concurrent playback, and posters until a reel is on screen.
-  The hero plays at most two clips per capsule during a handover.
-- **Content as data.** The 18 divisions, the method, the audiences and the work all live in
-  `src/content/*`. The pages render from it.
+- **A video budget.** A shared cap on concurrent playback (3 on desktop, 2 on a phone), one cold start
+  at a time, and posters until a reel is on screen. Reels download only when they are granted a slot.
+- **Content as data.** The 18 services, the four steps, the work, the founders and the client feedback
+  all live in `src/content/*`. The pages render from it.
 
 ```
 src/
 ├─ app/          routes: home, work, capabilities, approach, about, route
 ├─ components/   home acts, sections, capabilities, work, route builder, layout, media, fx, motion
-├─ content/      divisions, site profile, work screenings, founders, client feedback, generated media index
+├─ content/      services, site profile, work collections, founders, client feedback, generated media index
 └─ lib/          gsap registration, motion tokens, route store and adapters, SEO
 ```
 
@@ -202,18 +201,19 @@ npm start
 
 ## Check it yourself
 
-The test suite covers content integrity, accessibility (axe), reduced motion and the route
-planner end to end:
+The test suite covers content integrity, accessibility (axe), reduced motion, media loading, the
+contact flow and one regression guard per fixed audit item. Run it against a production build:
 
 ```bash
-npx playwright test
+npm run build && npm start -- --port 3102
+PORT=3102 npx playwright test --workers=1
 ```
 
 ```text
-  33 passed · 6 skipped (viewport-specific)
+  85 passed · 62 skipped (run-once tests skip on the other two viewports)
 ```
 
-QA scripts in `scripts/qa/` drive a real browser against the dev server on port 3100:
+QA scripts in `scripts/qa/` drive a real browser against a server on port 3100 (`QA_BASE` or `--base=` for another):
 
 | Script | What it proves |
 |---|---|
@@ -221,7 +221,8 @@ QA scripts in `scripts/qa/` drive a real browser against the dev server on port 
 | `record.mjs` | Records a scroll-through video of each route and logs every console error, failed request and 4xx |
 | `check-shift.mjs` | Layout stability: layout shift (CLS) and page height, idle and while scrolling |
 | `check-flow.mjs` | No dead ends: the nav, a Home link and onward links are on screen at the end of every page |
-| `check-motion.mjs` | The work loops keep running idle, the disc sits centred, the method board unscrambles |
+| `perf.mjs` | Load metrics and scroll smoothness under CPU throttling (production build only) |
+| `media-audit.mjs` | Videos mounted and playing, video requests and bytes per route |
 
 The images in this README are produced the same way: `node scripts/readme/capture.mjs`.
 
@@ -238,22 +239,23 @@ Nothing is stock or generated.
 <details>
 <summary><b>What happens with reduced motion turned on?</b></summary>
 <br>
-Every section renders complete and still. There are no pins, scrubs, auto-cycling or loops.
-Reels show their poster frame, and the departures board shows its real words.
+Every section renders complete and still. Nothing cycles or loops on its own: reels and the hero
+capsules show their poster frame, and the feedback row stays where the visitor puts it.
 </details>
 
 <details>
 <summary><b>Can I change the copy?</b></summary>
 <br>
-Yes. Edit <code>src/content/*</code>. The divisions, method and site profile are plain typed data,
-and the content audit test checks that the 18 division names still match the client's document.
+Yes. Edit <code>src/content/*</code>. The services, steps, site profile, founders and feedback are plain
+typed data, and the content audit test checks that the 18 service names still match the client's document.
 </details>
 
 <details>
 <summary><b>How does a visitor get in touch?</b></summary>
 <br>
-The route planner builds a short brief (who they are, what they need, which divisions) and sends it
-by WhatsApp or email, or copies it to the clipboard. There is no backend and no stored data.
+The Contact page puts WhatsApp, call and email first. Below them, an optional project brief (who
+they are, what they need, which services) is sent from the visitor's own WhatsApp or email, or
+copied. The site itself sends and stores nothing.
 </details>
 
 <details>
@@ -274,7 +276,7 @@ steps. <a href="AGENTS.md">AGENTS.md</a> has the project rules.
 | [docs/site-architecture.md](docs/site-architecture.md) | Routes, components and data flow |
 | [docs/content-map.md](docs/content-map.md) | Where every piece of copy comes from in the client's PDFs |
 | [docs/merge-sujal-site.md](docs/merge-sujal-site.md) | What was taken from the earlier prototype, and what was left out |
-| [docs/briefs/](docs/briefs/) | The owner's audit, performance and layout briefs |
+| [docs/briefs/](docs/briefs/) | The current brief; finished ones in `archive/` |
 | [docs/reviews/](docs/reviews/) | The report for each brief: findings, changes and measurements |
 
 ## Built with

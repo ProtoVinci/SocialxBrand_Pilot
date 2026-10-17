@@ -10,7 +10,9 @@ export function Footer() {
     <footer className="relative isolate overflow-hidden border-t border-ink/10 bg-shell pt-20" aria-labelledby="footer-title">
       <div aria-hidden className="grid-paper pointer-events-none absolute inset-0 -z-10" />
       <div className="gutter grid gap-14 md:grid-cols-12">
-        {/* a contact strip, not another manifesto: the pages above have already made the case */}
+        {/* a contact strip, not another manifesto: the pages above have already made the case. No "Visit"
+            link: it opened this same site in a new tab (Pilot6 audit P2.15); official social profiles go
+            here once the owner supplies them */}
         <div className="md:col-span-6">
           <p className="label text-blue">Contact us</p>
           <h2 id="footer-title" className="mt-5 max-w-xl font-display text-headline font-medium">
@@ -28,10 +30,6 @@ export function Footer() {
               <a className="link-underline" href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a>
               <a className="link-underline text-muted" href={whatsapp} target="_blank" rel="noopener">WhatsApp ↗</a>
             </dd>
-          </div>
-          <div>
-            <dt className="label text-blue">Visit</dt>
-            <dd className="mt-3 text-base"><a className="link-underline" href={site.url} target="_blank" rel="noopener">{site.urlDisplay}</a></dd>
           </div>
         </dl>
       </div>

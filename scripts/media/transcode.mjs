@@ -92,7 +92,7 @@ async function video(item, index) {
   await sharp(files.poster).webp({ quality: 72 }).toFile(`${posterBase}.webp`);
   const lqip = await sharp(files.poster).resize(16).webp({ quality: 40 }).toBuffer();
   return {
-    id: name, kind: "video", screening: item.screening, driveId: item.id,
+    id: name, kind: "video", screening: item.screening,
     width: tw, height: th, orientation: portrait ? "portrait" : "landscape", seconds: Number(len.toFixed(2)),
     src: { webm: useWebm ? `/media/v/${name}.webm` : null, mp4: `/media/v/${name}.mp4`, preview: `/media/v/${name}-preview.mp4` },
     bytes: useWebm ? webmSize : mp4Size,
@@ -121,7 +121,7 @@ async function photo(item, index) {
   }
   const lqip = await sharp(src).rotate().resize(16).webp({ quality: 40 }).toBuffer();
   return {
-    id: name, kind: "photo", screening: item.screening, driveId: item.id,
+    id: name, kind: "photo", screening: item.screening,
     width: oriented.w, height: oriented.h, orientation: oriented.h >= oriented.w ? "portrait" : "landscape",
     srcset, lqip: `data:image/webp;base64,${lqip.toString("base64")}`,
   };

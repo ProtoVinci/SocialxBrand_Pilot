@@ -4,7 +4,7 @@
 // Then it walks one real journey: home -> "See Recent Work" -> /work -> a screening -> home.
 import { chromium } from "playwright";
 const base = process.env.QA_BASE ?? "http://localhost:3100";
-const routes = ["/", "/work", "/work/creator-content", "/capabilities", "/capabilities/social-media-marketing", "/approach", "/route"];
+const routes = ["/", "/work", "/work/creator-content", "/capabilities", "/capabilities/social-media-marketing", "/approach", "/about", "/route"];
 const browser = await chromium.launch(process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {});
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const problems = [];

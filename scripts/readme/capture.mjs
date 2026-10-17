@@ -1,12 +1,12 @@
-// Regenerates every README asset from the running site (dev server on :3100):
+// Regenerates every README asset from a running build (production on :3100 by default; set QA_BASE):
 //   banner.png         built from the real logo paths, palette, Inter and real work stills
 //   *.jpg              section screenshots (desktop 1440x900) and phone screenshots (390x844)
-//   hero.webp          animated: the always-playing capsules, then the capsule-to-fullscreen morph
-//   work.webp          animated: the endlessly looping work panel
+//   hero.webp          animated: the hero capsules playing and rolling to the next clip
 //   node scripts/readme/capture.mjs
+// Animated frames are page screenshots joined by sharp, so no ffmpeg is needed.
 import { chromium } from "playwright";
-import { mkdir, readFile, rm } from "node:fs/promises";
-import { execFileSync } from "node:child_process";
+import { mkdir, readFile } from "node:fs/promises";
+import sharp from "sharp";
 
 const base = process.env.QA_BASE ?? "http://localhost:3100";
 const out = "docs/assets/readme";
@@ -67,65 +67,59 @@ const browser = await chromium.launch(process.env.PW_CHROMIUM_PATH ? { executabl
 }
 
 // ── screenshots ────────────────────────────────────────────────────
-const hideDevBadge = (p) => p.addInitScript(() => addEventListener("DOMContentLoaded", () => {
-  const st = document.createElement("style"); st.textContent = "nextjs-portal{display:none!important}"; document.head.append(st);
-}));
-const shoot = async (file, { url = "/", vp = [1440, 900], at, settle = 1600 } = {}) => {
+// a repeat visit: no one-off intro curtain, so every shot starts from the settled page
+const page = async (vp) => {
   const p = await browser.newPage({ viewport: { width: vp[0], height: vp[1] } });
-  await hideDevBadge(p);
-  await p.goto(base + url, { waitUntil: "networkidle" });
-  await p.waitForTimeout(2600); // intro choreography
-  if (at) await p.evaluate((sel) => { const el = document.querySelector(sel); (el.closest("section") ?? el).scrollIntoView({ block: "start" }); }, at);
+  await p.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  return p;
+};
+const shoot = async (file, { url = "/", vp = [1440, 900], at, settle = 1800 } = {}) => {
+  const p = await page(vp);
+  await p.goto(base + url, { waitUntil: "load" });
+  await p.waitForTimeout(1500);
+  if (at) {
+    // walk down to the section, so the reveals on the way have played as they would for a visitor
+    await p.evaluate(async (sel) => {
+      const el = document.querySelector(sel).closest("section") ?? document.querySelector(sel);
+      const y = el.getBoundingClientRect().top + scrollY - 40;
+      for (let t = 0; t < y; t += 300) { scrollTo(0, t); await new Promise((r) => setTimeout(r, 60)); }
+      scrollTo(0, y);
+    }, at);
+  }
   await p.waitForTimeout(settle);
-  await p.screenshot({ path: `${out}/${file}`, type: "jpeg", quality: 82 });
+  await p.screenshot({ path: `${out}/${file}`, type: "jpeg", quality: 80 });
   await p.close();
   console.log(file);
 };
 await shoot("hero.jpg");
-await shoot("work.jpg", { at: "#work" });
-await shoot("capabilities.jpg", { at: "#capabilities-title" });
-await shoot("method.jpg", { at: "#method-title", settle: 2400 });
-await shoot("ladder.jpg", { at: "#ladder-title" });
+await shoot("selected-work.jpg", { at: "#selected-work-title" });
+await shoot("services.jpg", { at: "#services-title" });
+await shoot("process.jpg", { at: "#process-title" });
+await shoot("feedback.jpg", { at: "#feedback-title" });
 await shoot("work-index.jpg", { url: "/work" });
-await shoot("division.jpg", { url: "/capabilities/social-media-marketing" });
-await shoot("route.jpg", { url: "/route" });
+await shoot("service.jpg", { url: "/capabilities/social-media-marketing" });
+await shoot("about.jpg", { url: "/about", at: "#founders-title" });
+await shoot("contact.jpg", { url: "/route" });
 await shoot("phone-hero.jpg", { vp: [390, 844] });
-await shoot("phone-capabilities.jpg", { vp: [390, 844], at: "#capabilities-title" });
-await shoot("phone-work.jpg", { vp: [390, 844], at: "#work" });
+await shoot("phone-services.jpg", { vp: [390, 844], at: "#services-title" });
+await shoot("phone-work.jpg", { vp: [390, 844], at: "#selected-work-title" });
 
-// ── animated clips (recorded, then encoded to small looping WebP) ──
-const clip = async (file, act, { vp = [1440, 900], fps = 14, width = 960 } = {}) => {
-  const ctx = await browser.newContext({ viewport: { width: vp[0], height: vp[1] }, recordVideo: { dir: `${out}/_rec`, size: { width: vp[0], height: vp[1] } } });
-  const p = await ctx.newPage();
-  await hideDevBadge(p);
-  await p.goto(base + "/", { waitUntil: "networkidle" });
-  const t0 = Date.now();
-  const startAt = await act(p);
-  const video = p.video();
-  await ctx.close();
-  const src = await video.path();
-  const ss = Math.max(0, (startAt - t0) / 1000);
-  execFileSync("ffmpeg", ["-v", "error", "-y", "-ss", ss.toFixed(2), "-i", src, "-vf", `fps=${fps},scale=${width}:-1:flags=lanczos`,
-    "-c:v", "libwebp_anim", "-lossless", "0", "-q:v", "62", "-compression_level", "6", "-loop", "0", `${out}/${file}`]);
-  console.log(file);
-};
-// hero: let the capsules play and roll over, then scroll so the top capsule morphs to full screen
-await clip("hero.webp", async (p) => {
-  await p.waitForTimeout(2400);
-  const start = Date.now();
-  await p.waitForTimeout(4600);
-  for (let k = 0; k < 26; k++) { await p.mouse.wheel(0, 70); await p.waitForTimeout(70); }
-  await p.waitForTimeout(1600);
-  return start;
-});
-// work panel: park it on screen and let the loops run with no input
-await clip("work.webp", async (p) => {
-  await p.waitForTimeout(1500);
-  await p.evaluate(() => { const el = document.querySelector("#work [data-track]").parentElement.parentElement; const r = el.getBoundingClientRect(); window.scrollBy(0, r.top + r.height / 2 - innerHeight / 2); });
-  await p.waitForTimeout(1500);
-  const start = Date.now();
-  await p.waitForTimeout(5000);
-  return start;
-});
-await rm(`${out}/_rec`, { recursive: true, force: true });
+// ── animated hero (screenshots joined into a small looping WebP) ──
+{
+  const p = await page([1440, 900]);
+  await p.goto(base + "/", { waitUntil: "load" });
+  await p.waitForTimeout(2500);
+  const frames = [];
+  const every = 120; // ms between frames; the delay below plays them back at the same pace
+  for (let k = 0; k < 50; k++) {
+    const t = Date.now();
+    frames.push(await sharp(await p.screenshot({ type: "png" })).resize(960).png().toBuffer());
+    await p.waitForTimeout(Math.max(0, every - (Date.now() - t)));
+  }
+  await p.close();
+  const info = await sharp(frames, { join: { animated: true } })
+    .webp({ quality: 55, effort: 6, loop: 0, delay: frames.map(() => every) })
+    .toFile(`${out}/hero.webp`);
+  console.log(`hero.webp (${Math.round(info.size / 1024)}KB)`);
+}
 await browser.close();

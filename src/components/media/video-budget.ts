@@ -13,12 +13,38 @@
 //   - crossing the 768px breakpoint re-ranks at once (3 → 2 slots pauses the lowest-ranked one)
 //   - play() rejections (autoplay blocked, a pause() racing a pending play()) are swallowed: the
 //     poster underneath stays visible
+//   - one cold start at a time: a video with no decoded frame yet (its fetch and decoder start-up
+//     still ahead) starts only when no other cold start is in flight; the next one goes when it can
+//     play, errors, stalls or is released. Without this, a row of work cards scrolling into view
+//     started three downloads and three decoders in the same frame (Pilot6 audit P1.4, 2026-10-17).
+//     Videos that already have data (resumed, or the capsules' warmed next clip) start at once.
 
 import { useEffect, type RefObject } from "react";
 
 type Entry = { el: HTMLVideoElement; ratio: number; priority: number };
 
 const wanted = new Map<HTMLVideoElement, Entry>();
+
+// the one cold start in flight, and how to stop listening for its end
+let starting: { el: HTMLVideoElement; done: AbortController } | null = null;
+const SETTLED = ["canplay", "playing", "error", "stalled", "abort", "emptied"] as const;
+
+function endStart() {
+  starting?.done.abort();
+  starting = null;
+}
+
+function start(el: HTMLVideoElement) {
+  if (el.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+    if (starting) return; // another cold start is under way: wait for it
+    const done = new AbortController();
+    starting = { el, done };
+    const next = () => { if (starting?.el === el) { endStart(); rebalance(); } };
+    for (const type of SETTLED) el.addEventListener(type, next, { once: true, signal: done.signal });
+  }
+  // a rejected play() (autoplay blocked) frees the gate without retrying: the next rebalance moves on
+  el.play().catch(() => { if (starting?.el === el) endStart(); });
+}
 
 const SMALL = "(max-width: 767.98px)";
 const limit = () => (typeof window !== "undefined" && window.matchMedia(SMALL).matches ? 2 : 3);
@@ -34,12 +60,15 @@ const watch = () => {
 
 function rebalance() {
   for (const el of wanted.keys()) if (!el.isConnected) wanted.delete(el);
+  // a start that no longer wants to play (released, unmounted) holds up nothing
+  if (starting && !wanted.has(starting.el)) endStart();
   const hidden = document.visibilityState === "hidden";
   const ranked = [...wanted.values()].sort((a, b) => b.priority - a.priority || b.ratio - a.ratio);
   ranked.forEach((entry, i) => {
     if (!hidden && i < limit()) {
-      if (entry.el.paused) entry.el.play().catch(() => {});
+      if (entry.el.paused) start(entry.el);
     } else if (!entry.el.paused) {
+      if (starting?.el === entry.el) endStart();
       entry.el.pause();
     }
   });

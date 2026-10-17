@@ -1,3 +1,5 @@
+> **Historical reference.** Completed; what was done is in [docs/reviews/audit-implementation-2026-10-09.md](../../reviews/audit-implementation-2026-10-09.md). For current decisions use [HANDOVER.md](../../../HANDOVER.md) and the latest brief in [docs/briefs/](../).
+
 # SOCIALxBRAND PILOT — Complete Website Improvement Plan
 
 **Purpose:** A controlled, evidence-led implementation brief for Claude Code Desktop to improve website smoothness, reliability, client trust, clarity, and enquiry conversion without random redesigns or invented facts.

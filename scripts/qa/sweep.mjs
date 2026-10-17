@@ -8,7 +8,7 @@ import sharp from "sharp";
 const arg = (k, d) => process.argv.find((a) => a.startsWith(`--${k}=`))?.split("=").slice(1).join("=") ?? d;
 const base = arg("base", "http://localhost:3100");
 const reduce = process.argv.includes("--reduce");
-const ROUTES = arg("routes", "/,/work,/work/restaurant-hospitality,/capabilities,/capabilities/performance-marketing,/approach,/route").split(",");
+const ROUTES = arg("routes", "/,/work,/work/restaurant-hospitality,/capabilities,/capabilities/performance-marketing,/approach,/about,/route").split(",");
 const VIEWPORTS = arg("vps", "1440x900,1280x720,1024x768,768x1024,390x844,360x800").split(",").map((v) => v.split("x").map(Number));
 const POSITIONS = arg("at", "0,20%,40%,60%,80%,100%").split(",");
 const TILE_W = 300;

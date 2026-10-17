@@ -1,6 +1,6 @@
 # Deep audit (client clarity, trust, performance): report, 2026-10-17
 
-Source brief: `docs/briefs/SocialxBrand_Pilot5_Deep_Audit_Client_Performance.md`. Starting point: commit `6288e27`. Nothing is committed. No dependency was added.
+Source brief: `docs/briefs/archive/SocialxBrand_Pilot5_Deep_Audit_Client_Performance.md`. Starting point: commit `6288e27`. Nothing is committed. No dependency was added.
 
 ## Owner decisions (2026-10-17)
 

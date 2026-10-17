@@ -14,7 +14,7 @@ The motion-led site for SOCIALxBRAND PILOT, an Indian digital marketing agency. 
 
 ## Non-negotiables
 
-1. **No invented content.** Never add clients, results, metrics, ROI, testimonials, awards, follower counts, years in business, a team, certifications, partnerships, prices or a city. The location is "India · IST". Every claim must trace to `src/content/*` (transcribed from the client PDFs; see `docs/content-map.md`).
+1. **No invented content.** Never add clients, results, metrics, ROI, testimonials, awards, follower counts, years in business, a team, certifications, partnerships, prices or a city. The location is "India · IST". Every claim must trace to `src/content/*` (transcribed from the client PDFs; see `docs/content-map.md`). The only exceptions are what the owner supplied: the founders (`founders.ts`) and the client feedback (`feedback.ts`); change or extend them only on the owner's word.
 2. **Real work only.** Media comes from the client's Drive via `scripts/media/*`. Work copy describes what is visible. Keep the "Production partner: Vishay Creations" credit.
 3. **One motion grammar.** Use `src/lib/motion/tokens.ts` and `@/lib/gsap`. Read the `motion-design` skill before touching any animation.
 4. **Reduced motion and no-JS must be complete.** Never hide content without a failsafe.
@@ -35,7 +35,7 @@ The motion-led site for SOCIALxBRAND PILOT, an Indian digital marketing agency. 
 
 - `src/content/`: divisions (18), site (profile), work (screenings), `media.generated.json`
 - `src/lib/`: gsap registration, motion tokens, route store, suggestions and enquiry adapters, SEO helpers
-- `src/components/`: `motion/` (SplitReveal, Reveal, SmoothScroll), `media/` (Reel, Photo, VideoBudget), `home/` (acts), `capabilities/`, `work/`, `route/`, `layout/`
+- `src/components/`: `motion/` (SplitReveal, Reveal, SmoothScroll), `media/` (Reel, Photo, VideoBudget), `home/` (hero), `sections/` (home and shared sections), `capabilities/`, `work/`, `route/`, `layout/`
 - `docs/`: research, brief, architecture, content map, motion system
 
 ## Agent tooling

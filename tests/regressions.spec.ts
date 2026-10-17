@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 
-// Regression guards for the audit fixes (docs/briefs/SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md).
+// Regression guards for the audit fixes (docs/briefs/archive/SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md).
 // Each test names the plan item it protects.
 
 /** Records window.scrollBy calls, then walks the route builder to its second step on a short viewport (where it must scroll). */
@@ -179,7 +179,7 @@ test("#10 AI pairs (AI Marketing & Automation page) play once as they arrive and
   }
 });
 
-// ── Performance fixes (docs/briefs/SocialxBrand_Performance_Fixes_README.md); each names the issue it guards ──
+// ── Performance fixes (docs/briefs/archive/SocialxBrand_Performance_Fixes_README.md); each names the issue it guards ──
 
 const playingVideos = (page: Page) => page.evaluate(() => [...document.querySelectorAll("video")].filter((v) => !v.paused).length);
 
@@ -231,7 +231,7 @@ test("perf #7/#12 navigation: Home → Work → back → Work, each page arrives
   await work();
 });
 
-// ── Post-phase audit (docs/briefs/SocialxBrand_Pilot_PostPhase_Audit.md); each names the audit section ──
+// ── Post-phase audit (docs/briefs/archive/SocialxBrand_Pilot_PostPhase_Audit.md); each names the audit section ──
 
 type GsapHook = { gsap: typeof import("gsap").gsap; ScrollTrigger: { getAll(): { trigger?: Element }[] } };
 /** The development-only `window.__gsap` hook (src/lib/gsap.ts); absent from production builds. */
@@ -308,7 +308,7 @@ test("audit §6/§11 leaving mid-animation: no tween left on removed nodes, trig
   expect(errors).toEqual([]);
 });
 
-// ── Client-first layout (docs/briefs/SocialxBrand_Client_First_Layout_Refactor_Plan.md) ──
+// ── Client-first layout (docs/briefs/archive/SocialxBrand_Client_First_Layout_Refactor_Plan.md) ──
 
 test("client-first home: the first screen says what the agency does and leads to Work and Services; five sections, then the footer", async ({ page }, info) => {
   test.skip(info.project.name === "reduced", "desktop and phone cover it");
@@ -353,7 +353,7 @@ test("client-first language: no internal terms (Pilot Route, screening, station,
   }
 });
 
-// ── Deep audit, 2026-10-17 (docs/briefs/SocialxBrand_Pilot5_Deep_Audit_Client_Performance.md) ──
+// ── Deep audit, 2026-10-17 (docs/briefs/archive/SocialxBrand_Pilot5_Deep_Audit_Client_Performance.md) ──
 
 test("audit5 P1 hero capsules: posters follow the media window (≤3 per capsule), not all eight", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "run once");
@@ -522,4 +522,77 @@ test("about: both founders with name, role, a loaded portrait and alt text; reac
   expect(await page.locator('script[type="application/ld+json"]').evaluateAll((s) => s.filter((x) => x.textContent!.includes('"Person"')).length)).toBe(founders.length);
   await expect(page.locator("footer").getByRole("link", { name: "About", exact: true })).toHaveAttribute("href", "/about");
   if (info.project.name === "desktop") await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "About", exact: true })).toHaveAttribute("aria-current", "page");
+});
+
+// ── Pilot6 full audit, 2026-10-17 (docs/briefs/SocialxBrand_Pilot6_Full_Audit_and_Fix_Plan.md) ──
+
+test("pilot6 P0.1 hero capsules: partly scrolled away, a capsule keeps playing its clip but stops changing it", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(1500);
+  const top = page.locator("[data-pill=top] > span");
+  const box = (await top.boundingBox())!;
+  // scroll until about half of the top capsule has left the screen
+  await page.evaluate((y) => window.scrollTo(0, y), Math.round(box.y + box.height / 2));
+  await page.waitForTimeout(1200); // let a handover already under way finish
+  const onIndex = () => top.evaluate((pill) => [...pill.children].findIndex((s) => s.getAttribute("data-state") === "on"));
+  const first = await onIndex();
+  const seen = new Set<number>();
+  for (let i = 0; i < 16; i++) { seen.add(await onIndex()); await page.waitForTimeout(250); } // ~3 beats of 1.4s
+  expect([...seen], "slides shown while partly scrolled away").toEqual([first]);
+  expect(await top.evaluate((pill) => [...pill.querySelectorAll("video")].filter((v) => !v.paused).length)).toBe(1);
+  expect(await top.locator("[data-state=out]").count(), "an outgoing slide left mounted").toBe(0);
+  // back in full view, it changes clip again
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(onIndex, { timeout: 4000 }).not.toBe(first);
+});
+
+test("pilot6 P1.4 video budget: one cold start at a time (the first work cards never start their downloads together)", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "run once");
+  await page.addInitScript(() => {
+    sessionStorage.setItem("sxbp.intro", "1");
+    // at every play() on a video with no data yet, count the earlier such starts still in flight:
+    // no frame yet, not paused, no error (judged by state, not by event order: the budget starts
+    // the next video from inside the previous one's canplay handler)
+    const w = window as unknown as { __cold: { most: number } };
+    w.__cold = { most: 0 };
+    const open = new Set<HTMLMediaElement>();
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+      for (const el of open) if (el.readyState >= 2 || el.paused || el.error) open.delete(el);
+      if (this.readyState < 2) { open.add(this); w.__cold.most = Math.max(w.__cold.most, open.size); }
+      return play.call(this);
+    };
+  });
+  await page.goto("/", { waitUntil: "load" });
+  await page.waitForTimeout(1500);
+  await page.mouse.move(720, 450);
+  for (let y = 0; y < 1400; y += 100) { await page.mouse.wheel(0, 100); await page.waitForTimeout(30); }
+  // the three work cards on screen all end up playing
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll("video")].filter((v) => !v.closest("[data-pill]") && !v.paused).length), { timeout: 10_000 }).toBe(3);
+  expect(await page.evaluate(() => (window as unknown as { __cold: { most: number } }).__cold.most), "cold starts in flight at once").toBe(1);
+});
+
+test("pilot6 P2.19 video that fails to load: the capsules and work cards keep their posters", async ({ page }, info) => {
+  test.skip(info.project.name === "reduced", "no video under reduced motion");
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.addInitScript(() => sessionStorage.setItem("sxbp.intro", "1"));
+  await page.route((u) => /\.(mp4|webm)$/.test(u.pathname), (r) => r.abort());
+  await page.goto("/", { waitUntil: "load" });
+  const loaded = (sel: string) => page.locator(sel).evaluateAll((imgs) => imgs.map((i) => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0));
+  await expect.poll(() => loaded("[data-pill] [data-state=on] img")).toEqual([true, true]);
+  const cards = page.locator("#main a video").first();
+  await cards.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1500);
+  const posters = await page.locator("#main a").filter({ has: page.locator("video") }).locator("picture img").evaluateAll((imgs) => imgs.slice(0, 3).map((i) => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth > 0));
+  expect(posters).toEqual([true, true, true]);
+  expect(errors).toEqual([]);
+});
+
+test("pilot6 P0.20 no Google Drive ids are sent to visitors", async ({ page }) => {
+  const res = await page.goto("/", { waitUntil: "load" });
+  const html = await res!.text();
+  expect(html).not.toContain("driveId");
 });

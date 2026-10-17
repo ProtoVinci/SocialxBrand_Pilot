@@ -1,5 +1,5 @@
 // The 18 services as a client meets them: four plain-language groups (the owner chose this grouping,
-// 2026-10-16, from docs/briefs/SocialxBrand_Client_First_Layout_Refactor_Plan.md). Presentation only: every
+// 2026-10-16, from docs/briefs/archive/SocialxBrand_Client_First_Layout_Refactor_Plan.md). Presentation only: every
 // service keeps its own page, slug, PDF wording and `cluster` in divisions.ts.
 // Each summary only restates what the member services' own descriptions already say.
 
