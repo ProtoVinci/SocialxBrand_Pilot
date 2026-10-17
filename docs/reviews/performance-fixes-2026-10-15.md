@@ -1,6 +1,6 @@
 # Performance fixes: report, 2026-10-15
 
-Source brief: `SocialxBrand_Performance_Fixes_README.md` (issues 1–12, phases 0–7). The owner asked for all phases in one pass.
+Source brief: `docs/briefs/SocialxBrand_Performance_Fixes_README.md` (issues 1–12, phases 0–7). The owner asked for all phases in one pass.
 Starting point: commit `a92616c` plus the owner's uncommitted logo, font and footer work, which was left untouched. Nothing is committed by this work.
 No dependency was added or removed.
 

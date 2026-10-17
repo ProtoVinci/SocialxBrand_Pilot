@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 
-// Regression guards for the audit fixes (SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md).
+// Regression guards for the audit fixes (docs/briefs/SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md).
 // Each test names the plan item it protects.
 
 /** Records window.scrollBy calls, then walks the route builder to its second step on a short viewport (where it must scroll). */
@@ -179,7 +179,7 @@ test("#10 AI pairs (AI Marketing & Automation page) play once as they arrive and
   }
 });
 
-// ── Performance fixes (SocialxBrand_Performance_Fixes_README.md); each names the issue it guards ──
+// ── Performance fixes (docs/briefs/SocialxBrand_Performance_Fixes_README.md); each names the issue it guards ──
 
 const playingVideos = (page: Page) => page.evaluate(() => [...document.querySelectorAll("video")].filter((v) => !v.paused).length);
 
@@ -231,7 +231,7 @@ test("perf #7/#12 navigation: Home → Work → back → Work, each page arrives
   await work();
 });
 
-// ── Post-phase audit (SocialxBrand_Pilot_PostPhase_Audit.md); each names the audit section ──
+// ── Post-phase audit (docs/briefs/SocialxBrand_Pilot_PostPhase_Audit.md); each names the audit section ──
 
 type GsapHook = { gsap: typeof import("gsap").gsap; ScrollTrigger: { getAll(): { trigger?: Element }[] } };
 /** The development-only `window.__gsap` hook (src/lib/gsap.ts); absent from production builds. */
@@ -308,7 +308,7 @@ test("audit §6/§11 leaving mid-animation: no tween left on removed nodes, trig
   expect(errors).toEqual([]);
 });
 
-// ── Client-first layout (SocialxBrand_Client_First_Layout_Refactor_Plan.md) ──
+// ── Client-first layout (docs/briefs/SocialxBrand_Client_First_Layout_Refactor_Plan.md) ──
 
 test("client-first home: the first screen says what the agency does and leads to Work and Services; five sections, then the footer", async ({ page }, info) => {
   test.skip(info.project.name === "reduced", "desktop and phone cover it");
@@ -353,7 +353,7 @@ test("client-first language: no internal terms (Pilot Route, screening, station,
   }
 });
 
-// ── Deep audit, 2026-10-17 (SocialxBrand_Pilot5_Deep_Audit_Client_Performance.md) ──
+// ── Deep audit, 2026-10-17 (docs/briefs/SocialxBrand_Pilot5_Deep_Audit_Client_Performance.md) ──
 
 test("audit5 P1 hero capsules: posters follow the media window (≤3 per capsule), not all eight", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "run once");
@@ -502,3 +502,24 @@ for (const vt of ["native", "absent"] as const) {
     expect(errors).toEqual([]);
   });
 }
+
+test("about: both founders with name, role, a loaded portrait and alt text; reachable from the nav and footer", async ({ page }, info) => {
+  const { founders } = await import("../src/content/founders");
+  await page.goto("/about", { waitUntil: "load" });
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("The people behind");
+  for (const f of founders) {
+    const row = page.locator(`li#${f.id}`);
+    // rows rise in as they enter the viewport (Reveal), so bring each one on screen first
+    await row.scrollIntoViewIfNeeded();
+    await expect(row.getByRole("heading", { level: 3, name: f.name })).toBeVisible();
+    await expect(row.getByText(f.role, { exact: true })).toBeVisible();
+    const img = row.getByRole("img", { name: f.portraitAlt });
+    await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth)).toBeGreaterThan(0);
+    // 4:5 portrait, never stretched
+    const box = await img.boundingBox();
+    expect(box!.height / box!.width).toBeCloseTo(1.25, 1);
+  }
+  expect(await page.locator('script[type="application/ld+json"]').evaluateAll((s) => s.filter((x) => x.textContent!.includes('"Person"')).length)).toBe(founders.length);
+  await expect(page.locator("footer").getByRole("link", { name: "About", exact: true })).toHaveAttribute("href", "/about");
+  if (info.project.name === "desktop") await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "About", exact: true })).toHaveAttribute("aria-current", "page");
+});

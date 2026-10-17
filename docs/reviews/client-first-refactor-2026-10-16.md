@@ -1,6 +1,6 @@
 # Client-first layout refactor: report, 2026-10-16
 
-Source brief: `SocialxBrand_Client_First_Layout_Refactor_Plan.md`. Starting point: commit `a8cdd53`. Nothing is committed.
+Source brief: `docs/briefs/SocialxBrand_Client_First_Layout_Refactor_Plan.md`. Starting point: commit `a8cdd53`. Nothing is committed.
 No dependency was added or removed. All URLs, slugs, the 18 service routes, the 14 work routes, SEO metadata, breadcrumbs (visible and JSON-LD) and reduced-motion support stay.
 
 ## Owner decisions taken (2026-10-16)

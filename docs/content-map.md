@@ -22,6 +22,8 @@ Every on-site claim traces to a source. **PDF-S** is *Services & Divisions Maste
 | "Every business has something worth showing…" | PDF-P p. 4 | `site.ts` `closing` | hero line, footer |
 | Contact: email, phone, web | PDF-P p. 4 | `site.ts` | footer, `/route`, JSON-LD |
 | Portfolio: 95 curated assets in 14 screenings | Drive (500 files; categories are the only metadata) | `scripts/media/selection.json` → `src/content/media.generated.json`, copy in `src/content/work.ts` | `/work`, home |
+| Founders: names, roles, bios, focus (condensed from the owner's text, 2026-10-17); portraits | owner-supplied text and photos (`docs/source/founders/`) | `src/content/founders.ts`, crops by `scripts/media/founders.mjs` → `public/founders/` | `/about` |
+| Client feedback and logos | owner statement, 2026-10-17 (written on clients' behalf with permission); logos `docs/source/feedback-logos/` | `src/content/feedback.ts`, logos by `scripts/media/feedback-logos.mjs` → `public/clients/` | home |
 | Logo files | supplied artwork | `public/brand/`, vector trace in `src/components/brand/mark-paths.ts` | everywhere |
 
 ## Copy written for the site (not in the PDFs)
@@ -35,4 +37,4 @@ These lines are framing, not claims. Each restates source ideas.
 
 ## Deliberately absent
 
-Client names (apart from marks that appear inside the logo work itself), results, metrics, testimonials, awards, a team, years in business, pricing and a city.
+Results, metrics, ratings, awards, a wider team, years in business, past employers or credentials, pricing and a city. Client names appear only with the feedback the owner supplied; the founders only as the owner described them.

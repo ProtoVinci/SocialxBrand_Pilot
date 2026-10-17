@@ -1,6 +1,7 @@
 import { site } from "@/content/site";
 import { siteUrl } from "@/lib/site-url";
 import type { Division } from "@/content/divisions";
+import { portrait, type Founder } from "@/content/founders";
 
 const abs = (path: string) => new URL(path, siteUrl).toString();
 
@@ -40,5 +41,17 @@ export function breadcrumbLd(items: { name: string; path: string }[]) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: items.map((it, i) => ({ "@type": "ListItem", position: i + 1, name: it.name, item: abs(it.path) })),
+  };
+}
+
+export function founderLd(f: Founder) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: f.fullName,
+    jobTitle: f.role,
+    image: abs(portrait(f.id, 800, "webp")),
+    worksFor: { "@id": abs("/#organization") },
+    url: abs(`/about#${f.id}`),
   };
 }

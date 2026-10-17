@@ -12,7 +12,7 @@ const initials = (s: string) => s.split(/\s+/).filter(Boolean).slice(0, 2).map((
  * using it (pointer over it, keyboard focus inside it), while it is off screen or the tab is hidden,
  * and after the Pause button (WCAG 2.2.2: anything that moves on its own can be paused). Reduced
  * motion: no automatic movement at all. Three cards across on desktop, two on tablet, one and a peek
- * on phones. Each card: the quote, then the client's logo (or initials until the logo is supplied),
+ * on phones. Each card: the quote, then the client's logo (or initials where none was supplied),
  * business and name. No star ratings: none were given.
  */
 const STEP_MS = 4500;
@@ -104,8 +104,8 @@ export function FeedbackCarousel({ items }: { items: FeedbackCard[] }) {
               </div>
               <figcaption className="flex items-center gap-4">
                 {f.logo ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- small client logos, sized by the box
-                  <img src={f.logo} alt="" width={56} height={56} loading="lazy" decoding="async" className="size-14 shrink-0 rounded-full bg-white object-contain p-1 ring-1 ring-line" />
+                  // eslint-disable-next-line @next/next/no-img-element -- 168px pre-sized WebP (scripts/media/feedback-logos.mjs); the name beside it labels it
+                  <img src={f.logo} alt="" width={56} height={56} loading="lazy" decoding="async" className="size-14 shrink-0 rounded-full bg-white object-cover ring-1 ring-line" />
                 ) : (
                   <span aria-hidden className="grid size-14 shrink-0 place-items-center rounded-full bg-sand font-display text-lg font-medium text-ink/70 ring-1 ring-line">
                     {initials(f.business ?? f.displayName)}

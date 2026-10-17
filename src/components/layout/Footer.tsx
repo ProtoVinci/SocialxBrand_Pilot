@@ -39,7 +39,7 @@ export function Footer() {
       <div className="gutter mt-16 flex flex-wrap items-center justify-between gap-6 border-t border-ink/10 py-6">
         {/* every page ends here, so this row is the way out: home first, generous tap targets */}
         <nav aria-label="Footer" className="-mx-2 flex flex-wrap gap-x-2 text-sm text-muted">
-          {[["/", "Home"], ["/work", "Work"], ["/capabilities", "Services"], ["/approach", "How we work"], ["/route", "Contact us"]].map(([href, label]) => (
+          {[["/", "Home"], ["/work", "Work"], ["/capabilities", "Services"], ["/approach", "How we work"], ["/about", "About"], ["/route", "Contact us"]].map(([href, label]) => (
             <Link key={href} href={href} className="rounded-full px-2 py-2.5 hover:text-ink">{label}</Link>
           ))}
         </nav>

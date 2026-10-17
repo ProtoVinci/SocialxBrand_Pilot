@@ -1,6 +1,6 @@
 # Post-phase audit: report, 2026-10-15 (second pass)
 
-Source brief: `SocialxBrand_Pilot_PostPhase_Audit.md` (phases 0–7). The owner asked for all phases in one pass.
+Source brief: `docs/briefs/SocialxBrand_Pilot_PostPhase_Audit.md` (phases 0–7). The owner asked for all phases in one pass.
 Baseline: commit `40c4fe1` (production build served on :3101). Candidate: the working tree (production build on :3102). Nothing is committed. No dependency was added or removed.
 
 Method: as in `performance-fixes-2026-10-15.md`. Production builds only, headless Chromium (software renderer), 4× CPU, 1440×900 unless noted, baseline and candidate runs **interleaved**, medians. Diagnostic scripts lived in the session scratchpad, not in the repo. Real laptop/phone GPUs were **not** measured: there is no device in this environment.

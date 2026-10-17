@@ -15,6 +15,7 @@ const links = [
   { href: "/work", label: "Work", hint: "Reels, films, photography and design" },
   { href: "/capabilities", label: "Services", hint: "18 services in four groups" },
   { href: "/approach", label: "How we work", hint: "Four steps, from your goals to what we improve next" },
+  { href: "/about", label: "About", hint: "The founders behind SxBP" },
   { href: "/route", label: "Contact us", hint: "WhatsApp, call or email, or build a project brief" },
 ];
 
@@ -163,13 +164,14 @@ export function Nav({ previews }: { previews: VideoAsset[] }) {
           </Link>
 
           <ul className="hidden items-center gap-1 md:flex">
-            {links.slice(0, 4).map((l) => (
-              <li key={l.href}>
+            {links.filter((l) => l.href !== "/route").map((l) => (
+              // tablet widths: the logo is the way home, so the bar drops "Home" to fit the rest on one line
+              <li key={l.href} className={l.href === "/" ? "hidden lg:block" : undefined}>
                 <Link
                   href={l.href}
                   aria-current={isActive(l.href) ? "page" : undefined}
                   transitionTypes={["nav-forward"]}
-                  className="roll relative block rounded-full px-4 py-2 text-sm text-ink/80 transition-colors hover:text-ink aria-[current=page]:text-ink"
+                  className="roll relative block whitespace-nowrap rounded-full px-4 py-2 text-sm text-ink/80 transition-colors hover:text-ink aria-[current=page]:text-ink"
                 >
                   <span className="relative block overflow-hidden">
                     <span className="roll-a block">{l.label}</span>

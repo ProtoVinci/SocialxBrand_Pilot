@@ -3,8 +3,9 @@
 // results that the client did not state and the owner cannot evidence.
 //
 // To change or add one: put the client's words in `quote`, record where they came from in
-// `sourceRef`, set `approved: true` and the sign-off date in `approvedAt`. Logos go in
-// public/clients/ and are referenced in `logo`.
+// `sourceRef`, set `approved: true` and the sign-off date in `approvedAt`. Logos: the
+// client's original goes in docs/source/feedback-logos/, `node scripts/media/feedback-logos.mjs`
+// writes the small WebP to public/clients/<id>.webp, and `logo` points at that.
 //
 // Only entries with `approved: true`, an `approvedAt` date and a quote render, and only the public
 // fields (quote, name, role, business, logo, service) leave the server: `sourceRef` and the approval
@@ -48,42 +49,42 @@ export const feedback: FeedbackEntry[] = [
   {
     id: "coastal-tawa-bhiwandi", business: "Coastal Tawa Bhiwandi", displayName: "Nitish Shetty",
     quote: "They captured our food and our coastal flavour beautifully. The team listens, shares good ideas and is always quick to respond.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/coastal-tawa-bhiwandi.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
   {
     id: "sandesh-caterers", business: "Sandesh Caterers", displayName: "Sandesh Dalvi",
     quote: "Our festive posters and menus now look professional and clear. SxBP took the time to understand our catering business before designing anything.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/sandesh-caterers.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
   {
     id: "the-local-katta", business: "The Local Katta", displayName: "Samadhan Gholap",
     quote: "SxBP gave The Local Katta a consistent look online. The team is friendly, patient with changes and genuinely invested in our business.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/the-local-katta.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
   {
     id: "thet-tumchya-gharatun", business: "Thet Tumchya Gharatun", displayName: "Prasad Khandekar",
     quote: "They understood the homely feel of our brand and brought it across in every post. Communication was simple and clear throughout.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/thet-tumchya-gharatun.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
   {
     id: "24-benne-tribe", business: "24 Benne Tribe", displayName: "Ashish Singh",
     quote: "Creative, reliable and easy to work with. SxBP helped us present 24 Benne Tribe the way we always imagined it.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/24-benne-tribe.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
   {
     id: "firdosh-marbel-arts", business: "Firdosh Marbel Arts", displayName: "Kalamuddin",
     quote: "Our marble work is detailed, and SxBP showed it with real care. They made our craft look as good online as it does in person.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/firdosh-marbel-arts.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
   {
     id: "celebration-cakes-bakery", business: "Celebration Cakes & Bakery", displayName: "Rameshwar Koli",
     quote: "From cake photos to festival posts, everything feels fresh and on-brand. The team plans ahead, so we always know what is coming next.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/celebration-cakes-bakery.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
   {
     id: "cool-goti-soda", business: "Cool Goti Soda", displayName: "Akshay Mohite",
     quote: "SxBP gave Cool Goti Soda a fun, energetic voice on social media. Great ideas, and a team that actually listens.",
-    sourceRef: onBehalf, approved: true, approvedAt: signedOff,
+    logo: "/clients/cool-goti-soda.webp", sourceRef: onBehalf, approved: true, approvedAt: signedOff,
   },
 ];
 

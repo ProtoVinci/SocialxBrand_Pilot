@@ -133,7 +133,7 @@ page end. Footer has Home and Back to top. Labels (2026-10-09): nav, footer, cru
 
 ## 5. Changes history (newest first, condensed)
 
-00. **Audit-plan implementation (2026-10-09, local session).** Source: `SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md`; every item, with status and evidence, is in `docs/reviews/audit-implementation-2026-10-09.md`. In short:
+00. **Audit-plan implementation (2026-10-09, local session).** Source: `docs/briefs/SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md`; every item, with status and evidence, is in `docs/reviews/audit-implementation-2026-10-09.md`. In short:
    - **Fixed a real download bug:** calling `video.load()` on a `preload="none"` video fetches the whole file in Chromium; the earlier AV1 switch called it on mount, so hardware-AV1 machines downloaded every reel on a page at once. `Reel` now picks its clip through the `src` attribute (see §6).
    - Media: the hero takeover reel (2.5MB) is started by the pinned scene, not at load; the capabilities stage and cursor preview mount at most two reels (were 18); small thumbnails and phone layouts use the 360p clip (`Reel variant="preview"`); Nav menu previews are poster-only (`still`).
    - Runtime: no tween/delayedCall per scroll update (WorkShowcase, Marquee); PointerFx on one rAF per frame; touch ignored by pointer effects; DivisionTicker listeners cleaned up with an AbortController; one-shot reveals via `observeOnce`; RouteBuilder scrolls through Lenis when it runs; below-the-fold sections set up when about a screen away (`useGSAPNear`).

@@ -1,6 +1,6 @@
 # Audit implementation report — 2026-10-09
 
-Source plan: `SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md` (37 technical items, 12 client-perspective items, phases 0–6).
+Source plan: `docs/briefs/SocialxBrand_Complete_Audit_and_Claude_Code_Plan.md` (37 technical items, 12 client-perspective items, phases 0–6).
 Starting point: commit `9a5cbbb` (baseline measured on it). Nothing is committed by this work; `git diff` shows all of it.
 No dependency was added or removed (`package.json` / lockfile untouched).
 

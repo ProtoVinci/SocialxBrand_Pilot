@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const ROUTES = ["/", "/work", "/work/restaurant-hospitality", "/capabilities", "/capabilities/performance-marketing", "/approach", "/route"];
+const ROUTES = ["/", "/work", "/work/restaurant-hospitality", "/capabilities", "/capabilities/performance-marketing", "/approach", "/about", "/route"];
 
 for (const route of ROUTES) {
   test(`${route}: renders, no page errors, no horizontal overflow`, async ({ page }) => {
@@ -23,7 +23,7 @@ for (const route of ROUTES) {
 
 test("accessibility: no serious or critical axe violations on key routes", async ({ page }, info) => {
   test.skip(info.project.name !== "desktop", "run once");
-  for (const route of ["/", "/capabilities/branding-identity", "/route"]) {
+  for (const route of ["/", "/capabilities/branding-identity", "/about", "/route"]) {
     await page.goto(route, { waitUntil: "networkidle" });
     await page.waitForTimeout(2800); // let entrance reveals settle so hidden states don't skew contrast
     const results = await new AxeBuilder({ page }).disableRules(["color-contrast"]).analyze();
